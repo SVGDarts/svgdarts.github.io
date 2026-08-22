@@ -691,7 +691,7 @@
   </div>
 
   <script>
-    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxb62t0bioYheQ5on6HnM9_XiVVGvcq6iXKLDPPizRzdZYqEalTmlAebaZyUKWkyyTA/exec";
+    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyqTjhE04Y8oxP-8x2aInviGGDYdtHguMvoVSWizdKTTjscKXoPLhs1yq7ZFYNlptC_/exec";
     const CACHE_KEY = "svg_darts_app_data_v2";
 
     const TEAM_URLS = {
@@ -1065,7 +1065,6 @@
       renderRecords();
     }
 
-    /* ÜBERARBEITETE ROW-LOGIK MIT GEWECHSELTEN AUSWÄRTSFARBEN UND WEISS-RULE + 0:0 BEHANDLUNG */
     function createMatchRowHTML(m) {
       let scoreRaw = String(m.score || '-').trim();
       
@@ -1086,7 +1085,6 @@
       const scoreParts = scoreRaw.split(/[:\-]/).map(s => parseInt(s.trim(), 10));
       let displayScore = scoreRaw;
       
-      // Standardklasse für ungespielte/ungeplante Partien
       let scoreStyleClass = 'score-neutral';
 
       if (scoreParts.length === 2 && !isNaN(scoreParts[0]) && !isNaN(scoreParts[1])) {
@@ -1096,27 +1094,21 @@
         displayScore = `${svgScore}:${opponentScore}`;
         const sum = svgScore + opponentScore;
 
-        // Regel 0: 0:0 -> Schwarz mit weißer Schrift
         if (svgScore === 0 && opponentScore === 0) {
           scoreStyleClass = 'score-zero';
         }
-        // Regel 1: Summe unter 12, aber mindestens 1 -> Weiß hervorheben
         else if (sum >= 1 && sum < 12) {
           scoreStyleClass = 'score-white';
         } else {
-          // Regel 2: Auswärtsspiele mit vertauschter Farb-Logik
           if (isAway) {
             if (svgScore > opponentScore) {
-              // Auswärts Gewonnen -> Farbe wie Niederlage
               scoreStyleClass = 'score-loss';
             } else if (svgScore < opponentScore) {
-              // Auswärts Verloren -> Farbe wie Sieg
               scoreStyleClass = 'score-win';
             } else {
               scoreStyleClass = 'score-draw';
             }
           } 
-          // Regel 3: Heimspiele mit normaler Farb-Logik
           else {
             if (svgScore > opponentScore) {
               scoreStyleClass = 'score-win';
@@ -1619,9 +1611,9 @@
           <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
           <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
           <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-400">${r.shortgameChance ?? r.shortgame_chance ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-400">${formatPercent(r.shortgameChance ?? r.shortgame_chance)}</td>
           <td class="px-4 py-4 text-neutral-400">${r.maxSpecialsMatchday ?? r.max_specials_matchday ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-400">${r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday ?? '-'}</td>
+          <td class="px-4 py-4 text-neutral-400">${formatNumber(r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday)}</td>
         </tr>
       `;
       }).join('');
