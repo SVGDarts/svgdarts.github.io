@@ -983,7 +983,7 @@
         console.error("Fehler beim Speichern:", err);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Vorschlag speichern`;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Änderung speichern`;
       }
     }
 
@@ -1335,12 +1335,12 @@
           isMatch = (m) => /SVG\s*8/i.test(m.home) || /SVG\s*8/i.test(m.away);
         } else if (/^[B-Z]$/.test(token)) {
           isMatch = (m) => {
-            const regex = new RegExp(`SVG\s*${token}\b`, 'i');
+            const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
             return regex.test(m.home) || regex.test(m.away);
           };
         } else if (/^\d+$/.test(token)) {
           isMatch = (m) => {
-            const regex = new RegExp(`SVG\s*${token}\b`, 'i');
+            const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
             return regex.test(m.home) || regex.test(m.away);
           };
         }
@@ -1657,15 +1657,6 @@
       }
       
       loadDataFromSheets();
-
-      // Automatische Aktualisierung alle 2 Minuten (120000 ms) im Hintergrund
-      setInterval(() => {
-        if (typeof loadDataFromSheets === 'function') {
-          loadDataFromSheets(false);
-        } else {
-          location.reload();
-        }
-      }, 120000);
     });
   </script>
 </body>
