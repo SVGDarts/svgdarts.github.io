@@ -885,62 +885,32 @@
       handleGlobalSearch();
     }
 
-    async function ladeDaten() {
-        try {
-            // Lädt die JSON-Datei direkt von deinem GitHub-Hosting (blitzschnell!)
-            const response = await fetch('./data/daten.json');
-            const daten = await response.json();
-            
-            console.log("Daten erfolgreich geladen:", daten);
-            
-            // Übernehme die Daten direkt in deine App-Struktur
-            appData = {
-              matches: daten.matches || [],
-              players: daten.players || [],
-              stats: daten.stats || [],
-              records: daten.records || [],
-              gameStats: daten.gameStats || daten.game_stats || daten.gameStatistics || [],
-              notes: daten.notes || []
-            };
-
-            populateMatchFilters();
-            renderAllTables();
-            renderNotes();
-            
-        } catch (error) {
-            console.error("Fehler beim Laden der Daten:", error);
-        }
-    }
-
     async function loadDataFromSheets(isManualRefresh = false) {
       const icon = document.getElementById('refreshIcon');
       if (icon) icon.classList.add('fa-spin');
 
-      // Falls ein manueller Refresh gewünscht ist, rufen wir den Google Apps Script Webhook auf (optional als Fallback/Synchronisation)
-      if (isManualRefresh) {
-        try {
-          const response = await fetch(SHEETS_WEBAPP_URL, { method: 'GET', mode: 'cors' });
-          if (!response.ok) throw new Error("Netzwerkfehler");
-          const data = await response.json();
-          appData = {
-            matches: data.matches || [],
-            players: data.players || [],
-            stats: data.stats || [],
-            records: data.records || [],
-            gameStats: data.gameStats || data.game_stats || data.gameStatistics || [],
-            notes: data.notes || []
-          };
-          populateMatchFilters();
-          renderAllTables();
-          renderNotes();
-        } catch (err) {
-          console.warn("Direktabruf vom Webhook fehlgeschlagen, lade stattdessen JSON.", err);
-          await ladeDaten();
-        } finally {
-          if (icon) icon.classList.remove('fa-spin');
-        }
-      } else {
-        await ladeDaten();
+      try {
+        const response = await fetch(SHEETS_WEBAPP_URL, { method: 'GET', mode: 'cors' });
+        if (!response.ok) throw new Error("Netzwerkfehler");
+        
+        const data = await response.json();
+        
+        appData = {
+          matches: data.matches || [],
+          players: data.players || [],
+          stats: data.stats || [],
+          records: data.records || [],
+          gameStats: data.gameStats || data.game_stats || data.gameStatistics || [],
+          notes: data.notes || []
+        };
+
+        localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
+        populateMatchFilters();
+        renderAllTables();
+        renderNotes();
+      } catch (err) {
+        console.warn("Backend nicht erreichbar oder langsamer Kaltstart. Nutze Cache.", err);
+      } finally {
         if (icon) icon.classList.remove('fa-spin');
       }
     }
@@ -1008,7 +978,7 @@
         });
 
         input.value = '';
-        await loadDataFromSheets(true);
+        await loadDataFromSheets();
       } catch (err) {
         console.error("Fehler beim Speichern:", err);
       } finally {
@@ -1028,7 +998,7 @@
           body: JSON.stringify({ action: 'delete', rowIndex: rowIndex })
         });
 
-        await loadDataFromSheets(true);
+        await loadDataFromSheets();
       } catch (err) {
         console.error("Fehler beim Löschen:", err);
       }
@@ -1674,9 +1644,20 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      ladeDaten();
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        try {
+          appData = JSON.parse(cached);
+          populateMatchFilters();
+          renderAllTables();
+          renderNotes();
+        } catch (e) {
+          console.error("Cache Read Error", e);
+        }
+      }
+      
+      loadDataFromSheets();
     });
   </script>
 </body>
 </html>
-```[cite: 1]
