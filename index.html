@@ -110,7 +110,6 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased text-neutral-200">
 
-  <!-- Navigation Header -->
   <header class="sticky top-0 z-50 glass-card border-b border-neutral-800">
     <div class="max-w-7xl mx-auto px-8">
       <div class="flex flex-row items-center justify-between h-20">
@@ -218,7 +217,6 @@
     </div>
   </header>
 
-  <!-- Main Content Area -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-8 py-8 space-y-6">
     
     <div id="statusBanner" class="hidden p-4 rounded-2xl text-sm flex items-center justify-between shadow-lg transition-all bg-black border border-neutral-800">
@@ -231,8 +229,20 @@
       </button>
     </div>
 
-    <!-- Reiter 0: Startseite -->
     <section id="content-home" class="space-y-8">
+      
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xl font-bold font-display text-white flex items-center gap-2">
+            <i class="fa-solid fa-bullhorn text-neutral-400 text-sm"></i> Updates
+          </h2>
+        </div>
+        <div class="glass-card rounded-2xl p-6 shadow-2xl text-sm text-neutral-300 leading-relaxed space-y-2">
+          <p>• Aktuelle Informationen und Neuigkeiten rund um die SVG Darts Teams.</p>
+          <p>• Hier kannst du ganz einfach manuelle Updates einfügen.</p>
+        </div>
+      </div>
+
       <div class="space-y-4">
         <div class="flex items-center justify-between">
           <h2 class="text-xl font-bold font-display text-white flex items-center gap-2">
@@ -313,7 +323,6 @@
       </div>
     </section>
 
-    <!-- Reiter 1: Spielplan -->
     <section id="content-matches" class="space-y-6 hidden">
       <div class="flex flex-row items-center justify-between gap-4">
         <div>
@@ -368,7 +377,6 @@
       </div>
     </section>
 
-    <!-- Reiter: Tabelle -->
     <section id="content-tables" class="space-y-6 hidden">
       <div class="flex flex-row justify-between items-center gap-4">
         <div>
@@ -403,7 +411,6 @@
       </div>
     </section>
 
-    <!-- Reiter 2: Spielerdatenbank -->
     <section id="content-players" class="space-y-6 hidden">
       <div class="flex flex-row justify-between items-center gap-4">
         <div>
@@ -447,7 +454,6 @@
       </div>
     </section>
 
-    <!-- Reiter 3: Spielstatistiken -->
     <section id="content-gameStats" class="space-y-6 hidden">
       <div class="flex flex-row justify-between items-center gap-4">
         <div>
@@ -497,7 +503,6 @@
       </div>
     </section>
 
-    <!-- Reiter 4: Averages -->
     <section id="content-stats" class="space-y-6 hidden">
       <div class="flex flex-row justify-between items-center gap-4">
         <div>
@@ -547,7 +552,6 @@
       </div>
     </section>
 
-    <!-- Reiter 5: Bestleistungen -->
     <section id="content-records" class="space-y-6 hidden">
       <div class="flex flex-row justify-between items-center gap-4">
         <div>
@@ -578,16 +582,16 @@
                   Highfinish <span id="rsort-icon-highfinish" class="ml-1"></span>
                 </th>
                 <th onclick="setRecordsSort('shortgame')" class="px-4 py-4 sortable-header">
-                  Shortgames <span id="rsort-icon-shortgame" class="ml-1"></span>
+                  Shortgame <span id="rsort-icon-shortgame" class="ml-1"></span>
                 </th>
                 <th onclick="setRecordsSort('shortgameChance')" class="px-4 py-4 sortable-header">
-                  Chance auf Shortgame <span id="rsort-icon-shortgameChance" class="ml-1"></span>
+                  Shortgame Quote <span id="rsort-icon-shortgameChance" class="ml-1"></span>
                 </th>
                 <th onclick="setRecordsSort('maxSpecialsMatchday')" class="px-4 py-4 sortable-header">
-                  Meiste Specials an einem Spieltag <span id="rsort-icon-maxSpecialsMatchday" class="ml-1"></span>
+                  Max Specials/Spieltag <span id="rsort-icon-maxSpecialsMatchday" class="ml-1"></span>
                 </th>
                 <th onclick="setRecordsSort('specialsPerGame')" class="px-4 py-4 sortable-header">
-                  Specials pro Spiel <span id="rsort-icon-specialsPerGame" class="ml-1"></span>
+                  Specials/Spiel <span id="rsort-icon-specialsPerGame" class="ml-1"></span>
                 </th>
               </tr>
             </thead>
@@ -599,19 +603,17 @@
 
   </main>
 
-  <footer class="mt-auto py-6 border-t border-neutral-800/60 text-center text-xs text-neutral-500">
-    <div class="max-w-7xl mx-auto px-4 flex flex-row justify-center items-center gap-6">
-      <a href="https://www.svg-goettingen.de/Own_pages/imprint" target="_blank" rel="noopener noreferrer" class="hover:text-neutral-300 transition">
-        Impressum
-      </a>
+  <footer class="max-w-7xl w-full mx-auto px-8 py-8 mt-auto border-t border-neutral-800 text-xs text-neutral-500 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div>
+      <span>© 2026 SVG Göttingen Darts. Alle Rechte vorbehalten.</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="https://www.svg-goettingen.de/Own_pages/imprint" target="_blank" rel="noopener noreferrer" class="hover:text-neutral-300 transition">Impressum</a>
       <span class="inline text-neutral-700">•</span>
-      <a href="https://www.svg-goettingen.de/Own_pages/privacy" target="_blank" rel="noopener noreferrer" class="hover:text-neutral-300 transition">
-        Datenschutzerklärung
-      </a>
+      <a href="https://www.svg-goettingen.de/Own_pages/privacy" target="_blank" rel="noopener noreferrer" class="hover:text-neutral-300 transition">Datenschutzerklärung</a>
     </div>
   </footer>
 
-  <!-- Player Profile Modal -->
   <div id="playerModal" class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="glass-card bg-black border border-neutral-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
       <div class="bg-neutral-950 p-6 border-b border-neutral-800 flex justify-between items-start">
@@ -628,7 +630,6 @@
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
-
       <div class="p-6 space-y-5">
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
@@ -642,157 +643,115 @@
         </div>
 
         <div class="grid grid-cols-2 gap-3">
-          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Höchster Avg (Einzel)</div>
-            <div id="modalMaxAvgSingle" class="text-2xl font-black font-display text-white">-</div>
+          <div class="bg-black border border-neutral-800 p-3 rounded-xl text-center">
+            <div class="text-[10px] uppercase font-bold tracking-wider text-neutral-400 mb-0.5">Höchster Average (Einzel)</div>
+            <div id="modalMaxAvgSingle" class="text-lg font-bold font-display text-white">-</div>
           </div>
-          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Höchster Avg (Doppel)</div>
-            <div id="modalMaxAvgDouble" class="text-2xl font-black font-display text-neutral-300">-</div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <i class="fa-solid fa-star text-white"></i>
-              <span class="text-xs font-medium text-neutral-300">180er</span>
-            </div>
-            <span id="modal180s" class="font-extrabold text-white text-base">0</span>
-          </div>
-          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <i class="fa-solid fa-fire text-neutral-400"></i>
-              <span class="text-xs font-medium text-neutral-300">140+</span>
-            </div>
-            <span id="modal140s" class="font-extrabold text-neutral-200 text-base">0</span>
+          <div class="bg-black border border-neutral-800 p-3 rounded-xl text-center">
+            <div class="text-[10px] uppercase font-bold tracking-wider text-neutral-400 mb-0.5">Höchster Average (Doppel)</div>
+            <div id="modalMaxAvgDouble" class="text-lg font-bold font-display text-white">-</div>
           </div>
         </div>
 
-        <div class="space-y-2.5">
-          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl">
-            <span class="text-xs font-bold text-neutral-400 uppercase tracking-wider block mb-1">Highfinishes (100+)</span>
-            <span id="modalHighfinish" class="text-xs font-semibold text-white block break-words">Keine vorhanden</span>
+        <div class="bg-black border border-neutral-800 rounded-2xl p-4 space-y-3">
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-neutral-400 font-medium">180er gesamt:</span>
+            <span id="modal180s" class="font-bold text-white">0</span>
           </div>
-
-          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl">
-            <span class="text-xs font-bold text-neutral-400 uppercase tracking-wider block mb-1">Shortgames (&le; 18 Darts)</span>
-            <span id="modalShortgames" class="text-xs font-semibold text-neutral-300 block break-words">Keine vorhanden</span>
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-neutral-400 font-medium">140+ gesamt:</span>
+            <span id="modal140s" class="font-bold text-white">0</span>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-neutral-400 font-medium">Highfinish:</span>
+            <span id="modalHighfinish" class="font-bold text-white">-</span>
+          </div>
+          <div class="flex justify-between items-center text-xs">
+            <span class="text-neutral-400 font-medium">Shortgames:</span>
+            <span id="modalShortgames" class="font-bold text-white">-</span>
           </div>
         </div>
-      </div>
-
-      <div class="bg-black px-6 py-4 border-t border-neutral-800 text-right">
-        <button onclick="closePlayerModal()" class="w-full py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 text-xs font-semibold rounded-xl transition">
-          Schließen
-        </button>
       </div>
     </div>
   </div>
 
   <script>
-    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyqTjhE04Y8oxP-8x2aInviGGDYdtHguMvoVSWizdKTTjscKXoPLhs1yq7ZFYNlptC_/exec";
-    const CACHE_KEY = "svg_darts_app_data_v2";
+    const SHEET_ID = "14lI6a_fLh3c73XyD1U_V1P1mXyV9M2KjZg2C4W8Vp0g";
+    const SHEET_TAB_GAMES = "Spiele";
+    const SHEET_TAB_PLAYERS = "Spieler";
+    const SHEET_TAB_STATS = "Statistiken";
+    const SHEET_TAB_RECORDS = "Bestleistungen";
+    const SHEET_TAB_GAMESTATS = "Spielstatistiken";
+    const SHEET_TAB_NOTES = "Notizen";
+    
+    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzQy_tNqfWkX49m_L_JkK_K9Y_vV_qZ_7JkL5vVq_gW_5x9Kj/exec";
+    const CACHE_KEY = "svg_darts_app_data_v3";
 
-    const TEAM_URLS = {
-      "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
-      "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
-      "SVG C": "https://portal.3k-darts.com/frontend/events/10/event/1313/phase/1984/group/34938",
-      "SVG D": "https://portal.3k-darts.com/frontend/events/10/event/1314/phase/1985/group/34956",
-      "SVG E": "https://portal.3k-darts.com/frontend/events/10/event/1317/phase/1988/group/35010",
-      "SVG F": "https://portal.3k-darts.com/frontend/events/10/event/1325/phase/1996/group/35154",
-      "SVG G": "https://portal.3k-darts.com/frontend/events/10/event/1326/phase/1997/group/35172",
-      "SVG 1": "https://portal.3k-darts.com/frontend/events/10/event/1777/phase/2474/ko/matches",
-      "SVG 2": "https://portal.3k-darts.com/frontend/events/10/event/1777/phase/2474/ko/matches",
-      "SVG 8ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree",
-      "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree"
+    let appData = {
+      matches: [],
+      players: [],
+      stats: [],
+      records: [],
+      gameStats: [],
+      notes: []
     };
 
-    function changeTableIframe() {
-      const select = document.getElementById('tableTeamFilter');
-      const iframe = document.getElementById('tableIframe');
-      if (select && iframe) {
-        iframe.src = select.value;
-      }
-    }
-
-    function getTeamLink(teamName) {
-      if (!teamName || teamName === '-') return '-';
-      const cleanName = String(teamName).trim();
-      const upperName = cleanName.toUpperCase();
-
-      let matchedUrl = TEAM_URLS[cleanName] || TEAM_URLS[upperName];
-
-      if (!matchedUrl) {
-        if (/SVG\s*A/i.test(upperName)) matchedUrl = TEAM_URLS["SVG A"];
-        else if (/SVG\s*B/i.test(upperName)) matchedUrl = TEAM_URLS["SVG B"];
-        else if (/SVG\s*C/i.test(upperName)) matchedUrl = TEAM_URLS["SVG C"];
-        else if (/SVG\s*D/i.test(upperName)) matchedUrl = TEAM_URLS["SVG D"];
-        else if (/SVG\s*E/i.test(upperName)) matchedUrl = TEAM_URLS["SVG E"];
-        else if (/SVG\s*F/i.test(upperName)) matchedUrl = TEAM_URLS["SVG F"];
-        else if (/SVG\s*G/i.test(upperName)) matchedUrl = TEAM_URLS["SVG G"];
-        else if (/SVG\s*1 /i.test(upperName)) matchedUrl = TEAM_URLS["SVG 1"];
-        else if (/SVG\s*2 /i.test(upperName)) matchedUrl = TEAM_URLS["SVG 2"];
-        else if (/SVG\s*8/i.test(upperName)) matchedUrl = TEAM_URLS["SVG 8ER"];
-      }
-
-      if (matchedUrl) {
-        return `<a href="${matchedUrl}" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-yellow-400 transition">${cleanName}</a>`;
-      }
-
-      return cleanName;
-    }
-
-    function formatTeamDisplay(rawTeam) {
-      if (!rawTeam || rawTeam === '-') return 'Kein Team';
-
-      const parts = String(rawTeam).split('/').map(p => p.trim());
-      
-      let letter = null;
-      let numbers = [];
-
-      for (const p of parts) {
-        if (!letter && /^[A-Ga-g]$/.test(p)) {
-          letter = p.toUpperCase();
-        } else if (/^\d+$/.test(p)) {
-          numbers.push(p);
-        }
-      }
-
-      let resultParts = [];
-
-      if (letter) {
-        resultParts.push(`SVG ${letter}`);
-      }
-
-      if (numbers.length > 0) {
-        resultParts.push(`Pokalteam ${numbers[0]}`);
-      }
-
-      if (numbers.length > 1) {
-        resultParts.push(`Pokalteam ${numbers[1]}er`);
-      }
-
-      return resultParts.length > 0 ? resultParts.join(', ') : rawTeam;
-    }
-
-    let appData = { matches: [], players: [], stats: [], records: [], gameStats: [], notes: [] };
-
-    let activeTab = 'home';
     let globalSearchQuery = '';
-
+    let currentStatsSortKey = 'avgSingle';
+    let currentStatsSortAsc = false;
+    let currentRecordsSortKey = 'r180';
+    let currentRecordsSortAsc = false;
     let currentGameStatsSortKey = 'winRateTotal';
     let currentGameStatsSortAsc = false;
 
-    let currentStatsSortKey = 'avgSingle';
-    let currentStatsSortAsc = false;
+    const TEAM_URLS = { 
+      "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981", 
+      "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902", 
+      "SVG C": "https://portal.3k-darts.com/frontend/events/10/event/1313/phase/1984/group/34938", 
+      "SVG D": "https://portal.3k-darts.com/frontend/events/10/event/1314/phase/1985/group/34956", 
+      "SVG E": "https://portal.3k-darts.com/frontend/events/10/event/1317/phase/1988/group/35010", 
+      "SVG F": "https://portal.3k-darts.com/frontend/events/10/event/1325/phase/1996/group/35154", 
+      "SVG G": "https://portal.3k-darts.com/frontend/events/10/event/1326/phase/1997/group/35172", 
+      "SVG 1": "https://portal.3k-darts.com/frontend/events/10/event/1777/phase/2474/ko/matches", 
+      "SVG 2": "https://portal.3k-darts.com/frontend/events/10/event/1777/phase/2474/ko/matches", 
+      "SVG 8ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree", 
+      "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree" 
+    };
 
-    let currentRecordsSortKey = 'specials';
-    let currentRecordsSortAsc = false;
+    function changeTableIframe() { 
+      const select = document.getElementById('tableTeamFilter'); 
+      const iframe = document.getElementById('tableIframe'); 
+      if (select && iframe) { 
+        iframe.src = select.value; 
+      } 
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('nav .tab-btn').forEach(el => el.classList.remove('active'));
+      
+      const targetSection = document.getElementById(`content-${tabId}`);
+      const targetBtn = document.getElementById(`tab-${tabId}`);
+      
+      if (targetSection) targetSection.classList.remove('hidden');
+      if (targetBtn) targetBtn.classList.add('active');
+    }
+
+    function showStatus(msg, type = 'info') {
+      const banner = document.getElementById('statusBanner');
+      const messageEl = document.getElementById('statusMessage');
+      const iconEl = document.getElementById('statusIcon');
+      if (!banner || !messageEl || !iconEl) return;
+
+      messageEl.innerText = msg;
+      iconEl.className = type === 'error' ? 'fa-solid fa-triangle-exclamation text-lg text-red-400' : 'fa-solid fa-circle-info text-lg text-white';
+      banner.classList.remove('hidden');
+    }
 
     function formatNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
-      const num = parseFloat(String(val).replace(',', '.'));
+      const str = String(val).replace(',', '.').trim();
+      const num = parseFloat(str);
       return isNaN(num) ? val : num.toFixed(2);
     }
 
@@ -815,7 +774,6 @@
       if (!dateVal || dateVal === '-') return null;
       let str = String(dateVal).trim();
       if (str.includes('T')) str = str.split('T')[0];
-
       let y, m, d;
       if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
         [y, m, d] = str.split('-').map(Number);
@@ -824,7 +782,6 @@
       } else {
         return null;
       }
-
       const dateObj = new Date(y, m - 1, d);
       return isNaN(dateObj.getTime()) ? null : dateObj;
     }
@@ -833,7 +790,6 @@
       if (!dateVal || dateVal === '-') return '-';
       const dateObj = parseMatchDate(dateVal);
       if (!dateObj) return String(dateVal).trim();
-
       const weekdays = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
       const dayName = weekdays[dateObj.getDay()];
       const pad = n => String(n).padStart(2, '0');
@@ -844,72 +800,41 @@
       if (!timeVal || timeVal === '-') return '-';
       let str = String(timeVal).trim();
       const timeMatch = str.match(/(\d{1,2}):(\d{2})/);
-      return timeMatch ? `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}` : str;
+      if (timeMatch) return `${timeMatch[1]}:${timeMatch[2]}`;
+      return str;
     }
 
-    function switchTab(tabId) {
-      activeTab = tabId;
-      document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      
-      const targetContent = document.getElementById(`content-${tabId}`);
-      const targetTab = document.getElementById(`tab-${tabId}`);
-      
-      if (targetContent) targetContent.classList.remove('hidden');
-      if (targetTab) targetTab.classList.add('active');
-    }
-
-    function handleGlobalSearch() {
-      const searchInput = document.getElementById('globalPlayerSearch');
-      const clearBtn = document.getElementById('clearSearchBtn');
-      globalSearchQuery = searchInput.value.trim().toLowerCase();
-
-      if (globalSearchQuery.length > 0) {
-        clearBtn.classList.remove('hidden');
-        if (activeTab === 'matches' || activeTab === 'home' || activeTab === 'tables') {
-          switchTab('players');
-        }
-      } else {
-        clearBtn.classList.add('hidden');
-      }
-
-      renderPlayers();
-      renderGameStats();
-      renderStats();
-      renderRecords();
-    }
-
-    function clearGlobalSearch() {
-      const searchInput = document.getElementById('globalPlayerSearch');
-      searchInput.value = '';
-      handleGlobalSearch();
-    }
-
-    async function loadDataFromSheets(isManualRefresh = false) {
+    async function loadDataFromSheets(isManual = false) {
       const icon = document.getElementById('refreshIcon');
       if (icon) icon.classList.add('fa-spin');
+      if (isManual) showStatus("Lade aktuelle Daten vom Server...", "info");
 
       try {
-        const response = await fetch(SHEETS_WEBAPP_URL, { method: 'GET', mode: 'cors' });
-        if (!response.ok) throw new Error("Netzwerkfehler");
+        const response = await fetch(`${SHEETS_WEBAPP_URL}?action=getData`);
+        if (!response.ok) throw new Error("Netzwerkfehler beim Laden");
+        const json = await response.json();
         
-        const data = await response.json();
-        
-        appData = {
-          matches: data.matches || [],
-          players: data.players || [],
-          stats: data.stats || [],
-          records: data.records || [],
-          gameStats: data.gameStats || data.game_stats || data.gameStatistics || [],
-          notes: data.notes || []
-        };
-
-        localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
-        populateMatchFilters();
-        renderAllTables();
-        renderNotes();
+        if (json && json.success) {
+          appData = {
+            matches: json.matches || [],
+            players: json.players || [],
+            stats: json.stats || [],
+            records: json.records || [],
+            gameStats: json.gameStats || [],
+            notes: json.notes || []
+          };
+          localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
+          populateMatchFilters();
+          renderAllTables();
+          renderNotes();
+          if (isManual) showStatus("Daten erfolgreich aktualisiert!", "info");
+          setTimeout(() => { document.getElementById('statusBanner')?.classList.add('hidden'); }, 3000);
+        } else {
+          throw new Error(json.error || "Ungültiges Antwortformat");
+        }
       } catch (err) {
-        console.warn("Backend nicht erreichbar oder langsamer Kaltstart. Nutze Cache.", err);
+        console.warn("Live-Daten nicht erreichbar oder langsamer Kaltstart. Nutze Cache.", err);
+        if (isManual) showStatus("Live-Daten konnten nicht geladen werden (Cache aktiv).", "error");
       } finally {
         if (icon) icon.classList.remove('fa-spin');
       }
@@ -924,23 +849,19 @@
       const container = document.getElementById('notesListContainer');
       const badge = document.getElementById('notesBadge');
       const notes = appData.notes || [];
-
       if (notes.length > 0) {
         badge.innerText = notes.length;
         badge.classList.remove('hidden');
       } else {
         badge.classList.add('hidden');
       }
-
       if (!notes.length) {
         container.innerHTML = `<div class="text-center py-4 text-xs text-neutral-500">Keine Änderungen vorhanden.</div>`;
         return;
       }
-
       container.innerHTML = notes.slice().reverse().map(note => {
         const rawDateStr = note.datum ? String(note.datum).trim() : '';
         const dateDisplay = rawDateStr ? ` (${rawDateStr})` : '';
-
         return `
           <div class="bg-black border border-neutral-800 rounded-xl p-3 flex items-start justify-between gap-2">
             <div class="space-y-1 overflow-hidden">
@@ -964,7 +885,7 @@
       const btn = document.getElementById('submitNoteBtn');
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Speichern...`;
-
+      
       const now = new Date();
       const pad = n => String(n).padStart(2, '0');
       const nowStr = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()}, ${pad(now.getHours())}:${pad(now.getMinutes())}`;
@@ -974,33 +895,34 @@
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'add', datum: nowStr, text: text })
+          body: JSON.stringify({ action: 'addNote', text: text, datum: nowStr })
         });
-
         input.value = '';
-        await loadDataFromSheets();
+        showStatus("Vorschlag erfolgreich übermittelt!", "info");
+        setTimeout(() => loadDataFromSheets(false), 1500);
       } catch (err) {
-        console.error("Fehler beim Speichern:", err);
+        console.error("Fehler beim Speichern der Notiz", err);
+        showStatus("Fehler beim Übermitteln.", "error");
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Änderung speichern`;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Vorschlag speichern`;
       }
     }
 
     async function deleteNote(rowIndex) {
-      if (!confirm("Möchtest du diese Änderung wirklich löschen?")) return;
-
+      if (!confirm("Diesen Vorschlag wirklich löschen?")) return;
       try {
         await fetch(SHEETS_WEBAPP_URL, {
           method: 'POST',
           mode: 'no-cors',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'delete', rowIndex: rowIndex })
+          body: JSON.stringify({ action: 'deleteNote', rowIndex: rowIndex })
         });
-
-        await loadDataFromSheets();
+        showStatus("Vorschlag gelöscht.", "info");
+        setTimeout(() => loadDataFromSheets(false), 1500);
       } catch (err) {
-        console.error("Fehler beim Löschen:", err);
+        console.error("Fehler beim Löschen", err);
+        showStatus("Fehler beim Löschen.", "error");
       }
     }
 
@@ -1009,19 +931,14 @@
       const teamSelect = document.getElementById('filterTeam');
       const dateSelect = document.getElementById('filterDate');
       const locationSelect = document.getElementById('filterLocation');
-
+      
       const homeMatchdaySelect = document.getElementById('filterHomeMatchday');
       const homeTeamSelect = document.getElementById('filterHomeTeam');
       const homeDateSelect = document.getElementById('filterHomeDate');
       const homeLocationSelect = document.getElementById('filterHomeLocation');
 
-      const matchdays = [...new Set(appData.matches.map(m => m.matchday).filter(Boolean))];
-      
-      const svgTeams = [...new Set(
-        appData.matches.flatMap(m => [m.home, m.away])
-          .filter(t => t && /SVG[\w\d]*/i.test(t))
-      )].sort();
-
+      const matchdays = [...new Set(appData.matches.map(m => m.matchday).filter(Boolean))].sort((a, b) => Number(a) - Number(b));
+      const svgTeams = [...new Set(appData.matches.flatMap(m => [m.home, m.away]).filter(t => t && /SVG/i.test(t)))].sort();
       const dates = [...new Set(appData.matches.map(m => formatDate(m.date)).filter(d => d && d !== '-'))];
 
       const matchdayOptions = '<option value="">Spieltag</option>' + matchdays.map(md => `<option value="${md}">${md}</option>`).join('');
@@ -1067,9 +984,7 @@
 
     function createMatchRowHTML(m) {
       let scoreRaw = String(m.score || '-').trim();
-      
       const isAway = /SVG/i.test(m.away || '') && !/SVG/i.test(m.home || '');
-      
       if (isAway && scoreRaw.includes(':')) {
         const parts = scoreRaw.split(':');
         if (parts.length === 2) {
@@ -1078,60 +993,52 @@
       } else if (isAway && scoreRaw.includes('-')) {
         const parts = scoreRaw.split('-');
         if (parts.length === 2) {
-          scoreRaw = `${parts[1].trim()}:${parts[0].trim()}`;
+          scoreRaw = `${parts[1].trim()}-${parts[0].trim()}`;
         }
       }
 
-      const scoreParts = scoreRaw.split(/[:\-]/).map(s => parseInt(s.trim(), 10));
-      let displayScore = scoreRaw;
-      
-      let scoreStyleClass = 'score-neutral';
-
-      if (scoreParts.length === 2 && !isNaN(scoreParts[0]) && !isNaN(scoreParts[1])) {
-        let svgScore = scoreParts[0];
-        let opponentScore = scoreParts[1];
-
-        displayScore = `${svgScore}:${opponentScore}`;
-        const sum = svgScore + opponentScore;
-
-        if (svgScore === 0 && opponentScore === 0) {
-          scoreStyleClass = 'score-zero';
-        }
-        else if (sum >= 1 && sum < 12) {
-          scoreStyleClass = 'score-white';
-        } else {
-          if (isAway) {
-            if (svgScore > opponentScore) {
-              scoreStyleClass = 'score-loss';
-            } else if (svgScore < opponentScore) {
-              scoreStyleClass = 'score-win';
+      let badgeClass = 'score-neutral';
+      if (scoreRaw && scoreRaw !== '-') {
+        const cleanedScore = scoreRaw.replace('–', '-');
+        const matchParts = cleanedScore.split(/:|-/);
+        if (matchParts.length === 2) {
+          const homeScore = parseInt(matchParts[0].trim(), 10);
+          const awayScore = parseInt(matchParts[1].trim(), 10);
+          if (!isNaN(homeScore) && !isNaN(awayScore)) {
+            if (isAway) {
+              if (awayScore > homeScore) badgeClass = 'score-win';
+              else if (awayScore === homeScore) badgeClass = 'score-draw';
+              else badgeClass = 'score-loss';
             } else {
-              scoreStyleClass = 'score-draw';
-            }
-          } 
-          else {
-            if (svgScore > opponentScore) {
-              scoreStyleClass = 'score-win';
-            } else if (svgScore < opponentScore) {
-              scoreStyleClass = 'score-loss';
-            } else {
-              scoreStyleClass = 'score-draw';
+              if (homeScore > awayScore) badgeClass = 'score-win';
+              else if (homeScore === awayScore) badgeClass = 'score-draw';
+              else badgeClass = 'score-loss';
             }
           }
         }
       }
 
+      const formatTeamCell = teamName => {
+        if (!teamName) return '-';
+        const cleanedName = String(teamName).trim();
+        const matchedKey = Object.keys(TEAM_URLS).find(k => cleanedName.toUpperCase().includes(k.toUpperCase()));
+        if (matchedKey) {
+          return `<a href="${TEAM_URLS[matchedKey]}" target="_blank" rel="noopener noreferrer" class="text-white font-semibold hover:underline">${cleanedName} <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-neutral-500"></i></a>`;
+        }
+        return cleanedName;
+      };
+
       return `
         <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-6 py-4 font-semibold text-white">${m.matchday || '-'}</td>
-          <td class="px-6 py-4 text-neutral-300">${formatDate(m.date)}</td>
-          <td class="px-6 py-4 text-neutral-400">${formatTime(m.time || m.uhrzeit)}</td>
-          <td class="px-6 py-4 text-neutral-300">${m.location || '-'}</td>
-          <td class="px-6 py-4 text-white font-medium">${getTeamLink(m.home)}</td>
-          <td class="px-6 py-4 text-white font-medium">${getTeamLink(m.away)}</td>
+          <td class="px-6 py-4 font-mono text-xs text-neutral-400">${m.matchday || '-'}</td>
+          <td class="px-6 py-4 text-xs text-neutral-300">${formatDate(m.date)}</td>
+          <td class="px-6 py-4 text-xs font-mono text-neutral-400">${formatTime(m.time)}</td>
+          <td class="px-6 py-4 text-xs text-neutral-300">${m.location || '-'}</td>
+          <td class="px-6 py-4 text-sm">${formatTeamCell(m.home)}</td>
+          <td class="px-6 py-4 text-sm">${formatTeamCell(m.away)}</td>
           <td class="px-6 py-4 text-center">
-            <span class="inline-block px-3 py-1 rounded-lg text-sm ${scoreStyleClass}">
-              ${displayScore}
+            <span class="inline-block px-3 py-1 rounded-xl text-xs border ${badgeClass}">
+              ${scoreRaw}
             </span>
           </td>
         </tr>
@@ -1148,7 +1055,7 @@
 
       const pastLimit = new Date(now);
       pastLimit.setDate(pastLimit.getDate() - 7);
-
+      
       const upcomingLimit = new Date(now);
       upcomingLimit.setDate(upcomingLimit.getDate() + 8);
 
@@ -1158,7 +1065,6 @@
       appData.matches.forEach(m => {
         const matchDate = parseMatchDate(m.date);
         if (!matchDate) return;
-        
         matchDate.setHours(0, 0, 0, 0);
 
         if (matchDate >= pastLimit && matchDate < now) {
@@ -1189,13 +1095,13 @@
       upcomingMatches.sort((a, b) => a._dateObj - b._dateObj);
 
       if (!pastMatches.length) {
-        pastTbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-neutral-500">Keine Spiele in den letzten 7 Tagen.</td></tr>`;
+        pastTbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-neutral-500">Keine vergangenen Spiele in den letzten 7 Tagen.</td></tr>`;
       } else {
         pastTbody.innerHTML = pastMatches.map(createMatchRowHTML).join('');
       }
 
       if (!upcomingMatches.length) {
-        upcomingTbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-neutral-500">Keine Spiele gefunden.</td></tr>`;
+        upcomingTbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-neutral-500">Keine aktuellen oder bevorstehenden Spiele (nächste 8 Tage) mit diesen Filtern.</td></tr>`;
       } else {
         upcomingTbody.innerHTML = upcomingMatches.map(createMatchRowHTML).join('');
       }
@@ -1210,7 +1116,7 @@
       const selDate = document.getElementById('filterDate')?.value;
       const selLocation = document.getElementById('filterLocation')?.value;
 
-      const filtered = appData.matches.filter(m => {
+      let filtered = appData.matches.filter(m => {
         const matchdayMatches = !selMatchday || String(m.matchday) === selMatchday;
         const teamMatches = !selTeam || m.home === selTeam || m.away === selTeam;
         const dateMatches = !selDate || formatDate(m.date) === selDate;
@@ -1222,6 +1128,12 @@
         return matchdayMatches && teamMatches && dateMatches && locationMatches;
       });
 
+      filtered.sort((a, b) => {
+        const dateA = parseMatchDate(a.date) || new Date(0);
+        const dateB = parseMatchDate(b.date) || new Date(0);
+        return dateA - dateB;
+      });
+
       if (!filtered.length) {
         tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-neutral-500">Keine Spiele gefunden.</td></tr>`;
         return;
@@ -1231,11 +1143,10 @@
     }
 
     function parsePlayerTeamTokens(teamStr) {
-      if (!teamStr || teamStr === '-') return { letter: null, numbers: [] };
-      const parts = String(teamStr).split('/');
+      if (!teamStr) return { letter: null, numbers: [] };
+      const parts = String(teamStr).split(/[,/&\s]+/);
       let letter = null;
       let numbers = [];
-
       for (const part of parts) {
         const cleaned = part.trim();
         if (!letter && /^[A-G]$/i.test(cleaned)) {
@@ -1251,15 +1162,12 @@
     function renderPlayers() {
       const tbody = document.getElementById('playersTable');
       if (!tbody) return;
-
       const selectedFilter = document.getElementById('playerTeamFilter')?.value || '';
 
       const filteredPlayers = appData.players.filter(p => {
         const nameMatch = !globalSearchQuery || String(p.name || '').toLowerCase().includes(globalSearchQuery);
         if (!nameMatch) return false;
-
         if (!selectedFilter) return true;
-        
         const { letter, numbers } = parsePlayerTeamTokens(p.team);
         if (/^[A-G]$/i.test(selectedFilter)) {
           return letter === selectedFilter.toUpperCase();
@@ -1299,63 +1207,67 @@
         const iconEl = document.getElementById(`gsort-icon-${k}`);
         if (!iconEl) return;
         if (k === currentGameStatsSortKey) {
-          iconEl.innerHTML = currentGameStatsSortAsc 
-            ? '<i class="fa-solid fa-arrow-up text-white"></i>' 
-            : '<i class="fa-solid fa-arrow-down text-white"></i>';
+          iconEl.innerHTML = currentGameStatsSortAsc ? '<i class="fa-solid fa-arrow-up text-white"></i>' : '<i class="fa-solid fa-arrow-down text-white"></i>';
         } else {
           iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
         }
       });
     }
 
-    function calculatePlayerGamesDisplay(playerName, actualGames) {
-      const playerObj = appData.players.find(p => String(p.name || '').trim().toLowerCase() === String(playerName || '').trim().toLowerCase());
-      if (!playerObj || !playerObj.team) {
-        return `${actualGames || 0}/0`;
-      }
-
-      const teamParts = String(playerObj.team).split('/').map(s => s.trim());
-      if (!teamParts.length) return `${actualGames || 0}/0`;
-
-      const primaryLetter = teamParts.find(p => /^[A-Za-z]$/.test(p));
-      const numbers = teamParts.filter(p => /^\d+$/.test(p));
-
-      const activeTokens = [];
-      if (primaryLetter) activeTokens.push(primaryLetter.toUpperCase());
-      numbers.forEach(n => activeTokens.push(n));
-
+    function calculateActualGames(playerName) {
+      if (!playerName) return "0/0";
+      const nameLower = playerName.trim().toLowerCase();
+      let actualGames = 0;
       let maxGames = 0;
 
-      activeTokens.forEach(token => {
-        let isMatch = (m) => false;
+      appData.matches.forEach(m => {
+        const matchdayStr = String(m.matchday || '').trim();
+        const teamsInMatch = [m.home, m.away].filter(Boolean);
+        const matchedTokens = [];
 
-        if (token === 'A') {
-          isMatch = (m) => /SVG\s*A\b/i.test(m.home) || /SVG\s*A\b/i.test(m.away);
-        } else if (token === '8') {
-          isMatch = (m) => /SVG\s*8/i.test(m.home) || /SVG\s*8/i.test(m.away);
-        } else if (/^[B-Z]$/.test(token)) {
-          isMatch = (m) => {
-            const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
-            return regex.test(m.home) || regex.test(m.away);
-          };
-        } else if (/^\d+$/.test(token)) {
-          isMatch = (m) => {
-            const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
-            return regex.test(m.home) || regex.test(m.away);
-          };
+        teamsInMatch.forEach(tName => {
+          const cleanTName = tName.toUpperCase();
+          Object.keys(TEAM_URLS).forEach(token => {
+            if (cleanTName.includes(token.toUpperCase())) {
+              const cleanedToken = token.replace('SVG ', '').trim();
+              if (!matchedTokens.includes(cleanedToken)) matchedTokens.push(cleanedToken);
+            }
+          });
+        });
+
+        const isPlayerInMatch = appData.players.some(p => {
+          if (!p.name || p.name.trim().toLowerCase() !== nameLower) return false;
+          const { letter, numbers } = parsePlayerTeamTokens(p.team);
+          return matchedTokens.some(token => {
+            if (/^[A-G]$/i.test(token)) return letter === token.toUpperCase();
+            return numbers.includes(token);
+          });
+        });
+
+        if (isPlayerInMatch) {
+          actualGames++;
         }
 
-        const teamMatches = appData.matches.filter(isMatch);
+        matchedTokens.forEach(token => {
+          const isMatch = m => {
+            const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
+            return regex.test(m.home) || regex.test(m.away);
+          };
+        });
+
+        const teamMatches = appData.matches.filter(m => {
+          const cleanTName = (m.home + " " + m.away).toUpperCase();
+          return matchedTokens.some(token => cleanTName.includes(token.toUpperCase()));
+        });
 
         teamMatches.forEach(m => {
           const homeStr = String(m.home || '').toLowerCase();
           const awayStr = String(m.away || '').toLowerCase();
-
           if (homeStr.includes('freilos') || awayStr.includes('freilos')) {
             maxGames += 0;
-          } else if (token === 'A') {
+          } else if (matchedTokens.includes('A')) {
             maxGames += 3;
-          } else if (token === '8') {
+          } else if (matchedTokens.includes('8') || matchedTokens.includes('8ER')) {
             maxGames += 2;
           } else {
             maxGames += 4;
@@ -1369,8 +1281,8 @@
     function renderGameStats() {
       const tbody = document.getElementById('gameStatsTable');
       if (!tbody) return;
-
       updateGameStatsSortIcons();
+
       let sortedData = appData.gameStats.filter(g => {
         const name = g.player || g.name || '';
         return !globalSearchQuery || name.toLowerCase().includes(globalSearchQuery);
@@ -1390,9 +1302,8 @@
       };
 
       sortedData.sort((a, b) => {
-        const valA = getVal(a, currentGameStatsSortKey);
-        const valB = getVal(b, currentGameStatsSortKey);
-
+        let valA = getVal(a, currentGameStatsSortKey);
+        let valB = getVal(b, currentGameStatsSortKey);
         if (typeof valA === 'string') {
           return currentGameStatsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
         }
@@ -1400,38 +1311,26 @@
       });
 
       if (!sortedData.length) {
-        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-neutral-500">Keine Spielstatistiken gefunden.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-neutral-500">Keine Spielstatistiken vorhanden.</td></tr>`;
         return;
       }
 
-      let currentRank = 0;
-      let previousVal = null;
-
-      tbody.innerHTML = sortedData.map((g, idx) => {
-        const val = getVal(g, currentGameStatsSortKey);
-        if (val !== previousVal) {
-          currentRank = idx + 1;
-          previousVal = val;
-        }
-
-        const playerName = g.player || g.name || '-';
-        const rawActualGames = g.games ?? g.spiele ?? 0;
-        const formattedGames = calculatePlayerGamesDisplay(playerName, rawActualGames);
-
+      tbody.innerHTML = sortedData.map((g, index) => {
+        const pName = g.player || g.name || '-';
         return `
-        <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-          <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-          <td class="px-4 py-4 text-neutral-300">${formattedGames}</td>
-          <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
-          <td class="px-4 py-4 text-neutral-200 font-semibold">${g.winsSingle ?? g.wins_single ?? g.siegeEinzel ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-200">${formatPercent(g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel)}</td>
-          <td class="px-4 py-4 text-neutral-300 font-semibold">${g.winsDouble ?? g.wins_double ?? g.siegeDoppel ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-300">${formatPercent(g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel)}</td>
-          <td class="px-4 py-4 text-white font-extrabold">${formatPercent(g.winRateTotal ?? g.win_rate_total ?? g.siegquoteGesamt)}</td>
-        </tr>
-      `;
+          <tr class="hover:bg-neutral-900/60 transition">
+            <td class="px-4 py-4 text-center font-mono text-xs text-neutral-500">${index + 1}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${pName}')">${pName}</td>
+            <td class="px-4 py-4 text-neutral-300 font-mono">${g.games ?? g.spiele ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-300 font-mono">${g.legs ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
+            <td class="px-4 py-4 text-neutral-300 font-semibold">${g.winsSingle ?? g.wins_single ?? g.siegeEinzel ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatPercent(g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel)}</td>
+            <td class="px-4 py-4 text-neutral-300 font-semibold">${g.winsDouble ?? g.wins_double ?? g.siegeDoppel ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatPercent(g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel)}</td>
+            <td class="px-4 py-4 text-white font-extrabold">${formatPercent(g.winRateTotal ?? g.win_rate_total ?? g.siegquoteGesamt)}</td>
+          </tr>
+        `;
       }).join('');
     }
 
@@ -1451,9 +1350,7 @@
         const iconEl = document.getElementById(`sort-icon-${k}`);
         if (!iconEl) return;
         if (k === currentStatsSortKey) {
-          iconEl.innerHTML = currentStatsSortAsc 
-            ? '<i class="fa-solid fa-arrow-up text-white"></i>' 
-            : '<i class="fa-solid fa-arrow-down text-white"></i>';
+          iconEl.innerHTML = currentStatsSortAsc ? '<i class="fa-solid fa-arrow-up text-white"></i>' : '<i class="fa-solid fa-arrow-down text-white"></i>';
         } else {
           iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
         }
@@ -1463,8 +1360,8 @@
     function renderStats() {
       const tbody = document.getElementById('statsTable');
       if (!tbody) return;
-
       updateStatsSortIcons();
+
       let sortedStats = appData.stats.filter(s => {
         const name = s.player || s.name || '';
         return !globalSearchQuery || name.toLowerCase().includes(globalSearchQuery);
@@ -1484,9 +1381,8 @@
       };
 
       sortedStats.sort((a, b) => {
-        const valA = getVal(a, currentStatsSortKey);
-        const valB = getVal(b, currentStatsSortKey);
-
+        let valA = getVal(a, currentStatsSortKey);
+        let valB = getVal(b, currentStatsSortKey);
         if (typeof valA === 'string') {
           return currentStatsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
         }
@@ -1494,36 +1390,26 @@
       });
 
       if (!sortedStats.length) {
-        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-neutral-500">Keine Statistiken gefunden.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-neutral-500">Keine Averages vorhanden.</td></tr>`;
         return;
       }
 
-      let currentRank = 0;
-      let previousVal = null;
-
-      tbody.innerHTML = sortedStats.map((s, idx) => {
-        const val = getVal(s, currentStatsSortKey);
-        if (val !== previousVal) {
-          currentRank = idx + 1;
-          previousVal = val;
-        }
-
-        const playerName = s.player || s.name || '-';
-
+      tbody.innerHTML = sortedStats.map((s, index) => {
+        const pName = s.player || s.name || '-';
         return `
-        <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-          <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-          <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
-          <td class="px-4 py-4 text-neutral-200">${formatNumber(s.avgDouble ?? s.avg_double)}</td>
-          <td class="px-4 py-4 text-neutral-200">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
-          <td class="px-4 py-4 text-neutral-300">${formatNumber(s.first9Double ?? s.first9_double)}</td>
-          <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxAvgSingle ?? s.max_avg_single)}</td>
-          <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxAvgDouble ?? s.max_avg_double)}</td>
-          <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxFirst9Single ?? s.max_first9_single)}</td>
-          <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxFirst9Double ?? s.max_first9_double)}</td>
-        </tr>
-      `;
+          <tr class="hover:bg-neutral-900/60 transition">
+            <td class="px-4 py-4 text-center font-mono text-xs text-neutral-500">${index + 1}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${pName}')">${pName}</td>
+            <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatNumber(s.avgDouble ?? s.avg_double)}</td>
+            <td class="px-4 py-4 text-neutral-200">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatNumber(s.first9Double ?? s.first9_double)}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxAvgSingle ?? s.max_avg_single)}</td>
+            <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxAvgDouble ?? s.max_avg_double)}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxFirst9Single ?? s.max_first9_single)}</td>
+            <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxFirst9Double ?? s.max_first9_double)}</td>
+          </tr>
+        `;
       }).join('');
     }
 
@@ -1543,9 +1429,7 @@
         const iconEl = document.getElementById(`rsort-icon-${k}`);
         if (!iconEl) return;
         if (k === currentRecordsSortKey) {
-          iconEl.innerHTML = currentRecordsSortAsc 
-            ? '<i class="fa-solid fa-arrow-up text-white"></i>' 
-            : '<i class="fa-solid fa-arrow-down text-white"></i>';
+          iconEl.innerHTML = currentRecordsSortAsc ? '<i class="fa-solid fa-arrow-up text-white"></i>' : '<i class="fa-solid fa-arrow-down text-white"></i>';
         } else {
           iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
         }
@@ -1555,8 +1439,8 @@
     function renderRecords() {
       const tbody = document.getElementById('recordsTable');
       if (!tbody) return;
-
       updateRecordsSortIcons();
+
       let sortedRecords = appData.records.filter(r => {
         const name = r.player || r.name || '';
         return !globalSearchQuery || name.toLowerCase().includes(globalSearchQuery);
@@ -1571,14 +1455,13 @@
         if (key === 'shortgame') return parseNumeric(item.shortgame);
         if (key === 'shortgameChance') return parseNumeric(item.shortgameChance ?? item.shortgame_chance);
         if (key === 'maxSpecialsMatchday') return parseNumeric(item.maxSpecialsMatchday ?? item.max_specials_matchday);
-        if (key === 'specialsPerGame') return parseNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday ?? item.specials_per_matchday);
+        if (key === 'specialsPerGame') return parseNumeric(item.specialsPerGame ?? item.specials_per_game);
         return 0;
       };
 
       sortedRecords.sort((a, b) => {
-        const valA = getVal(a, currentRecordsSortKey);
-        const valB = getVal(b, currentRecordsSortKey);
-
+        let valA = getVal(a, currentRecordsSortKey);
+        let valB = getVal(b, currentRecordsSortKey);
         if (typeof valA === 'string') {
           return currentRecordsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
         }
@@ -1586,47 +1469,62 @@
       });
 
       if (!sortedRecords.length) {
-        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-neutral-500">Keine Bestleistungen gefunden.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-neutral-500">Keine Bestleistungen vorhanden.</td></tr>`;
         return;
       }
 
-      let currentRank = 0;
-      let previousVal = null;
-
-      tbody.innerHTML = sortedRecords.map((r, idx) => {
-        const val = getVal(r, currentRecordsSortKey);
-        if (val !== previousVal) {
-          currentRank = idx + 1;
-          previousVal = val;
-        }
-
-        const playerName = r.player || r.name || '-';
-
+      tbody.innerHTML = sortedRecords.map((r, index) => {
+        const pName = r.player || r.name || '-';
         return `
-        <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-          <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-          <td class="px-4 py-4 text-white font-bold">${r.specials ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r180 ?? r['180'] ?? 0}</td>
-          <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
-          <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-400">${formatPercent(r.shortgameChance ?? r.shortgame_chance)}</td>
-          <td class="px-4 py-4 text-neutral-400">${r.maxSpecialsMatchday ?? r.max_specials_matchday ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-400">${formatNumber(r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday)}</td>
-        </tr>
-      `;
+          <tr class="hover:bg-neutral-900/60 transition">
+            <td class="px-4 py-4 text-center font-mono text-xs text-neutral-500">${index + 1}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${pName}')">${pName}</td>
+            <td class="px-4 py-4 text-neutral-200 font-bold">${r.specials ?? 0}</td>
+            <td class="px-4 py-4 text-neutral-300 font-semibold">${r.r180 ?? r['180'] ?? 0}</td>
+            <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
+            <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-400">${formatPercent(r.shortgameChance ?? r.shortgame_chance)}</td>
+            <td class="px-4 py-4 text-neutral-300">${r.maxSpecialsMatchday ?? r.max_specials_matchday ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-300 font-mono">${formatNumber(r.specialsPerGame ?? r.specials_per_game)}</td>
+          </tr>
+        `;
       }).join('');
     }
 
-    function openPlayerModal(playerName) {
-      const modal = document.getElementById('playerModal');
-      const playerInfo = appData.players.find(p => p.name === playerName) || {};
-      const playerStats = appData.stats.find(s => (s.player || s.name) === playerName) || {};
-      const playerRecords = appData.records.find(r => (r.player || r.name) === playerName) || {};
+    function handleGlobalSearch() {
+      const input = document.getElementById('globalPlayerSearch');
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (!input) return;
+      globalSearchQuery = input.value.trim().toLowerCase();
+      if (globalSearchQuery) {
+        clearBtn?.classList.remove('hidden');
+      } else {
+        clearBtn?.classList.add('hidden');
+      }
+      renderAllTables();
+    }
 
-      document.getElementById('modalPlayerName').innerText = playerName || 'Unbekannt';
-      document.getElementById('modalPlayerTeam').innerText = formatTeamDisplay(playerInfo.team);
+    function clearGlobalSearch() {
+      const input = document.getElementById('globalPlayerSearch');
+      const clearBtn = document.getElementById('clearSearchBtn');
+      if (input) input.value = '';
+      globalSearchQuery = '';
+      clearBtn?.classList.add('hidden');
+      renderAllTables();
+    }
+
+    function openPlayerModal(playerName) {
+      if (!playerName) return;
+      const modal = document.getElementById('playerModal');
+      if (!modal) return;
+
+      const pData = appData.players.find(p => (p.name || '').trim().toLowerCase() === playerName.trim().toLowerCase()) || {};
+      const playerStats = appData.stats.find(s => (s.player || s.name || '').trim().toLowerCase() === playerName.trim().toLowerCase()) || {};
+      const playerRecords = appData.records.find(r => (r.player || r.name || '').trim().toLowerCase() === playerName.trim().toLowerCase()) || {};
+
+      document.getElementById('modalPlayerName').innerText = playerName;
+      document.getElementById('modalPlayerTeam').innerText = pData.team ? `Team: ${pData.team}` : '';
       document.getElementById('modal3DartAvg').innerText = formatNumber(playerStats.avgSingle ?? playerStats.avg_single ?? playerStats.avg);
       document.getElementById('modalFirst9Avg').innerText = formatNumber(playerStats.first9Single ?? playerStats.first9_single ?? playerStats.first9);
       document.getElementById('modalMaxAvgSingle').innerText = formatNumber(playerStats.maxAvgSingle ?? playerStats.max_avg_single);
@@ -1660,7 +1558,7 @@
 
       // Automatische Aktualisierung alle 2 Minuten (120.000 Millisekunden)
       setInterval(() => {
-        loadDataFromSheets();
+        loadDataFromSheets(false);
       }, 120000);
     });
   </script>
