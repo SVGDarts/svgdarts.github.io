@@ -1,1 +1,38 @@
+name: Google Sheets zu JSON Sync
 
+on:
+  # Leg fest, wie oft das Skript automatisch laufen soll (z.B. alle 4 Stunden)
+  schedule:
+    - cron: '0 */4 * * *' 
+  # Erlaubt es dir auch, das Skript manuell über den GitHub-Tab "Actions" zu starten
+  workflow_dispatch:
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Pandas installieren (für CSV-zu-JSON-Konvertierung)
+        run: pip install pandas
+
+      - name: Skript ausführen, um Google Sheet in JSON zu konvertieren
+        run: |
+          python -c "
+          import pandas as pd
+          url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTHSHr_CUGwItHFYn0yX3cuH4E0cOGucdZmMk1NWJjP6SZCc0MBCj6ttvQymxistscQ249aiHza0HzN/pub?output=csv'
+          df = pd.read_csv(url)
+          df.to_json('data/daten.json', orient='records', force_ascii=False, indent=2)
+          "
+
+      - name: Änderungen committen und zurück ins Repo pushen
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Automatisches Update der JSON-Daten aus Google Sheets"
+          file_pattern: data/daten.json
