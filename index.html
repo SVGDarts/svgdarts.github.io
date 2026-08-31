@@ -1657,6 +1657,11 @@
       }
       
       loadDataFromSheets();
+
+      // Automatische Aktualisierung alle 2 Minuten (120.000 Millisekunden)
+      setInterval(() => {
+        loadDataFromSheets();
+      }, 120000);
     });
   </script>
 </body>
