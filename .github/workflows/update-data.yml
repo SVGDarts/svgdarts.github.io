@@ -1,11 +1,11 @@
-name: Google Sheets zu JSON Sync
+name: Google Sheets zu JSON Sync (Sofort-Update)
 
 on:
-  # Leg fest, wie oft das Skript automatisch laufen soll (z.B. alle 4 Stunden)
   schedule:
-    - cron: '0 */4 * * *' 
-  # Erlaubt es dir auch, das Skript manuell über den GitHub-Tab "Actions" zu starten
+    - cron: '0 */4 * * *' # Bleibt zur Sicherheit als Backup alle 4 Stunden
   workflow_dispatch:
+  repository_dispatch:     # Erlaubt das Starten von außen via Webhook-Signal
+    types: [trigger-sync]
 
 jobs:
   update-data:
@@ -19,10 +19,10 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Pandas installieren (für CSV-zu-JSON-Konvertierung)
+      - name: Pandas installieren
         run: pip install pandas
 
-      - name: Skript ausführen, um Google Sheet in JSON zu konvertieren
+      - name: CSV in JSON umwandeln
         run: |
           python -c "
           import pandas as pd
@@ -31,8 +31,8 @@ jobs:
           df.to_json('data/daten.json', orient='records', force_ascii=False, indent=2)
           "
 
-      - name: Änderungen committen und zurück ins Repo pushen
+      - name: Änderungen committen und pushen
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "Automatisches Update der JSON-Daten aus Google Sheets"
+          commit_message: "Sofort-Update: Google Sheet geändert"
           file_pattern: data/daten.json
