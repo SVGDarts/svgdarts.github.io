@@ -196,6 +196,9 @@
         <button onclick="switchTab('home')" id="tab-home" class="tab-btn active px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-house text-xs"></i> Startseite
         </button>
+        <button onclick="switchTab('livegames')" id="tab-livegames" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-tower-broadcast text-xs"></i> Livespiele
+        </button>
         <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-calendar-days text-xs"></i> Spielplan
         </button>
@@ -317,6 +320,23 @@
               <tbody id="homeUpcomingMatchesTable" class="divide-y divide-neutral-800/60"></tbody>
             </table>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reiter: Livespiele -->
+    <section id="content-livegames" class="space-y-6 hidden">
+      <div class="flex flex-row justify-between items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold font-display text-white">Livespiele</h2>
+          <p class="text-xs text-neutral-400 mt-1">Automatische Anzeige aller heutigen Livespiele (max. 8 Spiele via iframe).</p>
+        </div>
+      </div>
+
+      <!-- Grid für bis zu 8 Iframes (2 Spalten auf großen Bildschirmen) -->
+      <div id="liveGamesGrid" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+        <div class="glass-card rounded-2xl p-6 text-center text-neutral-500">
+          Lade Livespiele...
         </div>
       </div>
     </section>
@@ -699,7 +719,7 @@
   </div>
 
   <script>
-    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyVniX8nprqXt_97i806ylkvxMtjTrB9KyHrVa5IBc1uanImKwuh93IJPCNOhFSiNJv/exec";
+    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw6FeUPjMDcAI-n1HEa1HUG8p-4w9TnuAurxdp_lWrwKbridc8gu3XDc0XsT1RejBTA/exec";
     const CACHE_KEY = "svg_darts_app_data_v2";
 
     const TEAM_URLS = {
@@ -865,6 +885,66 @@
       
       if (targetContent) targetContent.classList.remove('hidden');
       if (targetTab) targetTab.classList.add('active');
+
+      if (tabId === 'livegames') {
+        renderLiveGames();
+      }
+    }
+
+    function renderLiveGames() {
+      const gridContainer = document.getElementById('liveGamesGrid');
+      if (!gridContainer) return;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const todayMatches = appData.matches.filter(m => {
+        const matchDate = parseMatchDate(m.date);
+        if (!matchDate) return false;
+        matchDate.setHours(0, 0, 0, 0);
+        
+        const isToday = matchDate.getTime() === today.getTime();
+        const hasUrl = Boolean(m.url || m.iframe || m.link);
+        return isToday && hasUrl;
+      }).slice(0, 8);
+
+      if (todayMatches.length === 0) {
+        gridContainer.innerHTML = `
+          <div class="col-span-full glass-card rounded-2xl p-12 text-center text-neutral-400 space-y-2">
+            <i class="fa-solid fa-circle-info text-2xl text-neutral-500 mb-2"></i>
+            <p class="text-base font-bold text-white">Heute finden keine Livespiele mit hinterlegtem Livestream/Ticker statt.</p>
+            <p class="text-xs text-neutral-500">Sobald Links im Tabellenblatt „Spielplan“ für das heutige Datum eingetragen sind, erscheinen sie hier automatisch.</p>
+          </div>
+        `;
+        return;
+      }
+
+      gridContainer.innerHTML = todayMatches.map((m, index) => {
+        const iframeUrl = m.url || m.iframe || m.link;
+        const matchTitle = `${m.home || 'Heim'} vs. ${m.away || 'Auswärts'}`;
+        const matchTime = formatTime(m.time || m.uhrzeit);
+
+        return `
+          <div class="glass-card rounded-2xl overflow-hidden shadow-2xl flex flex-col border border-neutral-800">
+            <div class="bg-neutral-900/90 px-4 py-3 border-b border-neutral-800 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
+                <span class="text-xs font-bold font-display text-white uppercase tracking-wider">${matchTitle}</span>
+              </div>
+              <span class="text-xs text-neutral-400 font-mono">${matchTime} Uhr</span>
+            </div>
+            <div class="p-2 bg-black/40 flex-1">
+              <iframe 
+                src="${iframeUrl}" 
+                class="w-full rounded-xl border-0" 
+                style="height: 450px;" 
+                loading="lazy"
+                title="Livespiel ${index + 1}">
+              </iframe>
+            </div>
+          </div>
+        `;
+      }).join('');
     }
 
     function handleGlobalSearch() {
@@ -874,7 +954,7 @@
 
       if (globalSearchQuery.length > 0) {
         clearBtn.classList.remove('hidden');
-        if (activeTab === 'matches' || activeTab === 'home' || activeTab === 'tables') {
+        if (activeTab === 'matches' || activeTab === 'home' || activeTab === 'tables' || activeTab === 'livegames') {
           switchTab('players');
         }
       } else {
@@ -916,6 +996,9 @@
         populateMatchFilters();
         renderAllTables();
         renderNotes();
+        if (activeTab === 'livegames') {
+          renderLiveGames();
+        }
       } catch (err) {
         console.warn("Backend nicht erreichbar oder langsamer Kaltstart. Nutze Cache.", err);
       } finally {
@@ -991,7 +1074,7 @@
         console.error("Fehler beim Speichern:", err);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Änderung speichern`;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Vorschlag speichern`;
       }
     }
 
