@@ -329,7 +329,7 @@
       <div class="flex flex-row justify-between items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold font-display text-white">Livespiele</h2>
-          <p class="text-xs text-neutral-400 mt-1">Automatische Anzeige aller heutigen Livespiele (max. 8 Spiele via iframe).</p>
+          <p class="text-xs text-neutral-400 mt-1">Automatische Anzeige aller heutigen Livespiele (max. 8 Spiele via iframe). Spiele verschwinden 4h nach Beginn.</p>
         </div>
       </div>
 
@@ -895,7 +895,8 @@
       const gridContainer = document.getElementById('liveGamesGrid');
       if (!gridContainer) return;
 
-      const today = new Date();
+      const now = new Date();
+      const today = new Date(now);
       today.setHours(0, 0, 0, 0);
 
       const todayMatches = appData.matches.filter(m => {
@@ -905,15 +906,32 @@
         
         const isToday = matchDate.getTime() === today.getTime();
         const hasUrl = Boolean(m.url || m.iframe || m.link);
-        return isToday && hasUrl;
+        if (!isToday || !hasUrl) return false;
+
+        // Prüfung: Spielbeginn + 4 Stunden noch nicht überschritten?
+        const timeVal = m.time || m.uhrzeit;
+        if (timeVal) {
+          const timeMatch = String(timeVal).trim().match(/(\d{1,2}):(\d{2})/);
+          if (timeMatch) {
+            const matchStart = parseMatchDate(m.date); // Frisches Objekt
+            matchStart.setHours(parseInt(timeMatch[1], 10), parseInt(timeMatch[2], 10), 0, 0);
+            
+            const hideTime = new Date(matchStart.getTime() + 4 * 60 * 60 * 1000); // + 4 Stunden
+            if (now >= hideTime) {
+              return false; // Spiel ist länger als 4h her -> ausblenden
+            }
+          }
+        }
+
+        return true;
       }).slice(0, 8);
 
       if (todayMatches.length === 0) {
         gridContainer.innerHTML = `
           <div class="col-span-full glass-card rounded-2xl p-12 text-center text-neutral-400 space-y-2">
             <i class="fa-solid fa-circle-info text-2xl text-neutral-500 mb-2"></i>
-            <p class="text-base font-bold text-white">Heute finden keine Livespiele mit hinterlegtem Livestream/Ticker statt.</p>
-            <p class="text-xs text-neutral-500">Sobald Links im Tabellenblatt „Spielplan“ für das heutige Datum eingetragen sind, erscheinen sie hier automatisch.</p>
+            <p class="text-base font-bold text-white">Heute finden keine Live-Spiele statt (bzw. alle Spiele sind bereits länger als 4 Stunden im Gange/vorüber).</p>
+            <p class="text-xs text-neutral-500">Sobald Links im Tabellenblatt „Spielplan“ für das heutige Datum eingetragen sind, erscheinen sie hier (bis 4h nach Anwurf).</p>
           </div>
         `;
         return;
