@@ -975,7 +975,7 @@
       });
     }
 
-        // 9. Vorschlagswesen (Notes) - Echtzeit über Firebase (Datenbankpfad: 'Vorschläge')
+            // 9. Vorschlagswesen (Notes) - Echtzeit über Firebase (Datenbankpfad: 'Vorschläge')
     function toggleNotesDropdown() {
       const dropdown = document.getElementById('notesDropdown');
       dropdown.classList.toggle('hidden');
@@ -1107,63 +1107,6 @@
       renderRecords();
     }
 
-
-    // 10. Filter-Populierungen & Resets
-    function populateMatchFilters() {
-      const matchdaySelect = document.getElementById('filterMatchday');
-      const teamSelect = document.getElementById('filterTeam');
-      const dateSelect = document.getElementById('filterDate');
-      const locationSelect = document.getElementById('filterLocation');
-
-      const homeMatchdaySelect = document.getElementById('filterHomeMatchday');
-      const homeTeamSelect = document.getElementById('filterHomeTeam');
-      const homeDateSelect = document.getElementById('filterHomeDate');
-      const homeLocationSelect = document.getElementById('filterHomeLocation');
-
-      const matchdays = [...new Set(appData.matches.map(m => m.matchday).filter(Boolean))];
-      const svgTeams = [...new Set(appData.matches.flatMap(m => [m.home, m.away]).filter(t => t && /SVG[\w\d]*/i.test(t)))].sort();
-      const dates = [...new Set(appData.matches.map(m => formatDate(m.date)).filter(d => d && d !== '-'))];
-
-      const matchdayOptions = '<option value="">Spieltag</option>' + matchdays.map(md => `<option value="${md}">${md}</option>`).join('');
-      const teamOptions = '<option value="">Teams</option>' + svgTeams.map(t => `<option value="${t}">${t}</option>`).join('');
-      const dateOptions = '<option value="">Datum</option>' + dates.map(d => `<option value="${d}">${d}</option>`).join('');
-      const locationOptions = '<option value="">Spielort</option><option value="Göttingen">Göttingen</option><option value="Auswärts">Auswärts</option>';
-
-      if (matchdaySelect) matchdaySelect.innerHTML = matchdayOptions;
-      if (teamSelect) teamSelect.innerHTML = teamOptions;
-      if (dateSelect) dateSelect.innerHTML = dateOptions;
-      if (locationSelect) locationSelect.innerHTML = locationOptions;
-
-      if (homeMatchdaySelect) homeMatchdaySelect.innerHTML = matchdayOptions;
-      if (homeTeamSelect) homeTeamSelect.innerHTML = teamOptions;
-      if (homeDateSelect) homeDateSelect.innerHTML = dateOptions;
-      if (homeLocationSelect) homeLocationSelect.innerHTML = locationOptions;
-    }
-
-    function resetMatchFilters() {
-      document.getElementById('filterMatchday').value = "";
-      document.getElementById('filterTeam').value = "";
-      document.getElementById('filterDate').value = "";
-      document.getElementById('filterLocation').value = "";
-      renderMatches();
-    }
-
-    function resetHomeMatchFilters() {
-      document.getElementById('filterHomeMatchday').value = "";
-      document.getElementById('filterHomeTeam').value = "";
-      document.getElementById('filterHomeDate').value = "";
-      document.getElementById('filterHomeLocation').value = "";
-      renderHome();
-    }
-
-    function renderAllTables() {
-      renderHome();
-      renderMatches();
-      renderPlayers();
-      renderGameStats();
-      renderStats();
-      renderRecords();
-    }
     // 11. Match-Zeilen Generierung & dynamische Farbgebung
     function createMatchRowHTML(m) {
       let scoreRaw = String(m.score || '-').trim();
