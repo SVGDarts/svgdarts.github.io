@@ -1273,13 +1273,13 @@
       return { letter, numbers };
     }
 
-    function renderPlayers() {
+        function renderPlayers() {
       const tbody = document.getElementById('playersTable');
       if (!tbody) return;
 
       const selectedFilter = document.getElementById('playerTeamFilter')?.value || '';
 
-      const filteredPlayers = appData.players.filter(p => {
+      let filteredPlayers = appData.players.filter(p => {
         const nameMatch = !globalSearchQuery || String(p.name || '').toLowerCase().includes(globalSearchQuery);
         if (!nameMatch) return false;
         if (!selectedFilter) return true;
@@ -1291,6 +1291,21 @@
           return numbers.includes(selectedFilter);
         }
         return true;
+      });
+
+      // Numerische, natürliche Sortierung nach ID (1, 2, 3 ... statt 1, 10, 13)
+      filteredPlayers.sort((a, b) => {
+        const idA = parseInt(a.id, 10);
+        const idB = parseInt(b.id, 10);
+        
+        // Fallback, falls IDs keine gültigen Nummern sind
+        if (isNaN(idA) && isNaN(idB)) {
+          return String(a.id || '').localeCompare(String(b.id || ''), undefined, { numeric: true });
+        }
+        if (isNaN(idA)) return 1;
+        if (isNaN(idB)) return -1;
+        
+        return idA - idB; // Aufsteigend numerisch sortieren
       });
 
       if (!filteredPlayers.length) {
@@ -1306,6 +1321,7 @@
         </tr>
       `).join('');
     }
+
     // 13. Sortierung & Rendering: Spielstatistiken
     function setGameStatsSort(key) {
       if (currentGameStatsSortKey === key) {
