@@ -946,18 +946,22 @@
       handleGlobalSearch();
     }
 
-    // 8. Firebase Echtzeit-Datenbank Synchronisation (Ersatz für Sheets loadData)
+        // 8. Firebase Echtzeit-Datenbank Synchronisation (mit Übersetzer für deutsche Keys)
     function listenToDatabase() {
       onValue(ref(db, '/'), (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
+          
+          // Holt die Notizen/Vorschläge, egal wie sie in Firebase heißen
+          const rawNotes = data.Vorschläge || data.Notizen || data.notes || {};
+
           appData = {
-            matches: data.matches || [],
-            players: data.players || [],
-            stats: data.stats || [],
-            records: data.records || [],
-            gameStats: data.gameStats || data.game_stats || [],
-            notes: data.notes ? Object.keys(data.notes).map(key => ({ rowIndex: key, ...data.notes[key] })) : []
+            matches: data.Spielplan || data.Spiele || data.matches || [],
+            players: data.Spielerdatenbank || data.Spieler || data.players || [],
+            stats: data.Averages || data.stats || [],
+            records: data.Bestleistungen || data.records || [],
+            gameStats: data.Spielstatistiken || data.gameStats || data.game_stats || [],
+            notes: Object.keys(rawNotes).map(key => ({ rowIndex: key, ...rawNotes[key] }))
           };
 
           localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
@@ -970,6 +974,7 @@
         }
       });
     }
+
     // 9. Vorschlagswesen (Notes) - Echtzeit über Firebase
     function toggleNotesDropdown() {
       const dropdown = document.getElementById('notesDropdown');
