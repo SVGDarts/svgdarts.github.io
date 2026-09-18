@@ -177,11 +177,6 @@
             </div>
           </div>
 
-          <button id="refreshBtn" onclick="loadDataFromSheets(true)" class="group relative px-4 py-2 bg-black hover:bg-neutral-900 text-neutral-200 rounded-xl flex items-center gap-2 border border-neutral-700 transition shadow-sm text-sm font-medium whitespace-nowrap">
-            <i class="fa-solid fa-rotate text-white" id="refreshIcon"></i>
-            <span>Aktualisieren</span>
-          </button>
-
           <a href="https://www.instagram.com/svgdarts/?hl=de" target="_blank" rel="noopener noreferrer" title="SVG Göttingen Darts auf Instagram" class="p-2.5 bg-black hover:bg-neutral-900 text-white hover:text-pink-500 rounded-xl flex items-center justify-center border border-neutral-700 transition shadow-sm text-sm font-medium">
             <i class="fa-brands fa-instagram text-lg"></i>
           </a>
@@ -718,8 +713,28 @@
     </div>
   </div>
 
-  <script>
-    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw6FeUPjMDcAI-n1HEa1HUG8p-4w9TnuAurxdp_lWrwKbridc8gu3XDc0XsT1RejBTA/exec";
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+    import { getDatabase, ref, get, child, push, remove, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHNEhjZ4BH2xNcjKcrLWqNzhBy7oSo_b4",
+      authDomain: "svg-darts.firebaseapp.com",
+      projectId: "svg-darts",
+      storageBucket: "svg-darts.firebasestorage.app",
+      messagingSenderId: "226194980520",
+      appId: "1:226194980520:web:0cf84c85771ba839f74c9d",
+      measurementId: "G-T6WC9PJ9V3"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const db = getDatabase(app);
+
     const CACHE_KEY = "svg_darts_app_data_v2";
 
     const TEAM_URLS = {
@@ -736,15 +751,15 @@
       "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree"
     };
 
-    function changeTableIframe() {
+    window.changeTableIframe = function() {
       const select = document.getElementById('tableTeamFilter');
       const iframe = document.getElementById('tableIframe');
       if (select && iframe) {
         iframe.src = select.value;
       }
-    }
+    };
 
-    function getTeamLink(teamName) {
+    window.getTeamLink = function(teamName) {
       if (!teamName || teamName === '-') return '-';
       const cleanName = String(teamName).trim();
       const upperName = cleanName.toUpperCase();
@@ -769,9 +784,9 @@
       }
 
       return cleanName;
-    }
+    };
 
-    function formatTeamDisplay(rawTeam) {
+    window.formatTeamDisplay = function(rawTeam) {
       if (!rawTeam || rawTeam === '-') return 'Kein Team';
 
       const parts = String(rawTeam).split('/').map(p => p.trim());
@@ -802,7 +817,7 @@
       }
 
       return resultParts.length > 0 ? resultParts.join(', ') : rawTeam;
-    }
+    };
 
     let appData = { matches: [], players: [], stats: [], records: [], gameStats: [], notes: [] };
 
@@ -818,28 +833,28 @@
     let currentRecordsSortKey = 'specials';
     let currentRecordsSortAsc = false;
 
-    function formatNumber(val) {
+    window.formatNumber = function(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const num = parseFloat(String(val).replace(',', '.'));
       return isNaN(num) ? val : num.toFixed(2);
-    }
+    };
 
-    function formatPercent(val) {
+    window.formatPercent = function(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const str = String(val).replace(',', '.').trim();
       const num = parseFloat(str);
       if (isNaN(num)) return val;
       return str.includes('%') ? str : `${num.toFixed(1)}%`;
-    }
+    };
 
-    function parseNumeric(val) {
+    window.parseNumeric = function(val) {
       if (val === undefined || val === null || val === '-' || val === '') return 0;
       const cleanStr = String(val).replace('%', '').replace(',', '.').trim();
       const num = parseFloat(cleanStr);
       return isNaN(num) ? 0 : num;
-    }
+    };
 
-    function parseMatchDate(dateVal) {
+    window.parseMatchDate = function(dateVal) {
       if (!dateVal || dateVal === '-') return null;
       let str = String(dateVal).trim();
       if (str.includes('T')) str = str.split('T')[0];
@@ -855,9 +870,9 @@
 
       const dateObj = new Date(y, m - 1, d);
       return isNaN(dateObj.getTime()) ? null : dateObj;
-    }
+    };
 
-    function formatDate(dateVal) {
+    window.formatDate = function(dateVal) {
       if (!dateVal || dateVal === '-') return '-';
       const dateObj = parseMatchDate(dateVal);
       if (!dateObj) return String(dateVal).trim();
@@ -866,16 +881,16 @@
       const dayName = weekdays[dateObj.getDay()];
       const pad = n => String(n).padStart(2, '0');
       return `${dayName}, ${pad(dateObj.getDate())}.${pad(dateObj.getMonth() + 1)}.${dateObj.getFullYear()}`;
-    }
+    };
 
-    function formatTime(timeVal) {
+    window.formatTime = function(timeVal) {
       if (!timeVal || timeVal === '-') return '-';
       let str = String(timeVal).trim();
       const timeMatch = str.match(/(\d{1,2}):(\d{2})/);
       return timeMatch ? `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}` : str;
-    }
+    };
 
-    function switchTab(tabId) {
+    window.switchTab = function(tabId) {
       activeTab = tabId;
       document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -889,9 +904,9 @@
       if (tabId === 'livegames') {
         renderLiveGames();
       }
-    }
+    };
 
-    function renderLiveGames() {
+    window.renderLiveGames = function() {
       const gridContainer = document.getElementById('liveGamesGrid');
       if (!gridContainer) return;
 
@@ -908,17 +923,16 @@
         const hasUrl = Boolean(m.url || m.iframe || m.link);
         if (!isToday || !hasUrl) return false;
 
-        // Prüfung: Spielbeginn + 4 Stunden noch nicht überschritten?
         const timeVal = m.time || m.uhrzeit;
         if (timeVal) {
           const timeMatch = String(timeVal).trim().match(/(\d{1,2}):(\d{2})/);
           if (timeMatch) {
-            const matchStart = parseMatchDate(m.date); // Frisches Objekt
+            const matchStart = parseMatchDate(m.date);
             matchStart.setHours(parseInt(timeMatch[1], 10), parseInt(timeMatch[2], 10), 0, 0);
             
-            const hideTime = new Date(matchStart.getTime() + 4 * 60 * 60 * 1000); // + 4 Stunden
+            const hideTime = new Date(matchStart.getTime() + 4 * 60 * 60 * 1000);
             if (now >= hideTime) {
-              return false; // Spiel ist länger als 4h her -> ausblenden
+              return false;
             }
           }
         }
@@ -962,9 +976,9 @@
           </div>
         `;
       }).join('');
-    }
+    };
 
-    function handleGlobalSearch() {
+    window.handleGlobalSearch = function() {
       const searchInput = document.getElementById('globalPlayerSearch');
       const clearBtn = document.getElementById('clearSearchBtn');
       globalSearchQuery = searchInput.value.trim().toLowerCase();
@@ -982,53 +996,51 @@
       renderGameStats();
       renderStats();
       renderRecords();
-    }
+    };
 
-    function clearGlobalSearch() {
+    window.clearGlobalSearch = function() {
       const searchInput = document.getElementById('globalPlayerSearch');
       searchInput.value = '';
       handleGlobalSearch();
-    }
+    };
 
-    async function loadDataFromSheets(isManualRefresh = false) {
-      const icon = document.getElementById('refreshIcon');
-      if (icon) icon.classList.add('fa-spin');
-
+    async function loadDataFromFirebase() {
       try {
-        const response = await fetch(SHEETS_WEBAPP_URL, { method: 'GET', mode: 'cors' });
-        if (!response.ok) throw new Error("Netzwerkfehler");
+        const dbRef = ref(db);
+        const snapshot = await get(dbRef);
         
-        const data = await response.json();
-        
-        appData = {
-          matches: data.matches || [],
-          players: data.players || [],
-          stats: data.stats || [],
-          records: data.records || [],
-          gameStats: data.gameStats || data.game_stats || data.gameStatistics || [],
-          notes: data.notes || []
-        };
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          appData = {
+            matches: data.matches || [],
+            players: data.players || [],
+            stats: data.stats || [],
+            records: data.records || [],
+            gameStats: data.gameStats || data.game_stats || data.gameStatistics || [],
+            notes: data.notes || []
+          };
 
-        localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
-        populateMatchFilters();
-        renderAllTables();
-        renderNotes();
-        if (activeTab === 'livegames') {
-          renderLiveGames();
+          localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
+          populateMatchFilters();
+          renderAllTables();
+          renderNotes();
+          if (activeTab === 'livegames') {
+            renderLiveGames();
+          }
+        } else {
+          console.warn("Keine Daten in der Firebase Realtime Database gefunden.");
         }
       } catch (err) {
-        console.warn("Backend nicht erreichbar oder langsamer Kaltstart. Nutze Cache.", err);
-      } finally {
-        if (icon) icon.classList.remove('fa-spin');
+        console.warn("Fehler beim Laden von Firebase. Nutze Cache.", err);
       }
     }
 
-    function toggleNotesDropdown() {
+    window.toggleNotesDropdown = function() {
       const dropdown = document.getElementById('notesDropdown');
       dropdown.classList.toggle('hidden');
-    }
+    };
 
-    function renderNotes() {
+    window.renderNotes = function() {
       const container = document.getElementById('notesListContainer');
       const badge = document.getElementById('notesBadge');
       const notes = appData.notes || [];
@@ -1062,9 +1074,9 @@
           </div>
         `;
       }).join('');
-    }
+    };
 
-    async function submitNewNote() {
+    window.submitNewNote = async function() {
       const input = document.getElementById('newNoteInput');
       const text = input.value.trim();
       if (!text) return;
@@ -1078,41 +1090,42 @@
       const nowStr = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()}, ${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
       try {
-        await fetch(SHEETS_WEBAPP_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'add', datum: nowStr, text: text })
-        });
+        const notesRef = ref(db, 'notes');
+        const newNoteRef = push(notesRef);
+        await set(newNoteRef, { datum: nowStr, text: text });
 
         input.value = '';
-        await loadDataFromSheets();
+        await loadDataFromFirebase();
       } catch (err) {
         console.error("Fehler beim Speichern:", err);
       } finally {
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Vorschlag speichern`;
       }
-    }
+    };
 
-    async function deleteNote(rowIndex) {
+    window.deleteNote = async function(rowIndex) {
       if (!confirm("Möchtest du diese Änderung wirklich löschen?")) return;
 
       try {
-        await fetch(SHEETS_WEBAPP_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'delete', rowIndex: rowIndex })
-        });
-
-        await loadDataFromSheets();
+        const notesRef = ref(db, 'notes');
+        const snapshot = await get(notesRef);
+        if (snapshot.exists()) {
+          const notesObj = snapshot.val();
+          for (let key in notesObj) {
+            if (notesObj[key].rowIndex === rowIndex) {
+              await remove(ref(db, `notes/${key}`));
+              break;
+            }
+          }
+        }
+        await loadDataFromFirebase();
       } catch (err) {
         console.error("Fehler beim Löschen:", err);
       }
-    }
+    };
 
-    function populateMatchFilters() {
+    window.populateMatchFilters = function() {
       const matchdaySelect = document.getElementById('filterMatchday');
       const teamSelect = document.getElementById('filterTeam');
       const dateSelect = document.getElementById('filterDate');
@@ -1146,34 +1159,34 @@
       if (homeTeamSelect) homeTeamSelect.innerHTML = teamOptions;
       if (homeDateSelect) homeDateSelect.innerHTML = dateOptions;
       if (homeLocationSelect) homeLocationSelect.innerHTML = locationOptions;
-    }
+    };
 
-    function resetMatchFilters() {
+    window.resetMatchFilters = function() {
       document.getElementById('filterMatchday').value = "";
       document.getElementById('filterTeam').value = "";
       document.getElementById('filterDate').value = "";
       document.getElementById('filterLocation').value = "";
       renderMatches();
-    }
+    };
 
-    function resetHomeMatchFilters() {
+    window.resetHomeMatchFilters = function() {
       document.getElementById('filterHomeMatchday').value = "";
       document.getElementById('filterHomeTeam').value = "";
       document.getElementById('filterHomeDate').value = "";
       document.getElementById('filterHomeLocation').value = "";
       renderHome();
-    }
+    };
 
-    function renderAllTables() {
+    window.renderAllTables = function() {
       renderHome();
       renderMatches();
       renderPlayers();
       renderGameStats();
       renderStats();
       renderRecords();
-    }
+    };
 
-    function createMatchRowHTML(m) {
+    window.createMatchRowHTML = function(m) {
       let scoreRaw = String(m.score || '-').trim();
       
       const isAway = /SVG/i.test(m.away || '') && !/SVG/i.test(m.home || '');
@@ -1232,9 +1245,9 @@
           </td>
         </tr>
       `;
-    }
+    };
 
-    function renderHome() {
+    window.renderHome = function() {
       const pastTbody = document.getElementById('homePastMatchesTable');
       const upcomingTbody = document.getElementById('homeUpcomingMatchesTable');
       if (!pastTbody || !upcomingTbody) return;
@@ -1295,9 +1308,9 @@
       } else {
         upcomingTbody.innerHTML = upcomingMatches.map(createMatchRowHTML).join('');
       }
-    }
+    };
 
-    function renderMatches() {
+    window.renderMatches = function() {
       const tbody = document.getElementById('matchesTable');
       if (!tbody) return;
 
@@ -1324,9 +1337,9 @@
       }
 
       tbody.innerHTML = filtered.map(createMatchRowHTML).join('');
-    }
+    };
 
-    function parsePlayerTeamTokens(teamStr) {
+    window.parsePlayerTeamTokens = function(teamStr) {
       if (!teamStr || teamStr === '-') return { letter: null, numbers: [] };
       const parts = String(teamStr).split('/');
       let letter = null;
@@ -1342,9 +1355,9 @@
         }
       }
       return { letter, numbers };
-    }
+    };
 
-    function renderPlayers() {
+    window.renderPlayers = function() {
       const tbody = document.getElementById('playersTable');
       if (!tbody) return;
 
@@ -1377,9 +1390,9 @@
           <td class="px-6 py-4 text-neutral-300">${p.team || '-'}</td>
         </tr>
       `).join('');
-    }
+    };
 
-    function setGameStatsSort(key) {
+    window.setGameStatsSort = function(key) {
       if (currentGameStatsSortKey === key) {
         currentGameStatsSortAsc = !currentGameStatsSortAsc;
       } else {
@@ -1387,9 +1400,9 @@
         currentGameStatsSortAsc = key === 'player';
       }
       renderGameStats();
-    }
+    };
 
-    function updateGameStatsSortIcons() {
+    window.updateGameStatsSortIcons = function() {
       const keys = ['player', 'games', 'legs', 'legsWonPct', 'winsSingle', 'winRateSingle', 'winsDouble', 'winRateDouble', 'winRateTotal'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`gsort-icon-${k}`);
@@ -1402,9 +1415,9 @@
           iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
         }
       });
-    }
+    };
 
-    function calculatePlayerGamesDisplay(playerName, actualGames) {
+    window.calculatePlayerGamesDisplay = function(playerName, actualGames) {
       const playerObj = appData.players.find(p => String(p.name || '').trim().toLowerCase() === String(playerName || '').trim().toLowerCase());
       if (!playerObj || !playerObj.team) {
         return `${actualGames || 0}/0`;
@@ -1460,9 +1473,9 @@
       });
 
       return `${actualGames || 0}/${maxGames}`;
-    }
+    };
 
-    function renderGameStats() {
+    window.renderGameStats = function() {
       const tbody = document.getElementById('gameStatsTable');
       if (!tbody) return;
 
@@ -1529,9 +1542,9 @@
         </tr>
       `;
       }).join('');
-    }
+    };
 
-    function setStatsSort(key) {
+    window.setStatsSort = function(key) {
       if (currentStatsSortKey === key) {
         currentStatsSortAsc = !currentStatsSortAsc;
       } else {
@@ -1539,9 +1552,9 @@
         currentStatsSortAsc = key === 'player';
       }
       renderStats();
-    }
+    };
 
-    function updateStatsSortIcons() {
+    window.updateStatsSortIcons = function() {
       const keys = ['player', 'avgSingle', 'avgDouble', 'first9Single', 'first9Double', 'maxAvgSingle', 'maxAvgDouble', 'maxFirst9Single', 'maxFirst9Double'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`sort-icon-${k}`);
@@ -1554,9 +1567,9 @@
           iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
         }
       });
-    }
+    };
 
-    function renderStats() {
+    window.renderStats = function() {
       const tbody = document.getElementById('statsTable');
       if (!tbody) return;
 
@@ -1621,9 +1634,9 @@
         </tr>
       `;
       }).join('');
-    }
+    };
 
-    function setRecordsSort(key) {
+    window.setRecordsSort = function(key) {
       if (currentRecordsSortKey === key) {
         currentRecordsSortAsc = !currentRecordsSortAsc;
       } else {
@@ -1631,9 +1644,9 @@
         currentRecordsSortAsc = key === 'player';
       }
       renderRecords();
-    }
+    };
 
-    function updateRecordsSortIcons() {
+    window.updateRecordsSortIcons = function() {
       const keys = ['player', 'specials', 'r180', 'r140', 'highfinish', 'shortgame', 'shortgameChance', 'maxSpecialsMatchday', 'specialsPerGame'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`rsort-icon-${k}`);
@@ -1646,9 +1659,9 @@
           iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
         }
       });
-    }
+    };
 
-    function renderRecords() {
+    window.renderRecords = function() {
       const tbody = document.getElementById('recordsTable');
       if (!tbody) return;
 
@@ -1713,9 +1726,9 @@
         </tr>
       `;
       }).join('');
-    }
+    };
 
-    function openPlayerModal(playerName) {
+    window.openPlayerModal = function(playerName) {
       const modal = document.getElementById('playerModal');
       const playerInfo = appData.players.find(p => p.name === playerName) || {};
       const playerStats = appData.stats.find(s => (s.player || s.name) === playerName) || {};
@@ -1733,11 +1746,11 @@
       document.getElementById('modalShortgames').innerText = playerRecords.shortgame || 'Keine vorhanden';
 
       modal.classList.remove('hidden');
-    }
+    };
 
-    function closePlayerModal() {
+    window.closePlayerModal = function() {
       document.getElementById('playerModal').classList.add('hidden');
-    }
+    };
 
     window.addEventListener('DOMContentLoaded', () => {
       const cached = localStorage.getItem(CACHE_KEY);
@@ -1752,11 +1765,10 @@
         }
       }
       
-      loadDataFromSheets();
+      loadDataFromFirebase();
 
-      // Automatische Aktualisierung alle 2 Minuten (120.000 Millisekunden)
       setInterval(() => {
-        loadDataFromSheets();
+        loadDataFromFirebase();
       }, 120000);
     });
   </script>
