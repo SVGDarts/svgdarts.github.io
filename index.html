@@ -706,7 +706,7 @@
       </div>
     </div>
   </div>
-  <script type="module">
+    <script type="module">
     // 1. Firebase SDK Imports & Initialisierung
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
     import { getDatabase, ref, onValue, push, remove } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js';
@@ -746,7 +746,15 @@
     let currentRecordsSortKey = 'specials';
     let currentRecordsSortAsc = false;
 
-    // 3. Hilfsfunktionen für Navigation, Iframe & Teams
+    // Neue Hilfsfunktion: Verwandelt Firebase-Objektlisten sicher in Arrays
+    function firebaseListToArray(val) {
+      if (!val) return [];
+      if (Array.isArray(val)) return val.filter(Boolean);
+      if (typeof val === 'object') return Object.keys(val).map(key => val[key]);
+      return [];
+    }
+
+    // Hilfsfunktionen für Navigation, Iframe & Teams
     function changeTableIframe() {
       const select = document.getElementById('tableTeamFilter');
       const iframe = document.getElementById('tableIframe');
@@ -789,7 +797,7 @@
       return resultParts.length > 0 ? resultParts.join(', ') : rawTeam;
     }
 
-    // 4. Formatierungs- und Parsing-Utilities
+    // Formatierungs- und Parsing-Utilities
     function formatNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const num = parseFloat(String(val).replace(',', '.'));
@@ -838,6 +846,7 @@
       const timeMatch = str.match(/(\d{1,2}):(\d{2})/);
       return timeMatch ? `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}` : str;
     }
+
     // 5. Tab-Wechsel-System
     function switchTab(tabId) {
       activeTab = tabId;
@@ -946,21 +955,19 @@
       handleGlobalSearch();
     }
 
-        // 8. Firebase Echtzeit-Datenbank Synchronisation (mit Übersetzer für deutsche Keys)
+            // 8. Firebase Echtzeit-Datenbank Synchronisation (mit Konvertierungsschutz)
     function listenToDatabase() {
       onValue(ref(db, '/'), (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
-          
-          // Holt die Notizen/Vorschläge, egal wie sie in Firebase heißen
           const rawNotes = data.Vorschläge || data.Notizen || data.notes || {};
 
           appData = {
-            matches: data.Spielplan || data.Spiele || data.matches || [],
-            players: data.Spielerdatenbank || data.Spieler || data.players || [],
-            stats: data.Averages || data.stats || [],
-            records: data.Bestleistungen || data.records || [],
-            gameStats: data.Spielstatistiken || data.gameStats || data.game_stats || [],
+            matches: firebaseListToArray(data.Spielplan || data.Spiele || data.matches),
+            players: firebaseListToArray(data.Spielerdatenbank || data.Spieler || data.players),
+            stats: firebaseListToArray(data.Averages || data.stats),
+            records: firebaseListToArray(data.Bestleistungen || data.records),
+            gameStats: firebaseListToArray(data.Spielstatistiken || data.gameStats || data.game_stats),
             notes: Object.keys(rawNotes).map(key => ({ rowIndex: key, ...rawNotes[key] }))
           };
 
@@ -974,6 +981,7 @@
         }
       });
     }
+
 
             // 9. Vorschlagswesen (Notes) - Echtzeit über Firebase (Datenbankpfad: 'Vorschläge')
     function toggleNotesDropdown() {
@@ -1599,7 +1607,7 @@
         `;
       }).join('');
     }
-    // 16. Spieler-Profil Modal Steuerung
+        // 16. Spieler-Profil Modal Steuerung
     function openPlayerModal(playerName) {
       const modal = document.getElementById('playerModal');
       const playerInfo = appData.players.find(p => p.name === playerName) || {};
@@ -1624,12 +1632,18 @@
       document.getElementById('playerModal').classList.add('hidden');
     }
 
-    // 17. Initialisierung beim Laden der Seite
+    // 17. Initialisierung beim Laden der Seite (inkl. Cache-Sicherung)
     window.addEventListener('DOMContentLoaded', () => {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
         try {
           appData = JSON.parse(cached);
+          appData.matches = firebaseListToArray(appData.matches);
+          appData.players = firebaseListToArray(appData.players);
+          appData.stats = firebaseListToArray(appData.stats);
+          appData.records = firebaseListToArray(appData.records);
+          appData.gameStats = firebaseListToArray(appData.gameStats);
+          
           populateMatchFilters();
           renderAllTables();
           renderNotes();
@@ -1638,7 +1652,7 @@
         }
       }
       
-      // Starte die Echtzeit-Synchronisation mit deiner Realtime Database
+      // Startet die Synchronisation
       listenToDatabase();
     });
 
@@ -1663,3 +1677,4 @@
   </script>
 </body>
 </html>
+
