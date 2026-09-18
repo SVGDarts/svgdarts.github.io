@@ -1504,7 +1504,7 @@
 
       const getVal = (item, key) => {
         if (key === 'player') return item.player || item.name || '';
-        if (key === 'avgSingle') return parseNumeric(item.AvgSingle ?? item.avgSingle ?? item.avg_single ?? item.avg);
+        if (key === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avgSingle ?? item.avg_single ?? item.avg);
         if (key === 'avgDouble') return parseNumeric(item.AvgDouble ?? item.avgDouble ?? item.avg_double);
         if (key === 'first9Single') return parseNumeric(item.first9Single ?? item.first9_single ?? item.first9);
         if (key === 'first9Double') return parseNumeric(item.first9Double ?? item.first9_double);
