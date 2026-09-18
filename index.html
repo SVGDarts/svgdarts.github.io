@@ -65,7 +65,7 @@
       color: #ffffff;
     }
 
-    /* PRIORISIERTE FARBLICHE HERVORHEBUNG (OVERRIDE RULES) */
+    /* ERGEBNIS-FARBEN (WIN = GRÜN, LOSS = ROT) */
     .score-win {
       background-color: #064e3b !important;
       border-color: #10b981 !important;
@@ -713,29 +713,9 @@
     </div>
   </div>
 
-  <script type="module">
-    // Import the functions you need from the SDKs you need
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
-    import { getDatabase, ref, get, child, push, remove, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-    // Your web app's Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyBHNEhjZ4BH2xNcjKcrLWqNzhBy7oSo_b4",
-      authDomain: "svg-darts.firebaseapp.com",
-      projectId: "svg-darts",
-      storageBucket: "svg-darts.firebasestorage.app",
-      messagingSenderId: "226194980520",
-      appId: "1:226194980520:web:0cf84c85771ba839f74c9d",
-      measurementId: "G-T6WC9PJ9V3"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const analytics = getAnalytics(app);
-    const db = getDatabase(app);
-
-    const CACHE_KEY = "svg_darts_app_data_v2";
+  <script>
+    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw6FeUPjMDcAI-n1HEa1HUG8p-4w9TnuAurxdp_lWrwKbridc8gu3XDc0XsT1RejBTA/exec";
+    const CACHE_KEY = "svg_darts_app_data_v3";
 
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
@@ -751,15 +731,15 @@
       "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree"
     };
 
-    window.changeTableIframe = function() {
+    function changeTableIframe() {
       const select = document.getElementById('tableTeamFilter');
       const iframe = document.getElementById('tableIframe');
       if (select && iframe) {
         iframe.src = select.value;
       }
-    };
+    }
 
-    window.getTeamLink = function(teamName) {
+    function getTeamLink(teamName) {
       if (!teamName || teamName === '-') return '-';
       const cleanName = String(teamName).trim();
       const upperName = cleanName.toUpperCase();
@@ -784,9 +764,9 @@
       }
 
       return cleanName;
-    };
+    }
 
-    window.formatTeamDisplay = function(rawTeam) {
+    function formatTeamDisplay(rawTeam) {
       if (!rawTeam || rawTeam === '-') return 'Kein Team';
 
       const parts = String(rawTeam).split('/').map(p => p.trim());
@@ -817,7 +797,7 @@
       }
 
       return resultParts.length > 0 ? resultParts.join(', ') : rawTeam;
-    };
+    }
 
     let appData = { matches: [], players: [], stats: [], records: [], gameStats: [], notes: [] };
 
@@ -833,28 +813,28 @@
     let currentRecordsSortKey = 'specials';
     let currentRecordsSortAsc = false;
 
-    window.formatNumber = function(val) {
+    function formatNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const num = parseFloat(String(val).replace(',', '.'));
       return isNaN(num) ? val : num.toFixed(2);
-    };
+    }
 
-    window.formatPercent = function(val) {
+    function formatPercent(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const str = String(val).replace(',', '.').trim();
       const num = parseFloat(str);
       if (isNaN(num)) return val;
       return str.includes('%') ? str : `${num.toFixed(1)}%`;
-    };
+    }
 
-    window.parseNumeric = function(val) {
+    function parseNumeric(val) {
       if (val === undefined || val === null || val === '-' || val === '') return 0;
       const cleanStr = String(val).replace('%', '').replace(',', '.').trim();
       const num = parseFloat(cleanStr);
       return isNaN(num) ? 0 : num;
-    };
+    }
 
-    window.parseMatchDate = function(dateVal) {
+    function parseMatchDate(dateVal) {
       if (!dateVal || dateVal === '-') return null;
       let str = String(dateVal).trim();
       if (str.includes('T')) str = str.split('T')[0];
@@ -870,9 +850,9 @@
 
       const dateObj = new Date(y, m - 1, d);
       return isNaN(dateObj.getTime()) ? null : dateObj;
-    };
+    }
 
-    window.formatDate = function(dateVal) {
+    function formatDate(dateVal) {
       if (!dateVal || dateVal === '-') return '-';
       const dateObj = parseMatchDate(dateVal);
       if (!dateObj) return String(dateVal).trim();
@@ -881,16 +861,16 @@
       const dayName = weekdays[dateObj.getDay()];
       const pad = n => String(n).padStart(2, '0');
       return `${dayName}, ${pad(dateObj.getDate())}.${pad(dateObj.getMonth() + 1)}.${dateObj.getFullYear()}`;
-    };
+    }
 
-    window.formatTime = function(timeVal) {
+    function formatTime(timeVal) {
       if (!timeVal || timeVal === '-') return '-';
       let str = String(timeVal).trim();
       const timeMatch = str.match(/(\d{1,2}):(\d{2})/);
       return timeMatch ? `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}` : str;
-    };
+    }
 
-    window.switchTab = function(tabId) {
+    function switchTab(tabId) {
       activeTab = tabId;
       document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -904,9 +884,9 @@
       if (tabId === 'livegames') {
         renderLiveGames();
       }
-    };
+    }
 
-    window.renderLiveGames = function() {
+    function renderLiveGames() {
       const gridContainer = document.getElementById('liveGamesGrid');
       if (!gridContainer) return;
 
@@ -976,9 +956,9 @@
           </div>
         `;
       }).join('');
-    };
+    }
 
-    window.handleGlobalSearch = function() {
+    function handleGlobalSearch() {
       const searchInput = document.getElementById('globalPlayerSearch');
       const clearBtn = document.getElementById('clearSearchBtn');
       globalSearchQuery = searchInput.value.trim().toLowerCase();
@@ -996,51 +976,48 @@
       renderGameStats();
       renderStats();
       renderRecords();
-    };
+    }
 
-    window.clearGlobalSearch = function() {
+    function clearGlobalSearch() {
       const searchInput = document.getElementById('globalPlayerSearch');
       searchInput.value = '';
       handleGlobalSearch();
-    };
+    }
 
-    async function loadDataFromFirebase() {
+    async function loadDataFromSheets() {
       try {
-        const dbRef = ref(db);
-        const snapshot = await get(dbRef);
+        const response = await fetch(SHEETS_WEBAPP_URL, { method: 'GET', mode: 'cors' });
+        if (!response.ok) throw new Error("Netzwerkfehler");
         
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          appData = {
-            matches: data.matches || [],
-            players: data.players || [],
-            stats: data.stats || [],
-            records: data.records || [],
-            gameStats: data.gameStats || data.game_stats || data.gameStatistics || [],
-            notes: data.notes || []
-          };
+        const data = await response.json();
+        
+        appData = {
+          matches: data.matches || [],
+          players: data.players || [],
+          stats: data.stats || [],
+          records: data.records || [],
+          gameStats: data.gameStats || data.game_stats || data.gameStatistics || [],
+          notes: data.notes || []
+        };
 
-          localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
-          populateMatchFilters();
-          renderAllTables();
-          renderNotes();
-          if (activeTab === 'livegames') {
-            renderLiveGames();
-          }
-        } else {
-          console.warn("Keine Daten in der Firebase Realtime Database gefunden.");
+        localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
+        populateMatchFilters();
+        renderAllTables();
+        renderNotes();
+        if (activeTab === 'livegames') {
+          renderLiveGames();
         }
       } catch (err) {
-        console.warn("Fehler beim Laden von Firebase. Nutze Cache.", err);
+        console.warn("Backend nicht erreichbar oder langsamer Kaltstart. Nutze Cache.", err);
       }
     }
 
-    window.toggleNotesDropdown = function() {
+    function toggleNotesDropdown() {
       const dropdown = document.getElementById('notesDropdown');
       dropdown.classList.toggle('hidden');
-    };
+    }
 
-    window.renderNotes = function() {
+    function renderNotes() {
       const container = document.getElementById('notesListContainer');
       const badge = document.getElementById('notesBadge');
       const notes = appData.notes || [];
@@ -1074,9 +1051,9 @@
           </div>
         `;
       }).join('');
-    };
+    }
 
-    window.submitNewNote = async function() {
+    async function submitNewNote() {
       const input = document.getElementById('newNoteInput');
       const text = input.value.trim();
       if (!text) return;
@@ -1090,42 +1067,41 @@
       const nowStr = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()}, ${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
       try {
-        const notesRef = ref(db, 'notes');
-        const newNoteRef = push(notesRef);
-        await set(newNoteRef, { datum: nowStr, text: text });
+        await fetch(SHEETS_WEBAPP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'add', datum: nowStr, text: text })
+        });
 
         input.value = '';
-        await loadDataFromFirebase();
+        await loadDataFromSheets();
       } catch (err) {
         console.error("Fehler beim Speichern:", err);
       } finally {
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Vorschlag speichern`;
       }
-    };
+    }
 
-    window.deleteNote = async function(rowIndex) {
+    async function deleteNote(rowIndex) {
       if (!confirm("Möchtest du diese Änderung wirklich löschen?")) return;
 
       try {
-        const notesRef = ref(db, 'notes');
-        const snapshot = await get(notesRef);
-        if (snapshot.exists()) {
-          const notesObj = snapshot.val();
-          for (let key in notesObj) {
-            if (notesObj[key].rowIndex === rowIndex) {
-              await remove(ref(db, `notes/${key}`));
-              break;
-            }
-          }
-        }
-        await loadDataFromFirebase();
+        await fetch(SHEETS_WEBAPP_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', rowIndex: rowIndex })
+        });
+
+        await loadDataFromSheets();
       } catch (err) {
         console.error("Fehler beim Löschen:", err);
       }
-    };
+    }
 
-    window.populateMatchFilters = function() {
+    function populateMatchFilters() {
       const matchdaySelect = document.getElementById('filterMatchday');
       const teamSelect = document.getElementById('filterTeam');
       const dateSelect = document.getElementById('filterDate');
@@ -1159,69 +1135,79 @@
       if (homeTeamSelect) homeTeamSelect.innerHTML = teamOptions;
       if (homeDateSelect) homeDateSelect.innerHTML = dateOptions;
       if (homeLocationSelect) homeLocationSelect.innerHTML = locationOptions;
-    };
+    }
 
-    window.resetMatchFilters = function() {
+    function resetMatchFilters() {
       document.getElementById('filterMatchday').value = "";
       document.getElementById('filterTeam').value = "";
       document.getElementById('filterDate').value = "";
       document.getElementById('filterLocation').value = "";
       renderMatches();
-    };
+    }
 
-    window.resetHomeMatchFilters = function() {
+    function resetHomeMatchFilters() {
       document.getElementById('filterHomeMatchday').value = "";
       document.getElementById('filterHomeTeam').value = "";
       document.getElementById('filterHomeDate').value = "";
       document.getElementById('filterHomeLocation').value = "";
       renderHome();
-    };
+    }
 
-    window.renderAllTables = function() {
+    function renderAllTables() {
       renderHome();
       renderMatches();
       renderPlayers();
       renderGameStats();
       renderStats();
       renderRecords();
-    };
+    }
 
-    window.createMatchRowHTML = function(m) {
+    function createMatchRowHTML(m) {
       let scoreRaw = String(m.score || '-').trim();
-      
-      const isAway = /SVG/i.test(m.away || '') && !/SVG/i.test(m.home || '');
-
-      const scoreParts = scoreRaw.split(/[:\-]/).map(s => parseInt(s.trim(), 10));
+      let scoreParts = scoreRaw.split(/[:\-]/).map(s => parseInt(s.trim(), 10));
       let displayScore = scoreRaw;
       
       let scoreStyleClass = 'score-neutral';
 
       if (scoreParts.length === 2 && !isNaN(scoreParts[0]) && !isNaN(scoreParts[1])) {
-        let svgScore = scoreParts[0];
-        let opponentScore = scoreParts[1];
+        let homeScore = scoreParts[0];
+        let awayScore = scoreParts[1];
 
-        displayScore = `${svgScore}:${opponentScore}`;
-        const sum = svgScore + opponentScore;
+        displayScore = `${homeScore}:${awayScore}`;
+        const sum = homeScore + awayScore;
 
-        if (svgScore === 0 && opponentScore === 0) {
+        const isSvgHome = /SVG/i.test(m.home || '') && !/SVG/i.test(m.away || '');
+        const isSvgAway = /SVG/i.test(m.away || '') && !/SVG/i.test(m.home || '');
+
+        if (homeScore === 0 && awayScore === 0) {
           scoreStyleClass = 'score-zero';
         }
         else if (sum >= 1 && sum < 12) {
           scoreStyleClass = 'score-white';
         } else {
-          if (isAway) {
-            if (svgScore > opponentScore) {
-              scoreStyleClass = 'score-loss';
-            } else if (svgScore < opponentScore) {
+          if (isSvgHome) {
+            // Ist SVG Heim und Heimteam gewinnt -> grün, bei Niederlage -> rot
+            if (homeScore > awayScore) {
               scoreStyleClass = 'score-win';
+            } else if (homeScore < awayScore) {
+              scoreStyleClass = 'score-loss';
             } else {
               scoreStyleClass = 'score-draw';
             }
-          } 
-          else {
-            if (svgScore > opponentScore) {
+          } else if (isSvgAway) {
+            // Ist SVG Auswärts und gewinnt -> grün, bei Niederlage -> rot
+            if (awayScore > homeScore) {
               scoreStyleClass = 'score-win';
-            } else if (svgScore < opponentScore) {
+            } else if (awayScore < homeScore) {
+              scoreStyleClass = 'score-loss';
+            } else {
+              scoreStyleClass = 'score-draw';
+            }
+          } else {
+            // Fallback (z.B. SVG gegen SVG)
+            if (homeScore > awayScore) {
+              scoreStyleClass = 'score-win';
+            } else if (homeScore < awayScore) {
               scoreStyleClass = 'score-loss';
             } else {
               scoreStyleClass = 'score-draw';
@@ -1245,9 +1231,9 @@
           </td>
         </tr>
       `;
-    };
+    }
 
-    window.renderHome = function() {
+    function renderHome() {
       const pastTbody = document.getElementById('homePastMatchesTable');
       const upcomingTbody = document.getElementById('homeUpcomingMatchesTable');
       if (!pastTbody || !upcomingTbody) return;
@@ -1308,9 +1294,9 @@
       } else {
         upcomingTbody.innerHTML = upcomingMatches.map(createMatchRowHTML).join('');
       }
-    };
+    }
 
-    window.renderMatches = function() {
+    function renderMatches() {
       const tbody = document.getElementById('matchesTable');
       if (!tbody) return;
 
@@ -1337,9 +1323,9 @@
       }
 
       tbody.innerHTML = filtered.map(createMatchRowHTML).join('');
-    };
+    }
 
-    window.parsePlayerTeamTokens = function(teamStr) {
+    function parsePlayerTeamTokens(teamStr) {
       if (!teamStr || teamStr === '-') return { letter: null, numbers: [] };
       const parts = String(teamStr).split('/');
       let letter = null;
@@ -1355,9 +1341,9 @@
         }
       }
       return { letter, numbers };
-    };
+    }
 
-    window.renderPlayers = function() {
+    function renderPlayers() {
       const tbody = document.getElementById('playersTable');
       if (!tbody) return;
 
@@ -1390,9 +1376,9 @@
           <td class="px-6 py-4 text-neutral-300">${p.team || '-'}</td>
         </tr>
       `).join('');
-    };
+    }
 
-    window.setGameStatsSort = function(key) {
+    function setGameStatsSort(key) {
       if (currentGameStatsSortKey === key) {
         currentGameStatsSortAsc = !currentGameStatsSortAsc;
       } else {
@@ -1400,9 +1386,9 @@
         currentGameStatsSortAsc = key === 'player';
       }
       renderGameStats();
-    };
+    }
 
-    window.updateGameStatsSortIcons = function() {
+    function updateGameStatsSortIcons() {
       const keys = ['player', 'games', 'legs', 'legsWonPct', 'winsSingle', 'winRateSingle', 'winsDouble', 'winRateDouble', 'winRateTotal'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`gsort-icon-${k}`);
@@ -1415,9 +1401,9 @@
           iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
         }
       });
-    };
+    }
 
-    window.calculatePlayerGamesDisplay = function(playerName, actualGames) {
+    function calculatePlayerGamesDisplay(playerName, actualGames) {
       const playerObj = appData.players.find(p => String(p.name || '').trim().toLowerCase() === String(playerName || '').trim().toLowerCase());
       if (!playerObj || !playerObj.team) {
         return `${actualGames || 0}/0`;
@@ -1473,9 +1459,9 @@
       });
 
       return `${actualGames || 0}/${maxGames}`;
-    };
+    }
 
-    window.renderGameStats = function() {
+    function renderGameStats() {
       const tbody = document.getElementById('gameStatsTable');
       if (!tbody) return;
 
@@ -1542,9 +1528,9 @@
         </tr>
       `;
       }).join('');
-    };
+    }
 
-    window.setStatsSort = function(key) {
+    function setStatsSort(key) {
       if (currentStatsSortKey === key) {
         currentStatsSortAsc = !currentStatsSortAsc;
       } else {
@@ -1552,9 +1538,9 @@
         currentStatsSortAsc = key === 'player';
       }
       renderStats();
-    };
+    }
 
-    window.updateStatsSortIcons = function() {
+    function updateStatsSortIcons() {
       const keys = ['player', 'avgSingle', 'avgDouble', 'first9Single', 'first9Double', 'maxAvgSingle', 'maxAvgDouble', 'maxFirst9Single', 'maxFirst9Double'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`sort-icon-${k}`);
@@ -1567,9 +1553,9 @@
           iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
         }
       });
-    };
+    }
 
-    window.renderStats = function() {
+    function renderStats() {
       const tbody = document.getElementById('statsTable');
       if (!tbody) return;
 
@@ -1634,9 +1620,9 @@
         </tr>
       `;
       }).join('');
-    };
+    }
 
-    window.setRecordsSort = function(key) {
+    function setRecordsSort(key) {
       if (currentRecordsSortKey === key) {
         currentRecordsSortAsc = !currentRecordsSortAsc;
       } else {
@@ -1644,9 +1630,9 @@
         currentRecordsSortAsc = key === 'player';
       }
       renderRecords();
-    };
+    }
 
-    window.updateRecordsSortIcons = function() {
+    function updateRecordsSortIcons() {
       const keys = ['player', 'specials', 'r180', 'r140', 'highfinish', 'shortgame', 'shortgameChance', 'maxSpecialsMatchday', 'specialsPerGame'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`rsort-icon-${k}`);
@@ -1659,9 +1645,9 @@
           iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
         }
       });
-    };
+    }
 
-    window.renderRecords = function() {
+    function renderRecords() {
       const tbody = document.getElementById('recordsTable');
       if (!tbody) return;
 
@@ -1726,9 +1712,9 @@
         </tr>
       `;
       }).join('');
-    };
+    }
 
-    window.openPlayerModal = function(playerName) {
+    function openPlayerModal(playerName) {
       const modal = document.getElementById('playerModal');
       const playerInfo = appData.players.find(p => p.name === playerName) || {};
       const playerStats = appData.stats.find(s => (s.player || s.name) === playerName) || {};
@@ -1746,11 +1732,11 @@
       document.getElementById('modalShortgames').innerText = playerRecords.shortgame || 'Keine vorhanden';
 
       modal.classList.remove('hidden');
-    };
+    }
 
-    window.closePlayerModal = function() {
+    function closePlayerModal() {
       document.getElementById('playerModal').classList.add('hidden');
-    };
+    }
 
     window.addEventListener('DOMContentLoaded', () => {
       const cached = localStorage.getItem(CACHE_KEY);
@@ -1765,10 +1751,10 @@
         }
       }
       
-      loadDataFromFirebase();
+      loadDataFromSheets();
 
       setInterval(() => {
-        loadDataFromFirebase();
+        loadDataFromSheets();
       }, 120000);
     });
   </script>
