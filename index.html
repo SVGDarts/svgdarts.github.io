@@ -1177,18 +1177,6 @@
       let scoreRaw = String(m.score || '-').trim();
       
       const isAway = /SVG/i.test(m.away || '') && !/SVG/i.test(m.home || '');
-      
-      if (isAway && scoreRaw.includes(':')) {
-        const parts = scoreRaw.split(':');
-        if (parts.length === 2) {
-          scoreRaw = `${parts[1].trim()}:${parts[0].trim()}`;
-        }
-      } else if (isAway && scoreRaw.includes('-')) {
-        const parts = scoreRaw.split('-');
-        if (parts.length === 2) {
-          scoreRaw = `${parts[1].trim()}:${parts[0].trim()}`;
-        }
-      }
 
       const scoreParts = scoreRaw.split(/[:\-]/).map(s => parseInt(s.trim(), 10));
       let displayScore = scoreRaw;
