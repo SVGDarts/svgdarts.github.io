@@ -109,7 +109,6 @@
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased text-neutral-200">
-
   <!-- Navigation Header -->
   <header class="sticky top-0 z-50 glass-card border-b border-neutral-800">
     <div class="max-w-7xl mx-auto px-8">
@@ -215,7 +214,6 @@
       </nav>
     </div>
   </header>
-
   <!-- Main Content Area -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-8 py-8 space-y-6">
     
@@ -328,14 +326,12 @@
         </div>
       </div>
 
-      <!-- Grid für bis zu 8 Iframes (2 Spalten auf großen Bildschirmen) -->
       <div id="liveGamesGrid" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
         <div class="glass-card rounded-2xl p-6 text-center text-neutral-500">
           Lade Livespiele...
         </div>
       </div>
     </section>
-
     <!-- Reiter 1: Spielplan -->
     <section id="content-matches" class="space-y-6 hidden">
       <div class="flex flex-row items-center justify-between gap-4">
@@ -469,7 +465,6 @@
         </div>
       </div>
     </section>
-
     <!-- Reiter 3: Spielstatistiken -->
     <section id="content-gameStats" class="space-y-6 hidden">
       <div class="flex flex-row justify-between items-center gap-4">
@@ -621,7 +616,6 @@
     </section>
 
   </main>
-
   <footer class="mt-auto py-6 border-t border-neutral-800/60 text-center text-xs text-neutral-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-row justify-center items-center gap-6">
       <a href="https://www.svg-goettingen.de/Own_pages/imprint" target="_blank" rel="noopener noreferrer" class="hover:text-neutral-300 transition">
@@ -712,11 +706,21 @@
       </div>
     </div>
   </div>
+  <script type="module">
+    // 1. Firebase SDK Imports & Initialisierung
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
+    import { getDatabase, ref, onValue, push, remove } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js';
 
-  <script>
-    const SHEETS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw6FeUPjMDcAI-n1HEa1HUG8p-4w9TnuAurxdp_lWrwKbridc8gu3XDc0XsT1RejBTA/exec";
+    const firebaseConfig = {
+      projectId: "svg-darts",
+      databaseURL: "https://svg-darts-default-rtdb.europe-west1.firebasedatabase.app"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // 2. Globale Konstanten & App-Daten
     const CACHE_KEY = "svg_darts_app_data_v3";
-
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
       "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
@@ -731,21 +735,29 @@
       "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree"
     };
 
+    let appData = { matches: [], players: [], stats: [], records: [], gameStats: [], notes: [] };
+    let activeTab = 'home';
+    let globalSearchQuery = '';
+
+    let currentGameStatsSortKey = 'winRateTotal';
+    let currentGameStatsSortAsc = false;
+    let currentStatsSortKey = 'avgSingle';
+    let currentStatsSortAsc = false;
+    let currentRecordsSortKey = 'specials';
+    let currentRecordsSortAsc = false;
+
+    // 3. Hilfsfunktionen für Navigation, Iframe & Teams
     function changeTableIframe() {
       const select = document.getElementById('tableTeamFilter');
       const iframe = document.getElementById('tableIframe');
-      if (select && iframe) {
-        iframe.src = select.value;
-      }
+      if (select && iframe) iframe.src = select.value;
     }
 
     function getTeamLink(teamName) {
       if (!teamName || teamName === '-') return '-';
       const cleanName = String(teamName).trim();
       const upperName = cleanName.toUpperCase();
-
       let matchedUrl = TEAM_URLS[cleanName] || TEAM_URLS[upperName];
-
       if (!matchedUrl) {
         if (/SVG\s*A/i.test(upperName)) matchedUrl = TEAM_URLS["SVG A"];
         else if (/SVG\s*B/i.test(upperName)) matchedUrl = TEAM_URLS["SVG B"];
@@ -754,65 +766,30 @@
         else if (/SVG\s*E/i.test(upperName)) matchedUrl = TEAM_URLS["SVG E"];
         else if (/SVG\s*F/i.test(upperName)) matchedUrl = TEAM_URLS["SVG F"];
         else if (/SVG\s*G/i.test(upperName)) matchedUrl = TEAM_URLS["SVG G"];
-        else if (/SVG\s*1 /i.test(upperName)) matchedUrl = TEAM_URLS["SVG 1"];
-        else if (/SVG\s*2 /i.test(upperName)) matchedUrl = TEAM_URLS["SVG 2"];
+        else if (/SVG\s*1/i.test(upperName)) matchedUrl = TEAM_URLS["SVG 1"];
+        else if (/SVG\s*2/i.test(upperName)) matchedUrl = TEAM_URLS["SVG 2"];
         else if (/SVG\s*8/i.test(upperName)) matchedUrl = TEAM_URLS["SVG 8ER"];
       }
-
-      if (matchedUrl) {
-        return `<a href="${matchedUrl}" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-yellow-400 transition">${cleanName}</a>`;
-      }
-
-      return cleanName;
+      return matchedUrl ? `<a href="${matchedUrl}" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-yellow-400 transition">${cleanName}</a>` : cleanName;
     }
 
     function formatTeamDisplay(rawTeam) {
       if (!rawTeam || rawTeam === '-') return 'Kein Team';
-
       const parts = String(rawTeam).split('/').map(p => p.trim());
-      
       let letter = null;
       let numbers = [];
-
       for (const p of parts) {
-        if (!letter && /^[A-Ga-g]$/.test(p)) {
-          letter = p.toUpperCase();
-        } else if (/^\d+$/.test(p)) {
-          numbers.push(p);
-        }
+        if (!letter && /^[A-Ga-g]$/.test(p)) letter = p.toUpperCase();
+        else if (/^\d+$/.test(p)) numbers.push(p);
       }
-
       let resultParts = [];
-
-      if (letter) {
-        resultParts.push(`SVG ${letter}`);
-      }
-
-      if (numbers.length > 0) {
-        resultParts.push(`Pokalteam ${numbers[0]}`);
-      }
-
-      if (numbers.length > 1) {
-        resultParts.push(`Pokalteam ${numbers[1]}er`);
-      }
-
+      if (letter) resultParts.push(`SVG ${letter}`);
+      if (numbers.length > 0) resultParts.push(`Pokalteam ${numbers[0]}`);
+      if (numbers.length > 1) resultParts.push(`Pokalteam ${numbers[1]}er`);
       return resultParts.length > 0 ? resultParts.join(', ') : rawTeam;
     }
 
-    let appData = { matches: [], players: [], stats: [], records: [], gameStats: [], notes: [] };
-
-    let activeTab = 'home';
-    let globalSearchQuery = '';
-
-    let currentGameStatsSortKey = 'winRateTotal';
-    let currentGameStatsSortAsc = false;
-
-    let currentStatsSortKey = 'avgSingle';
-    let currentStatsSortAsc = false;
-
-    let currentRecordsSortKey = 'specials';
-    let currentRecordsSortAsc = false;
-
+    // 4. Formatierungs- und Parsing-Utilities
     function formatNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const num = parseFloat(String(val).replace(',', '.'));
@@ -838,16 +815,10 @@
       if (!dateVal || dateVal === '-') return null;
       let str = String(dateVal).trim();
       if (str.includes('T')) str = str.split('T')[0];
-
       let y, m, d;
-      if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
-        [y, m, d] = str.split('-').map(Number);
-      } else if (/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(str)) {
-        [d, m, y] = str.split('.').map(Number);
-      } else {
-        return null;
-      }
-
+      if (/^\d{4}-\d{2}-\d{2}$/.test(str)) [y, m, d] = str.split('-').map(Number);
+      else if (/^\d{1,2}\.\d{1,2}\.\d{4}$/.test(str)) [d, m, y] = str.split('.').map(Number);
+      else return null;
       const dateObj = new Date(y, m - 1, d);
       return isNaN(dateObj.getTime()) ? null : dateObj;
     }
@@ -856,11 +827,9 @@
       if (!dateVal || dateVal === '-') return '-';
       const dateObj = parseMatchDate(dateVal);
       if (!dateObj) return String(dateVal).trim();
-
       const weekdays = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
-      const dayName = weekdays[dateObj.getDay()];
       const pad = n => String(n).padStart(2, '0');
-      return `${dayName}, ${pad(dateObj.getDate())}.${pad(dateObj.getMonth() + 1)}.${dateObj.getFullYear()}`;
+      return `${weekdays[dateObj.getDay()]}, ${pad(dateObj.getDate())}.${pad(dateObj.getMonth() + 1)}.${dateObj.getFullYear()}`;
     }
 
     function formatTime(timeVal) {
@@ -869,7 +838,7 @@
       const timeMatch = str.match(/(\d{1,2}):(\d{2})/);
       return timeMatch ? `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}` : str;
     }
-
+    // 5. Tab-Wechsel-System
     function switchTab(tabId) {
       activeTab = tabId;
       document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
@@ -886,6 +855,7 @@
       }
     }
 
+    // 6. Live-Spiele (Iframe-Grid) rendern
     function renderLiveGames() {
       const gridContainer = document.getElementById('liveGamesGrid');
       if (!gridContainer) return;
@@ -911,12 +881,9 @@
             matchStart.setHours(parseInt(timeMatch[1], 10), parseInt(timeMatch[2], 10), 0, 0);
             
             const hideTime = new Date(matchStart.getTime() + 4 * 60 * 60 * 1000);
-            if (now >= hideTime) {
-              return false;
-            }
+            if (now >= hideTime) return false;
           }
         }
-
         return true;
       }).slice(0, 8);
 
@@ -924,7 +891,7 @@
         gridContainer.innerHTML = `
           <div class="col-span-full glass-card rounded-2xl p-12 text-center text-neutral-400 space-y-2">
             <i class="fa-solid fa-circle-info text-2xl text-neutral-500 mb-2"></i>
-            <p class="text-base font-bold text-white">Heute finden keine Live-Spiele statt oder der Anwurf der Spiele ist bereits länger als 4 Stunden her.</p>
+            <p class="text-base font-bold text-white">Heute finden keine Live-Spiele statt.</p>
           </div>
         `;
         return;
@@ -945,19 +912,14 @@
               <span class="text-xs text-neutral-400 font-mono">${matchTime} Uhr</span>
             </div>
             <div class="p-2 bg-black/40 flex-1">
-              <iframe 
-                src="${iframeUrl}" 
-                class="w-full rounded-xl border-0" 
-                style="height: 450px;" 
-                loading="lazy"
-                title="Livespiel ${index + 1}">
-              </iframe>
+              <iframe src="${iframeUrl}" class="w-full rounded-xl border-0" style="height: 450px;" loading="lazy"></iframe>
             </div>
           </div>
         `;
       }).join('');
     }
 
+    // 7. Globale Spielersuche
     function handleGlobalSearch() {
       const searchInput = document.getElementById('globalPlayerSearch');
       const clearBtn = document.getElementById('clearSearchBtn');
@@ -984,34 +946,31 @@
       handleGlobalSearch();
     }
 
-    async function loadDataFromSheets() {
-      try {
-        const response = await fetch(SHEETS_WEBAPP_URL, { method: 'GET', mode: 'cors' });
-        if (!response.ok) throw new Error("Netzwerkfehler");
-        
-        const data = await response.json();
-        
-        appData = {
-          matches: data.matches || [],
-          players: data.players || [],
-          stats: data.stats || [],
-          records: data.records || [],
-          gameStats: data.gameStats || data.game_stats || data.gameStatistics || [],
-          notes: data.notes || []
-        };
+    // 8. Firebase Echtzeit-Datenbank Synchronisation (Ersatz für Sheets loadData)
+    function listenToDatabase() {
+      onValue(ref(db, '/'), (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          appData = {
+            matches: data.matches || [],
+            players: data.players || [],
+            stats: data.stats || [],
+            records: data.records || [],
+            gameStats: data.gameStats || data.game_stats || [],
+            notes: data.notes ? Object.keys(data.notes).map(key => ({ rowIndex: key, ...data.notes[key] })) : []
+          };
 
-        localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
-        populateMatchFilters();
-        renderAllTables();
-        renderNotes();
-        if (activeTab === 'livegames') {
-          renderLiveGames();
+          localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
+          populateMatchFilters();
+          renderAllTables();
+          renderNotes();
+          if (activeTab === 'livegames') {
+            renderLiveGames();
+          }
         }
-      } catch (err) {
-        console.warn("Backend nicht erreichbar oder langsamer Kaltstart. Nutze Cache.", err);
-      }
+      });
     }
-
+    // 9. Vorschlagswesen (Notes) - Echtzeit über Firebase
     function toggleNotesDropdown() {
       const dropdown = document.getElementById('notesDropdown');
       dropdown.classList.toggle('hidden');
@@ -1035,17 +994,14 @@
       }
 
       container.innerHTML = notes.slice().reverse().map(note => {
-        const rawDateStr = note.datum ? String(note.datum).trim() : '';
-        const dateDisplay = rawDateStr ? ` (${rawDateStr})` : '';
-
         return `
           <div class="bg-black border border-neutral-800 rounded-xl p-3 flex items-start justify-between gap-2">
             <div class="space-y-1 overflow-hidden">
               <p class="text-xs font-medium text-white break-words leading-snug">
-                ${note.text}${dateDisplay}
+                ${note.text}${note.datum ? ` (${note.datum})` : ''}
               </p>
             </div>
-            <button onclick="deleteNote(${note.rowIndex})" class="text-neutral-500 hover:text-red-400 p-1 transition flex-shrink-0" title="Löschen">
+            <button onclick="deleteNote('${note.rowIndex}')" class="text-neutral-500 hover:text-red-400 p-1 transition flex-shrink-0" title="Löschen">
               <i class="fa-solid fa-trash-can text-xs"></i>
             </button>
           </div>
@@ -1067,15 +1023,8 @@
       const nowStr = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()}, ${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
       try {
-        await fetch(SHEETS_WEBAPP_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'add', datum: nowStr, text: text })
-        });
-
+        await push(ref(db, 'notes'), { text, datum: nowStr });
         input.value = '';
-        await loadDataFromSheets();
       } catch (err) {
         console.error("Fehler beim Speichern:", err);
       } finally {
@@ -1084,23 +1033,17 @@
       }
     }
 
-    async function deleteNote(rowIndex) {
-      if (!confirm("Möchtest du diese Änderung wirklich löschen?")) return;
-
-      try {
-        await fetch(SHEETS_WEBAPP_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'delete', rowIndex: rowIndex })
-        });
-
-        await loadDataFromSheets();
-      } catch (err) {
-        console.error("Fehler beim Löschen:", err);
+    async function deleteNote(noteId) {
+      if (confirm("Möchtest du diese Änderung wirklich löschen?")) {
+        try {
+          await remove(ref(db, `notes/${noteId}`));
+        } catch (err) {
+          console.error("Fehler beim Löschen:", err);
+        }
       }
     }
 
+    // 10. Filter-Populierungen & Resets
     function populateMatchFilters() {
       const matchdaySelect = document.getElementById('filterMatchday');
       const teamSelect = document.getElementById('filterTeam');
@@ -1113,12 +1056,7 @@
       const homeLocationSelect = document.getElementById('filterHomeLocation');
 
       const matchdays = [...new Set(appData.matches.map(m => m.matchday).filter(Boolean))];
-      
-      const svgTeams = [...new Set(
-        appData.matches.flatMap(m => [m.home, m.away])
-          .filter(t => t && /SVG[\w\d]*/i.test(t))
-      )].sort();
-
+      const svgTeams = [...new Set(appData.matches.flatMap(m => [m.home, m.away]).filter(t => t && /SVG[\w\d]*/i.test(t)))].sort();
       const dates = [...new Set(appData.matches.map(m => formatDate(m.date)).filter(d => d && d !== '-'))];
 
       const matchdayOptions = '<option value="">Spieltag</option>' + matchdays.map(md => `<option value="${md}">${md}</option>`).join('');
@@ -1161,18 +1099,16 @@
       renderStats();
       renderRecords();
     }
-
+    // 11. Match-Zeilen Generierung & dynamische Farbgebung
     function createMatchRowHTML(m) {
       let scoreRaw = String(m.score || '-').trim();
       let scoreParts = scoreRaw.split(/[:\-]/).map(s => parseInt(s.trim(), 10));
       let displayScore = scoreRaw;
-      
       let scoreStyleClass = 'score-neutral';
 
       if (scoreParts.length === 2 && !isNaN(scoreParts[0]) && !isNaN(scoreParts[1])) {
         let homeScore = scoreParts[0];
         let awayScore = scoreParts[1];
-
         displayScore = `${homeScore}:${awayScore}`;
         const sum = homeScore + awayScore;
 
@@ -1181,37 +1117,21 @@
 
         if (homeScore === 0 && awayScore === 0) {
           scoreStyleClass = 'score-zero';
-        }
-        else if (sum >= 1 && sum < 12) {
+        } else if (sum >= 1 && sum < 12) {
           scoreStyleClass = 'score-white';
         } else {
           if (isSvgHome) {
-            // Ist SVG Heim und Heimteam gewinnt -> grün, bei Niederlage -> rot
-            if (homeScore > awayScore) {
-              scoreStyleClass = 'score-win';
-            } else if (homeScore < awayScore) {
-              scoreStyleClass = 'score-loss';
-            } else {
-              scoreStyleClass = 'score-draw';
-            }
+            if (homeScore > awayScore) scoreStyleClass = 'score-win';
+            else if (homeScore < awayScore) scoreStyleClass = 'score-loss';
+            else scoreStyleClass = 'score-draw';
           } else if (isSvgAway) {
-            // Ist SVG Auswärts und gewinnt -> grün, bei Niederlage -> rot
-            if (awayScore > homeScore) {
-              scoreStyleClass = 'score-win';
-            } else if (awayScore < homeScore) {
-              scoreStyleClass = 'score-loss';
-            } else {
-              scoreStyleClass = 'score-draw';
-            }
+            if (awayScore > homeScore) scoreStyleClass = 'score-win';
+            else if (awayScore < homeScore) scoreStyleClass = 'score-loss';
+            else scoreStyleClass = 'score-draw';
           } else {
-            // Fallback (z.B. SVG gegen SVG)
-            if (homeScore > awayScore) {
-              scoreStyleClass = 'score-win';
-            } else if (homeScore < awayScore) {
-              scoreStyleClass = 'score-loss';
-            } else {
-              scoreStyleClass = 'score-draw';
-            }
+            if (homeScore > awayScore) scoreStyleClass = 'score-win';
+            else if (homeScore < awayScore) scoreStyleClass = 'score-loss';
+            else scoreStyleClass = 'score-draw';
           }
         }
       }
@@ -1233,6 +1153,7 @@
       `;
     }
 
+    // 12. Render-Funktionen für Startseite, Spielplan & Spieler
     function renderHome() {
       const pastTbody = document.getElementById('homePastMatchesTable');
       const upcomingTbody = document.getElementById('homeUpcomingMatchesTable');
@@ -1253,7 +1174,6 @@
       appData.matches.forEach(m => {
         const matchDate = parseMatchDate(m.date);
         if (!matchDate) return;
-        
         matchDate.setHours(0, 0, 0, 0);
 
         if (matchDate >= pastLimit && matchDate < now) {
@@ -1321,7 +1241,6 @@
         tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-neutral-500">Keine Spiele gefunden.</td></tr>`;
         return;
       }
-
       tbody.innerHTML = filtered.map(createMatchRowHTML).join('');
     }
 
@@ -1330,15 +1249,10 @@
       const parts = String(teamStr).split('/');
       let letter = null;
       let numbers = [];
-
       for (const part of parts) {
         const cleaned = part.trim();
-        if (!letter && /^[A-G]$/i.test(cleaned)) {
-          letter = cleaned.toUpperCase();
-        }
-        if (/^\d+$/.test(cleaned)) {
-          numbers.push(cleaned);
-        }
+        if (!letter && /^[A-G]$/i.test(cleaned)) letter = cleaned.toUpperCase();
+        if (/^\d+$/.test(cleaned)) numbers.push(cleaned);
       }
       return { letter, numbers };
     }
@@ -1352,7 +1266,6 @@
       const filteredPlayers = appData.players.filter(p => {
         const nameMatch = !globalSearchQuery || String(p.name || '').toLowerCase().includes(globalSearchQuery);
         if (!nameMatch) return false;
-
         if (!selectedFilter) return true;
         
         const { letter, numbers } = parsePlayerTeamTokens(p.team);
@@ -1377,7 +1290,7 @@
         </tr>
       `).join('');
     }
-
+    // 13. Sortierung & Rendering: Spielstatistiken
     function setGameStatsSort(key) {
       if (currentGameStatsSortKey === key) {
         currentGameStatsSortAsc = !currentGameStatsSortAsc;
@@ -1405,9 +1318,7 @@
 
     function calculatePlayerGamesDisplay(playerName, actualGames) {
       const playerObj = appData.players.find(p => String(p.name || '').trim().toLowerCase() === String(playerName || '').trim().toLowerCase());
-      if (!playerObj || !playerObj.team) {
-        return `${actualGames || 0}/0`;
-      }
+      if (!playerObj || !playerObj.team) return `${actualGames || 0}/0`;
 
       const teamParts = String(playerObj.team).split('/').map(s => s.trim());
       if (!teamParts.length) return `${actualGames || 0}/0`;
@@ -1420,44 +1331,28 @@
       numbers.forEach(n => activeTokens.push(n));
 
       let maxGames = 0;
-
       activeTokens.forEach(token => {
         let isMatch = (m) => false;
-
-        if (token === 'A') {
-          isMatch = (m) => /SVG\s*A\b/i.test(m.home) || /SVG\s*A\b/i.test(m.away);
-        } else if (token === '8') {
-          isMatch = (m) => /SVG\s*8/i.test(m.home) || /SVG\s*8/i.test(m.away);
-        } else if (/^[B-Z]$/.test(token)) {
-          isMatch = (m) => {
-            const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
-            return regex.test(m.home) || regex.test(m.away);
-          };
+        if (token === 'A') isMatch = (m) => /SVG\s*A\b/i.test(m.home) || /SVG\s*A\b/i.test(m.away);
+        else if (token === '8') isMatch = (m) => /SVG\s*8/i.test(m.home) || /SVG\s*8/i.test(m.away);
+        else if (/^[B-Z]$/.test(token)) {
+          const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
+          isMatch = (m) => regex.test(m.home) || regex.test(m.away);
         } else if (/^\d+$/.test(token)) {
-          isMatch = (m) => {
-            const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
-            return regex.test(m.home) || regex.test(m.away);
-          };
+          const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
+          isMatch = (m) => regex.test(m.home) || regex.test(m.away);
         }
 
         const teamMatches = appData.matches.filter(isMatch);
-
         teamMatches.forEach(m => {
           const homeStr = String(m.home || '').toLowerCase();
           const awayStr = String(m.away || '').toLowerCase();
-
-          if (homeStr.includes('freilos') || awayStr.includes('freilos')) {
-            maxGames += 0;
-          } else if (token === 'A') {
-            maxGames += 3;
-          } else if (token === '8') {
-            maxGames += 2;
-          } else {
-            maxGames += 4;
-          }
+          if (homeStr.includes('freilos') || awayStr.includes('freilos')) maxGames += 0;
+          else if (token === 'A') maxGames += 3;
+          else if (token === '8') maxGames += 2;
+          else maxGames += 4;
         });
       });
-
       return `${actualGames || 0}/${maxGames}`;
     }
 
@@ -1487,10 +1382,7 @@
       sortedData.sort((a, b) => {
         const valA = getVal(a, currentGameStatsSortKey);
         const valB = getVal(b, currentGameStatsSortKey);
-
-        if (typeof valA === 'string') {
-          return currentGameStatsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
-        }
+        if (typeof valA === 'string') return currentGameStatsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
         return currentGameStatsSortAsc ? valA - valB : valB - valA;
       });
 
@@ -1508,32 +1400,28 @@
           currentRank = idx + 1;
           previousVal = val;
         }
-
         const playerName = g.player || g.name || '-';
-        const rawActualGames = g.games ?? g.spiele ?? 0;
-        const formattedGames = calculatePlayerGamesDisplay(playerName, rawActualGames);
-
         return `
-        <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-          <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-          <td class="px-4 py-4 text-neutral-300">${formattedGames}</td>
-          <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
-          <td class="px-4 py-4 text-neutral-200 font-semibold">${g.winsSingle ?? g.wins_single ?? g.siegeEinzel ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-200">${formatPercent(g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel)}</td>
-          <td class="px-4 py-4 text-neutral-300 font-semibold">${g.winsDouble ?? g.wins_double ?? g.siegeDoppel ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-300">${formatPercent(g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel)}</td>
-          <td class="px-4 py-4 text-white font-extrabold">${formatPercent(g.winRateTotal ?? g.win_rate_total ?? g.siegquoteGesamt)}</td>
-        </tr>
-      `;
+          <tr class="hover:bg-neutral-900/60 transition">
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-neutral-300">${calculatePlayerGamesDisplay(playerName, g.games ?? g.spiele ?? 0)}</td>
+            <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
+            <td class="px-4 py-4 text-neutral-200 font-semibold">${g.winsSingle ?? g.wins_single ?? g.siegeEinzel ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-200">${formatPercent(g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel)}</td>
+            <td class="px-4 py-4 text-neutral-300 font-semibold">${g.winsDouble ?? g.wins_double ?? g.siegeDoppel ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatPercent(g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel)}</td>
+            <td class="px-4 py-4 text-white font-extrabold">${formatPercent(g.winRateTotal ?? g.win_rate_total ?? g.siegquoteGesamt)}</td>
+          </tr>
+        `;
       }).join('');
     }
 
+    // 14. Sortierung & Rendering: Averages
     function setStatsSort(key) {
-      if (currentStatsSortKey === key) {
-        currentStatsSortAsc = !currentStatsSortAsc;
-      } else {
+      if (currentStatsSortKey === key) currentStatsSortAsc = !currentStatsSortAsc;
+      else {
         currentStatsSortKey = key;
         currentStatsSortAsc = key === 'player';
       }
@@ -1581,10 +1469,7 @@
       sortedStats.sort((a, b) => {
         const valA = getVal(a, currentStatsSortKey);
         const valB = getVal(b, currentStatsSortKey);
-
-        if (typeof valA === 'string') {
-          return currentStatsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
-        }
+        if (typeof valA === 'string') return currentStatsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
         return currentStatsSortAsc ? valA - valB : valB - valA;
       });
 
@@ -1602,30 +1487,28 @@
           currentRank = idx + 1;
           previousVal = val;
         }
-
         const playerName = s.player || s.name || '-';
-
         return `
-        <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-          <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-          <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
-          <td class="px-4 py-4 text-neutral-200">${formatNumber(s.avgDouble ?? s.avg_double)}</td>
-          <td class="px-4 py-4 text-neutral-200">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
-          <td class="px-4 py-4 text-neutral-300">${formatNumber(s.first9Double ?? s.first9_double)}</td>
-          <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxAvgSingle ?? s.max_avg_single)}</td>
-          <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxAvgDouble ?? s.max_avg_double)}</td>
-          <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxFirst9Single ?? s.max_first9_single)}</td>
-          <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxFirst9Double ?? s.max_first9_double)}</td>
-        </tr>
-      `;
+          <tr class="hover:bg-neutral-900/60 transition">
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
+            <td class="px-4 py-4 text-neutral-200">${formatNumber(s.avgDouble ?? s.avg_double)}</td>
+            <td class="px-4 py-4 text-neutral-200">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatNumber(s.first9Double ?? s.first9_double)}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxAvgSingle ?? s.max_avg_single)}</td>
+            <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxAvgDouble ?? s.max_avg_double)}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxFirst9Single ?? s.max_first9_single)}</td>
+            <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxFirst9Double ?? s.max_first9_double)}</td>
+          </tr>
+        `;
       }).join('');
     }
 
+    // 15. Sortierung & Rendering: Bestleistungen
     function setRecordsSort(key) {
-      if (currentRecordsSortKey === key) {
-        currentRecordsSortAsc = !currentRecordsSortAsc;
-      } else {
+      if (currentRecordsSortKey === key) currentRecordsSortAsc = !currentRecordsSortAsc;
+      else {
         currentRecordsSortKey = key;
         currentRecordsSortAsc = key === 'player';
       }
@@ -1673,10 +1556,7 @@
       sortedRecords.sort((a, b) => {
         const valA = getVal(a, currentRecordsSortKey);
         const valB = getVal(b, currentRecordsSortKey);
-
-        if (typeof valA === 'string') {
-          return currentRecordsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
-        }
+        if (typeof valA === 'string') return currentRecordsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
         return currentRecordsSortAsc ? valA - valB : valB - valA;
       });
 
@@ -1694,26 +1574,24 @@
           currentRank = idx + 1;
           previousVal = val;
         }
-
         const playerName = r.player || r.name || '-';
-
         return `
-        <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-          <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-          <td class="px-4 py-4 text-white font-bold">${r.specials ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r180 ?? r['180'] ?? 0}</td>
-          <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
-          <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-400">${formatPercent(r.shortgameChance ?? r.shortgame_chance)}</td>
-          <td class="px-4 py-4 text-neutral-400">${r.maxSpecialsMatchday ?? r.max_specials_matchday ?? '-'}</td>
-          <td class="px-4 py-4 text-neutral-400">${formatNumber(r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday)}</td>
-        </tr>
-      `;
+          <tr class="hover:bg-neutral-900/60 transition">
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-white font-bold">${r.specials ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r180 ?? r['180'] ?? 0}</td>
+            <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
+            <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-400">${formatPercent(r.shortgameChance ?? r.shortgame_chance)}</td>
+            <td class="px-4 py-4 text-neutral-400">${r.maxSpecialsMatchday ?? r.max_specials_matchday ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-400">${formatNumber(r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday)}</td>
+          </tr>
+        `;
       }).join('');
     }
-
+    // 16. Spieler-Profil Modal Steuerung
     function openPlayerModal(playerName) {
       const modal = document.getElementById('playerModal');
       const playerInfo = appData.players.find(p => p.name === playerName) || {};
@@ -1738,6 +1616,7 @@
       document.getElementById('playerModal').classList.add('hidden');
     }
 
+    // 17. Initialisierung beim Laden der Seite
     window.addEventListener('DOMContentLoaded', () => {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -1751,12 +1630,28 @@
         }
       }
       
-      loadDataFromSheets();
-
-      setInterval(() => {
-        loadDataFromSheets();
-      }, 120000);
+      // Starte die Echtzeit-Synchronisation mit deiner Realtime Database
+      listenToDatabase();
     });
+
+    // 18. Globale Schnittstelle für HTML-Inline-Events (da Modul-Scope)
+    window.switchTab = switchTab;
+    window.deleteNote = deleteNote;
+    window.submitNewNote = submitNewNote;
+    window.toggleNotesDropdown = toggleNotesDropdown;
+    window.handleGlobalSearch = handleGlobalSearch;
+    window.clearGlobalSearch = clearGlobalSearch;
+    window.changeTableIframe = changeTableIframe;
+    window.resetMatchFilters = resetMatchFilters;
+    window.resetHomeMatchFilters = resetHomeMatchFilters;
+    window.setGameStatsSort = setGameStatsSort;
+    window.setStatsSort = setStatsSort;
+    window.setRecordsSort = setRecordsSort;
+    window.openPlayerModal = openPlayerModal;
+    window.closePlayerModal = closePlayerModal;
+    window.renderHome = renderHome;
+    window.renderMatches = renderMatches;
+    window.renderPlayers = renderPlayers;
   </script>
 </body>
 </html>
