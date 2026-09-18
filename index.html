@@ -1461,7 +1461,7 @@
     }
 
     function updateStatsSortIcons() {
-      const keys = ['player', 'avgSingle', 'avgDouble', 'first9Single', 'first9Double', 'maxAvgSingle', 'maxAvgDouble', 'maxFirst9Single', 'maxFirst9Double'];
+      const keys = ['player', 'avgSingle', 'AvgDouble', 'first9Single', 'first9Double', 'maxAvgSingle', 'maxAvgDouble', 'maxFirst9Single', 'maxFirst9Double'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`sort-icon-${k}`);
         if (!iconEl) return;
@@ -1488,7 +1488,7 @@
       const getVal = (item, key) => {
         if (key === 'player') return item.player || item.name || '';
         if (key === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avg_single ?? item.avg);
-        if (key === 'avgDouble') return parseNumeric(item.avgDouble ?? item.avg_double);
+        if (key === 'avgDouble') return parseNumeric(item.AvgDouble ?? item.avg_double);
         if (key === 'first9Single') return parseNumeric(item.first9Single ?? item.first9_single ?? item.first9);
         if (key === 'first9Double') return parseNumeric(item.first9Double ?? item.first9_double);
         if (key === 'maxAvgSingle') return parseNumeric(item.maxAvgSingle ?? item.max_avg_single);
@@ -1525,7 +1525,7 @@
             <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
             <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
-            <td class="px-4 py-4 text-neutral-200">${formatNumber(s.avgDouble ?? s.avg_double)}</td>
+            <td class="px-4 py-4 text-neutral-200">${formatNumber(s.AvgDouble ?? s.avg_double)}</td>
             <td class="px-4 py-4 text-neutral-200">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
             <td class="px-4 py-4 text-neutral-300">${formatNumber(s.first9Double ?? s.first9_double)}</td>
             <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxAvgSingle ?? s.max_avg_single)}</td>
