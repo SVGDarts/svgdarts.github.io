@@ -113,6 +113,20 @@
       padding-bottom: 0.6rem !important;
       font-size: 0.72rem !important;
     }
+    /* Kopfzeile der Tabellen beim Herunterscrollen oben fixieren */
+    table thead th {
+      position: sticky !important;
+      top: 0;
+      z-index: 30;
+      background-color: #121212 !important; /* Entspricht der glass-card */
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1); /* Trennlinie nach unten */
+    }
+
+    /* Höherer z-index für die Schnittstellen (obere linke Ecke der fixierten Spalten) */
+    table thead th.sticky-col-1,
+    table thead th.sticky-col-2 {
+      z-index: 40 !important;
+    }
 
     /* Fixiert Rang & Spieler links beim Wischen auf Handys */
     .sticky-col-1 {
@@ -509,7 +523,7 @@
       </div>
 
       <!-- Wischbarer Container mit 'overflow-x-auto' -->
-      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-x-auto overflow-y-auto max-h-[600px] shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -560,7 +574,7 @@
       </div>
 
       <!-- Wischbarer Container mit 'overflow-x-auto' -->
-      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-x-auto overflow-y-auto max-h-[600px] shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -611,7 +625,7 @@
       </div>
 
       <!-- Wischbarer Container mit 'overflow-x-auto' -->
-      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-x-auto overflow-y-auto max-h-[600px] shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
