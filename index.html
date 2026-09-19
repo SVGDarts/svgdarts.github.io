@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   
-  <style>
+    <style>
     html { overflow-x: auto; }
     body {
       background-color: #000000;
@@ -105,7 +105,8 @@
       font-weight: 900 !important;
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
     }
-        /* Globaler kompakter Abstand & mobile Schriftgröße für alle Tabellen */
+
+    /* Globaler kompakter Abstand & mobile Schriftgröße für alle Tabellen */
     table th, table td {
       padding-left: 0.5rem !important;
       padding-right: 0.5rem !important;
@@ -130,7 +131,8 @@
     }
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
-        /* 2D-Sticky: Kopfzeile klebt am oberen Rand des scrollbaren Kasten-Containers */
+
+    /* 2D-Sticky: Kopfzeile klebt am oberen Rand des scrollbaren Kasten-Containers */
     table thead th {
       position: sticky !important;
       top: 0 !important; /* Wichtig: Klebt am oberen Rand des Kastens, nicht der Seite! */
@@ -144,8 +146,8 @@
     table thead th.sticky-col-2 {
       z-index: 40 !important;
     }
-
   </style>
+
 </head>
 <body class="min-h-screen flex flex-col antialiased text-neutral-200">
 
@@ -514,7 +516,7 @@
     </section>
 
 
-        <!-- Reiter 3: Spielstatistiken -->
+            <!-- Reiter 3: Spielstatistiken -->
     <section id="content-gameStats" class="space-y-6 hidden">
       <div class="flex flex-row justify-between items-center gap-4">
         <div>
@@ -523,7 +525,7 @@
         </div>
       </div>
 
-      <!-- Wischbarer Container mit 'overflow-x-auto' -->
+      <!-- Wisch- & scrollbarer Container mit klebrigen Spalten und Zeilen -->
       <div class="glass-card rounded-2xl overflow-auto max-h-[450px] shadow-2xl">
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -572,7 +574,6 @@
         </div>
       </div>
 
-      <!-- Wischbarer Container mit 'overflow-x-auto' -->
       <div class="glass-card rounded-2xl overflow-auto max-h-[450px] shadow-2xl">
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -621,7 +622,6 @@
         </div>
       </div>
 
-      <!-- Wischbarer Container mit 'overflow-x-auto' -->
       <div class="glass-card rounded-2xl overflow-auto max-h-[450px] shadow-2xl">
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -660,6 +660,7 @@
           </table>
       </div>
     </section>
+
 
   </main>
 
