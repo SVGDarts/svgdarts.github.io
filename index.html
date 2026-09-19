@@ -23,7 +23,6 @@
       background-attachment: fixed;
       color: #F3F4F6;
       font-family: 'Inter', sans-serif;
-      min-width: 1280px;
       width: 100%;
       overflow-x: auto;
     }
@@ -106,22 +105,39 @@
       font-weight: 900 !important;
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
     }
-        /* Verringert global Schriftgröße und Spaltenabstände in allen Tabellen */
+        /* Globaler kompakter Abstand & mobile Schriftgröße für alle Tabellen */
     table th, table td {
-      padding-left: 0.5rem !important;   /* Deutlich engerer Abstand zwischen den Spalten (px-3 statt px-6) */
+      padding-left: 0.5rem !important;
       padding-right: 0.5rem !important;
-      padding-top: 0.6rem !important;     /* Flachere, kompaktere Zeilenhöhe */
+      padding-top: 0.6rem !important;
       padding-bottom: 0.6rem !important;
-      font-size: 0.75rem !important;      /* Kleinere, schärfere Schriftgröße (text-xs) */
+      font-size: 0.72rem !important;
     }
 
+    /* Fixiert Rang & Spieler links beim Wischen auf Handys */
+    .sticky-col-1 {
+      position: sticky !important;
+      left: 0;
+      background-color: #121212 !important;
+      z-index: 20;
+    }
+    .sticky-col-2 {
+      position: sticky !important;
+      left: 36px; /* Bündig neben der ersten Spalte */
+      background-color: #121212 !important;
+      z-index: 20;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .scrollbar-none::-webkit-scrollbar { display: none; }
+    .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased text-neutral-200">
+
   <!-- Navigation Header -->
   <header class="sticky top-0 z-50 glass-card border-b border-neutral-800">
-    <div class="max-w-7xl mx-auto px-8">
-      <div class="flex flex-row items-center justify-between h-20">
+    <div class="max-w-7xl mx-auto px-4 md:px-8">
+      <div class="flex flex-col md:flex-row items-center justify-between py-4 md:h-20 gap-4 md:gap-0">
         
         <div class="flex items-center space-x-3">
           <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg border border-neutral-700 flex items-center justify-center bg-neutral-900">
@@ -137,8 +153,8 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-2.5 relative">
-          <div class="relative w-64">
+        <div class="flex flex-wrap items-center justify-center md:justify-end gap-2.5 relative w-full md:w-auto">
+          <div class="relative w-full sm:w-64">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-xs"></i>
             <input 
               type="text" 
@@ -162,7 +178,7 @@
               <span id="notesBadge" class="hidden bg-neutral-700 text-white text-xs px-1.5 py-0.5 rounded-full font-mono">0</span>
             </button>
 
-            <div id="notesDropdown" class="hidden absolute right-0 mt-2 w-96 glass-card bg-neutral-950 border border-neutral-800 rounded-2xl shadow-2xl p-4 z-50">
+            <div id="notesDropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 glass-card bg-neutral-950 border border-neutral-800 rounded-2xl shadow-2xl p-4 z-50">
               <div class="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3">
                 <h3 class="text-sm font-bold font-display text-white flex items-center gap-2">
                   <i class="fa-solid fa-pen-to-square text-yellow-400"></i> Änderungen
@@ -195,37 +211,37 @@
         </div>
       </div>
 
-    <nav class="flex flex-nowrap space-x-1.5 md:space-x-2 pb-3 pt-1 text-xs md:text-sm border-t border-neutral-800/60 overflow-x-auto whitespace-nowrap scrollbar-none">
-      <button onclick="switchTab('home')" id="tab-home" class="tab-btn active px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-house text-xs"></i> Startseite
-      </button>
-      <button onclick="switchTab('livegames')" id="tab-livegames" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-tower-broadcast text-xs"></i> Livespiele
-      </button>
-      <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-calendar-days text-xs"></i> Spielplan
-      </button>
-      <button onclick="switchTab('tables')" id="tab-tables" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-table text-xs"></i> Tabelle
-      </button>
-      <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-users text-xs"></i> Spielerdatenbank
-      </button>
-      <button onclick="switchTab('gameStats')" id="tab-gameStats" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-bullseye text-xs"></i> Spielstatistiken
-      </button>
-      <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-chart-line text-xs"></i> Averages
-      </button>
-      <button onclick="switchTab('records')" id="tab-records" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-trophy text-xs"></i> Bestleistungen
-      </button>
-    </nav>
-
+      <nav class="flex flex-nowrap space-x-1.5 md:space-x-2 pb-3 pt-1 text-xs md:text-sm border-t border-neutral-800/60 overflow-x-auto whitespace-nowrap scrollbar-none">
+        <button onclick="switchTab('home')" id="tab-home" class="tab-btn active px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-house text-xs"></i> Startseite
+        </button>
+        <button onclick="switchTab('livegames')" id="tab-livegames" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-tower-broadcast text-xs"></i> Livespiele
+        </button>
+        <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-calendar-days text-xs"></i> Spielplan
+        </button>
+        <button onclick="switchTab('tables')" id="tab-tables" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-table text-xs"></i> Tabelle
+        </button>
+        <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-users text-xs"></i> Spielerdatenbank
+        </button>
+        <button onclick="switchTab('gameStats')" id="tab-gameStats" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-bullseye text-xs"></i> Spielstatistiken
+        </button>
+        <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-chart-line text-xs"></i> Averages
+        </button>
+        <button onclick="switchTab('records')" id="tab-records" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-trophy text-xs"></i> Bestleistungen
+        </button>
+      </nav>
     </div>
   </header>
-  <!-- Main Content Area -->
-  <main class="flex-1 max-w-7xl w-full mx-auto px-8 py-8 space-y-6">
+
+    <!-- Main Content Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 space-y-6">
     
     <div id="statusBanner" class="hidden p-4 rounded-2xl text-sm flex items-center justify-between shadow-lg transition-all bg-black border border-neutral-800">
       <div class="flex items-center gap-3">
@@ -254,7 +270,8 @@
             <i class="fa-solid fa-clock-rotate-left text-neutral-400 text-sm"></i> Vergangene Spiele
           </h2>
         </div>
-        <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+        <!-- Wischbarer Tabellencontainer (overflow-x-auto statt overflow-hidden) -->
+        <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
           <div>
             <table class="w-full text-left text-sm text-neutral-300">
               <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -275,29 +292,30 @@
       </div>
 
       <div class="space-y-4">
-        <div class="flex flex-row items-center justify-between gap-4">
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <h2 class="text-xl font-bold font-display text-white flex items-center gap-2">
             <i class="fa-solid fa-calendar-check text-neutral-400 text-sm"></i> Aktuelle und bevorstehende Spiele
           </h2>
 
-          <div class="flex flex-row items-center gap-2 glass-card p-2 rounded-2xl">
+          <!-- Responsive Filterleiste (flex-wrap für mobile Bildschirme) -->
+          <div class="flex flex-wrap items-center gap-1.5 md:gap-2 glass-card p-1.5 md:p-2 rounded-2xl w-full lg:w-auto">
             <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
               <i class="fa-solid fa-filter text-white"></i> Filter:
             </div>
             
-            <select id="filterHomeMatchday" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
+            <select id="filterHomeMatchday" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
               <option value="">Spieltag</option>
             </select>
 
-            <select id="filterHomeTeam" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
+            <select id="filterHomeTeam" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
               <option value="">Teams</option>
             </select>
 
-            <select id="filterHomeDate" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
+            <select id="filterHomeDate" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
               <option value="">Datum</option>
             </select>
 
-            <select id="filterHomeLocation" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
+            <select id="filterHomeLocation" onchange="renderHome()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
               <option value="">Spielort</option>
             </select>
 
@@ -307,7 +325,8 @@
           </div>
         </div>
 
-        <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+        <!-- Wischbarer Tabellencontainer -->
+        <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
           <div>
             <table class="w-full text-left text-sm text-neutral-300">
               <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -343,32 +362,34 @@
         </div>
       </div>
     </section>
-    <!-- Reiter 1: Spielplan -->
+
+        <!-- Reiter 1: Spielplan -->
     <section id="content-matches" class="space-y-6 hidden">
-      <div class="flex flex-row items-center justify-between gap-4">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h2 class="text-2xl font-bold font-display text-white">Spielplan</h2>
           <p class="text-xs text-neutral-400 mt-1">Klicke auf ein Team der SVG, um es bei 3k aufzurufen.</p>
         </div>
         
-        <div class="flex flex-row items-center gap-2 glass-card p-2 rounded-2xl">
+        <!-- Responsive Filterleiste -->
+        <div class="flex flex-wrap items-center gap-1.5 md:gap-2 glass-card p-1.5 md:p-2 rounded-2xl w-full lg:w-auto">
           <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
             <i class="fa-solid fa-filter text-white"></i> Filter:
           </div>
           
-          <select id="filterMatchday" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
+          <select id="filterMatchday" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
             <option value="">Spieltag</option>
           </select>
 
-          <select id="filterTeam" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
+          <select id="filterTeam" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
             <option value="">Teams</option>
           </select>
 
-          <select id="filterDate" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
+          <select id="filterDate" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
             <option value="">Datum</option>
           </select>
 
-          <select id="filterLocation" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
+          <select id="filterLocation" onchange="renderMatches()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
             <option value="">Spielort</option>
           </select>
 
@@ -378,7 +399,8 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+      <!-- Wischbarer Tabellencontainer -->
+      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -400,17 +422,17 @@
 
     <!-- Reiter: Tabelle -->
     <section id="content-tables" class="space-y-6 hidden">
-      <div class="flex flex-row justify-between items-center gap-4">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold font-display text-white">Ligatabellen</h2>
           <p class="text-xs text-neutral-400 mt-1">Wähle ein Team aus, um die jeweilige Tabelle anzuzeigen.</p>
         </div>
         
-        <div class="flex items-center gap-2 glass-card p-2 rounded-2xl">
+        <div class="flex items-center gap-2 glass-card p-1.5 md:p-2 rounded-2xl">
           <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
             <i class="fa-solid fa-filter text-white"></i> Team:
           </div>
-          <select id="tableTeamFilter" onchange="changeTableIframe()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
+          <select id="tableTeamFilter" onchange="changeTableIframe()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
             <option value="https://www.2k-dart-software.com/frontend/events/10/event/1708/table">A-Team</option>
             <option value="https://www.2k-dart-software.com/frontend/events/10/event/1311/table">B-Team</option>
             <option value="https://www.2k-dart-software.com/frontend/events/10/event/1313/table">C-Team</option>
@@ -435,17 +457,17 @@
 
     <!-- Reiter 2: Spielerdatenbank -->
     <section id="content-players" class="space-y-6 hidden">
-      <div class="flex flex-row justify-between items-center gap-4">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold font-display text-white">Spielerdatenbank</h2>
           <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spielerin oder einen Spieler, um das Profil aufzurufen.</p>
         </div>
         
-        <div class="flex items-center gap-2 glass-card p-2 rounded-2xl">
+        <div class="flex items-center gap-2 glass-card p-1.5 md:p-2 rounded-2xl">
           <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
             <i class="fa-solid fa-filter text-white"></i> Filter:
           </div>
-          <select id="playerTeamFilter" onchange="renderPlayers()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none focus:border-white cursor-pointer">
+          <select id="playerTeamFilter" onchange="renderPlayers()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
             <option value="">Alle Teams</option>
             <option value="A">A</option>
             <option value="B">B</option>
@@ -461,7 +483,8 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+      <!-- Wischbarer Tabellencontainer -->
+      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs">
@@ -476,7 +499,8 @@
         </div>
       </div>
     </section>
-    <!-- Reiter 3: Spielstatistiken -->
+
+        <!-- Reiter 3: Spielstatistiken -->
     <section id="content-gameStats" class="space-y-6 hidden">
       <div class="flex flex-row justify-between items-center gap-4">
         <div>
@@ -485,13 +509,14 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+      <!-- Wischbarer Container mit 'overflow-x-auto' -->
+      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-4 py-4 w-12 text-center">Rang</th>
-                <th onclick="setGameStatsSort('player')" class="px-4 py-4 sortable-header">
+                <th class="px-4 py-4 w-12 text-center sticky-col-1">Rang</th>
+                <th onclick="setGameStatsSort('player')" class="px-4 py-4 sortable-header sticky-col-2">
                   Spieler <span id="gsort-icon-player" class="ml-1"></span>
                 </th>
                 <th onclick="setGameStatsSort('games')" class="px-4 py-4 sortable-header">
@@ -535,13 +560,14 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+      <!-- Wischbarer Container mit 'overflow-x-auto' -->
+      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-4 py-4 w-12 text-center">Rang</th>
-                <th onclick="setStatsSort('player')" class="px-4 py-4 sortable-header">
+                <th class="px-4 py-4 w-12 text-center sticky-col-1">Rang</th>
+                <th onclick="setStatsSort('player')" class="px-4 py-4 sortable-header sticky-col-2">
                   Spieler <span id="sort-icon-player" class="ml-1"></span>
                 </th>
                 <th onclick="setStatsSort('avgSingle')" class="px-4 py-4 sortable-header">
@@ -585,13 +611,14 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+      <!-- Wischbarer Container mit 'overflow-x-auto' -->
+      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-4 py-4 w-12 text-center">Rang</th>
-                <th onclick="setRecordsSort('player')" class="px-4 py-4 sortable-header">
+                <th class="px-4 py-4 w-12 text-center sticky-col-1">Rang</th>
+                <th onclick="setRecordsSort('player')" class="px-4 py-4 sortable-header sticky-col-2">
                   Spieler <span id="rsort-icon-player" class="ml-1"></span>
                 </th>
                 <th onclick="setRecordsSort('specials')" class="px-4 py-4 sortable-header">
@@ -627,7 +654,8 @@
     </section>
 
   </main>
-  <footer class="mt-auto py-6 border-t border-neutral-800/60 text-center text-xs text-neutral-500">
+
+   <footer class="mt-auto py-6 border-t border-neutral-800/60 text-center text-xs text-neutral-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-row justify-center items-center gap-6">
       <a href="https://www.svg-goettingen.de/Own_pages/imprint" target="_blank" rel="noopener noreferrer" class="hover:text-neutral-300 transition">
         Impressum
@@ -717,7 +745,8 @@
       </div>
     </div>
   </div>
-    <script type="module">
+
+  <script type="module">
     // 1. Firebase SDK Imports & Initialisierung
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
     import { getDatabase, ref, onValue, push, remove } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js';
@@ -730,8 +759,9 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // 2. Globale Konstanten & App-Daten
-    const CACHE_KEY = "svg_darts_app_data_v3";
+
+        // 2. Globale Konstanten & App-Daten
+    const CACHE_KEY = "svg_dart_app_data_v3";
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
       "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
@@ -757,7 +787,7 @@
     let currentRecordsSortKey = 'specials';
     let currentRecordsSortAsc = false;
 
-    // Neue Hilfsfunktion: Verwandelt Firebase-Objektlisten sicher in Arrays
+    // Hilfsfunktion: Verwandelt Firebase-Objektlisten sicher in echte Arrays
     function firebaseListToArray(val) {
       if (!val) return [];
       if (Array.isArray(val)) return val.filter(Boolean);
@@ -823,6 +853,7 @@
       return str.includes('%') ? str : `${num.toFixed(1)}%`;
     }
 
+    // Wandelt Strings sicher in Zahlen um
     function parseNumeric(val) {
       if (val === undefined || val === null || val === '-' || val === '') return 0;
       const cleanStr = String(val).replace('%', '').replace(',', '.').trim();
@@ -858,7 +889,8 @@
       return timeMatch ? `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}` : str;
     }
 
-    // 5. Tab-Wechsel-System
+
+        // 5. Tab-Wechsel-System
     function switchTab(tabId) {
       activeTab = tabId;
       document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
@@ -966,7 +998,7 @@
       handleGlobalSearch();
     }
 
-            // 8. Firebase Echtzeit-Datenbank Synchronisation (mit Konvertierungsschutz)
+    // 8. Firebase Echtzeit-Datenbank Synchronisation (mit Konvertierungsschutz & deutschen Fallbacks)
     function listenToDatabase() {
       onValue(ref(db, '/'), (snapshot) => {
         if (snapshot.exists()) {
@@ -994,7 +1026,8 @@
     }
 
 
-            // 9. Vorschlagswesen (Notes) - Echtzeit über Firebase (Datenbankpfad: 'Vorschläge')
+
+                // 9. Vorschlagswesen (Notes) - Echtzeit über Firebase (Datenbankpfad: 'Vorschläge')
     function toggleNotesDropdown() {
       const dropdown = document.getElementById('notesDropdown');
       dropdown.classList.toggle('hidden');
@@ -1126,7 +1159,8 @@
       renderRecords();
     }
 
-    // 11. Match-Zeilen Generierung & dynamische Farbgebung
+
+        // 11. Match-Zeilen Generierung & dynamische Farbgebung
     function createMatchRowHTML(m) {
       let scoreRaw = String(m.score || '-').trim();
       let scoreParts = scoreRaw.split(/[:\-]/).map(s => parseInt(s.trim(), 10));
@@ -1284,7 +1318,7 @@
       return { letter, numbers };
     }
 
-        function renderPlayers() {
+    function renderPlayers() {
       const tbody = document.getElementById('playersTable');
       if (!tbody) return;
 
@@ -1308,15 +1342,12 @@
       filteredPlayers.sort((a, b) => {
         const idA = parseInt(a.id, 10);
         const idB = parseInt(b.id, 10);
-        
-        // Fallback, falls IDs keine gültigen Nummern sind
         if (isNaN(idA) && isNaN(idB)) {
           return String(a.id || '').localeCompare(String(b.id || ''), undefined, { numeric: true });
         }
         if (isNaN(idA)) return 1;
         if (isNaN(idB)) return -1;
-        
-        return idA - idB; // Aufsteigend numerisch sortieren
+        return idA - idB;
       });
 
       if (!filteredPlayers.length) {
@@ -1333,7 +1364,8 @@
       `).join('');
     }
 
-    // 13. Sortierung & Rendering: Spielstatistiken
+
+        // 13. Sortierung & Rendering: Spielstatistiken
     function setGameStatsSort(key) {
       if (currentGameStatsSortKey === key) {
         currentGameStatsSortAsc = !currentGameStatsSortAsc;
@@ -1446,8 +1478,8 @@
         const playerName = g.player || g.name || '-';
         return `
           <tr class="hover:bg-neutral-900/60 transition">
-            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold sticky-col-1">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap sticky-col-2" onclick="openPlayerModal('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-neutral-300">${calculatePlayerGamesDisplay(playerName, g.games ?? g.spiele ?? 0)}</td>
             <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
@@ -1533,8 +1565,8 @@
         const playerName = s.player || s.name || '-';
         return `
           <tr class="hover:bg-neutral-900/60 transition">
-            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold sticky-col-1">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap sticky-col-2" onclick="openPlayerModal('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
             <td class="px-4 py-4 text-neutral-200">${formatNumber(s.AvgDouble ?? s.avg_double)}</td>
             <td class="px-4 py-4 text-neutral-200">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
@@ -1620,8 +1652,8 @@
         const playerName = r.player || r.name || '-';
         return `
           <tr class="hover:bg-neutral-900/60 transition">
-            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold sticky-col-1">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap sticky-col-2" onclick="openPlayerModal('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-white font-bold">${r.specials ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r180 ?? r['180'] ?? 0}</td>
             <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
@@ -1634,7 +1666,8 @@
         `;
       }).join('');
     }
-        // 16. Spieler-Profil Modal Steuerung
+
+            // 16. Spieler-Profil Modal Steuerung
     function openPlayerModal(playerName) {
       const modal = document.getElementById('playerModal');
       const playerInfo = appData.players.find(p => p.name === playerName) || {};
@@ -1704,3 +1737,4 @@
   </script>
 </body>
 </html>
+
