@@ -121,6 +121,15 @@
       font-weight: 900 !important;
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
     }
+        /* Scrollbar für das Navigationsmenü auf Handys ausblenden */
+    .scrollbar-none::-webkit-scrollbar {
+      display: none;
+    }
+    .scrollbar-none {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased text-neutral-200">
@@ -201,32 +210,33 @@
         </div>
       </div>
 
-      <nav class="flex space-x-2 pb-3 pt-1 text-sm border-t border-neutral-800/60">
-        <button onclick="switchTab('home')" id="tab-home" class="tab-btn active px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-          <i class="fa-solid fa-house text-xs"></i> Startseite
-        </button>
-        <button onclick="switchTab('livegames')" id="tab-livegames" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-          <i class="fa-solid fa-tower-broadcast text-xs"></i> Livespiele
-        </button>
-        <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-          <i class="fa-solid fa-calendar-days text-xs"></i> Spielplan
-        </button>
-        <button onclick="switchTab('tables')" id="tab-tables" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-          <i class="fa-solid fa-table text-xs"></i> Tabelle
-        </button>
-        <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-          <i class="fa-solid fa-users text-xs"></i> Spielerdatenbank
-        </button>
-        <button onclick="switchTab('gameStats')" id="tab-gameStats" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-          <i class="fa-solid fa-bullseye text-xs"></i> Spielstatistiken
-        </button>
-        <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-          <i class="fa-solid fa-chart-line text-xs"></i> Averages
-        </button>
-        <button onclick="switchTab('records')" id="tab-records" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-          <i class="fa-solid fa-trophy text-xs"></i> Bestleistungen
-        </button>
-      </nav>
+    <nav class="flex flex-nowrap space-x-1.5 md:space-x-2 pb-3 pt-1 text-xs md:text-sm border-t border-neutral-800/60 overflow-x-auto whitespace-nowrap scrollbar-none">
+      <button onclick="switchTab('home')" id="tab-home" class="tab-btn active px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-house text-xs"></i> Startseite
+      </button>
+      <button onclick="switchTab('livegames')" id="tab-livegames" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-tower-broadcast text-xs"></i> Livespiele
+      </button>
+      <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-calendar-days text-xs"></i> Spielplan
+      </button>
+      <button onclick="switchTab('tables')" id="tab-tables" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-table text-xs"></i> Tabelle
+      </button>
+      <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-users text-xs"></i> Spielerdatenbank
+      </button>
+      <button onclick="switchTab('gameStats')" id="tab-gameStats" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-bullseye text-xs"></i> Spielstatistiken
+      </button>
+      <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-chart-line text-xs"></i> Averages
+      </button>
+      <button onclick="switchTab('records')" id="tab-records" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-trophy text-xs"></i> Bestleistungen
+      </button>
+    </nav>
+
     </div>
   </header>
   <!-- Main Content Area -->
@@ -259,7 +269,7 @@
             <i class="fa-solid fa-clock-rotate-left text-neutral-400 text-sm"></i> Vergangene Spiele
           </h2>
         </div>
-        <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+        <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
           <div>
             <table class="w-full text-left text-sm text-neutral-300">
               <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -312,7 +322,7 @@
           </div>
         </div>
 
-        <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+        <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
           <div>
             <table class="w-full text-left text-sm text-neutral-300">
               <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -383,7 +393,7 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
