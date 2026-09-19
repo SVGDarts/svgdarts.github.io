@@ -241,7 +241,7 @@
     </div>
   </header>
 
-    <!-- Main Content Area -->
+      <!-- Main Content Area -->
   <main class="flex-1 max-w-7xl w-full mx-auto px-4 md:px-8 py-8 space-y-6">
     
     <div id="statusBanner" class="hidden p-4 rounded-2xl text-sm flex items-center justify-between shadow-lg transition-all bg-black border border-neutral-800">
@@ -271,19 +271,18 @@
             <i class="fa-solid fa-clock-rotate-left text-neutral-400 text-sm"></i> Vergangene Spiele
           </h2>
         </div>
-        <!-- Wischbarer Tabellencontainer (overflow-x-auto statt overflow-hidden) -->
+        <!-- Wischbarer Tabellencontainer mit neuer Spaltenreihenfolge -->
         <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
           <div>
             <table class="w-full text-left text-sm text-neutral-300">
               <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
                 <tr>
-                  <th class="px-6 py-4">Spieltag</th>
-                  <th class="px-6 py-4">Datum</th>
-                  <th class="px-6 py-4">Uhrzeit</th>
-                  <th class="px-6 py-4">Spielort</th>
+                  <th class="px-6 py-4">Datum / Uhrzeit</th>
                   <th class="px-6 py-4">Heim</th>
                   <th class="px-6 py-4">Auswärts</th>
                   <th class="px-6 py-4 text-center">Ergebnis</th>
+                  <th class="px-6 py-4">Spielort</th>
+                  <th class="px-6 py-4">Spieltag</th>
                 </tr>
               </thead>
               <tbody id="homePastMatchesTable" class="divide-y divide-neutral-800/60"></tbody>
@@ -298,7 +297,7 @@
             <i class="fa-solid fa-calendar-check text-neutral-400 text-sm"></i> Aktuelle und bevorstehende Spiele
           </h2>
 
-          <!-- Responsive Filterleiste (flex-wrap für mobile Bildschirme) -->
+          <!-- Responsive Filterleiste (flex-wrap) -->
           <div class="flex flex-wrap items-center gap-1.5 md:gap-2 glass-card p-1.5 md:p-2 rounded-2xl w-full lg:w-auto">
             <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
               <i class="fa-solid fa-filter text-white"></i> Filter:
@@ -326,19 +325,18 @@
           </div>
         </div>
 
-        <!-- Wischbarer Tabellencontainer -->
+        <!-- Wischbarer Tabellencontainer mit neuer Spaltenreihenfolge -->
         <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
           <div>
             <table class="w-full text-left text-sm text-neutral-300">
               <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
                 <tr>
-                  <th class="px-6 py-4">Spieltag</th>
-                  <th class="px-6 py-4">Datum</th>
-                  <th class="px-6 py-4">Uhrzeit</th>
-                  <th class="px-6 py-4">Spielort</th>
+                  <th class="px-6 py-4">Datum / Uhrzeit</th>
                   <th class="px-6 py-4">Heim</th>
                   <th class="px-6 py-4">Auswärts</th>
                   <th class="px-6 py-4 text-center">Ergebnis</th>
+                  <th class="px-6 py-4">Spielort</th>
+                  <th class="px-6 py-4">Spieltag</th>
                 </tr>
               </thead>
               <tbody id="homeUpcomingMatchesTable" class="divide-y divide-neutral-800/60"></tbody>
@@ -364,7 +362,8 @@
       </div>
     </section>
 
-        <!-- Reiter 1: Spielplan -->
+
+            <!-- Reiter 1: Spielplan -->
     <section id="content-matches" class="space-y-6 hidden">
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
@@ -372,7 +371,6 @@
           <p class="text-xs text-neutral-400 mt-1">Klicke auf ein Team der SVG, um es bei 3k aufzurufen.</p>
         </div>
         
-        <!-- Responsive Filterleiste -->
         <div class="flex flex-wrap items-center gap-1.5 md:gap-2 glass-card p-1.5 md:p-2 rounded-2xl w-full lg:w-auto">
           <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
             <i class="fa-solid fa-filter text-white"></i> Filter:
@@ -400,19 +398,18 @@
         </div>
       </div>
 
-      <!-- Wischbarer Tabellencontainer -->
+      <!-- Wischbarer Tabellencontainer mit neuer Spaltenreihenfolge -->
       <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-6 py-4">Spieltag</th>
-                <th class="px-6 py-4">Datum</th>
-                <th class="px-6 py-4">Uhrzeit</th>
-                <th class="px-6 py-4">Spielort</th>
+                <th class="px-6 py-4">Datum / Uhrzeit</th>
                 <th class="px-6 py-4">Heim</th>
                 <th class="px-6 py-4">Auswärts</th>
                 <th class="px-6 py-4 text-center">Ergebnis</th>
+                <th class="px-6 py-4">Spielort</th>
+                <th class="px-6 py-4">Spieltag</th>
               </tr>
             </thead>
             <tbody id="matchesTable" class="divide-y divide-neutral-800/60"></tbody>
@@ -500,6 +497,7 @@
         </div>
       </div>
     </section>
+
 
         <!-- Reiter 3: Spielstatistiken -->
     <section id="content-gameStats" class="space-y-6 hidden">
@@ -1161,7 +1159,7 @@
     }
 
 
-        // 11. Match-Zeilen Generierung & dynamische Farbgebung
+            // 11. Match-Zeilen Generierung & dynamische Farbgebung
     function createMatchRowHTML(m) {
       let scoreRaw = String(m.score || '-').trim();
       let scoreParts = scoreRaw.split(/[:\-]/).map(s => parseInt(s.trim(), 10));
@@ -1198,12 +1196,15 @@
         }
       }
 
+      // Datum und Uhrzeit sicher miteinander kombinieren
+      const dateStr = formatDate(m.date);
+      const timeStr = formatTime(m.time || m.uhrzeit);
+      const combinedDateTime = dateStr !== '-' && timeStr !== '-' ? `${dateStr} - ${timeStr}` : (dateStr !== '-' ? dateStr : timeStr);
+
+      // Rückgabe der neu angeordneten Spaltenstruktur
       return `
         <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-6 py-4 font-semibold text-white">${m.matchday || '-'}</td>
-          <td class="px-6 py-4 text-neutral-300">${formatDate(m.date)}</td>
-          <td class="px-6 py-4 text-neutral-400">${formatTime(m.time || m.uhrzeit)}</td>
-          <td class="px-6 py-4 text-neutral-300">${m.location || '-'}</td>
+          <td class="px-6 py-4 text-neutral-300">${combinedDateTime}</td>
           <td class="px-6 py-4 text-white font-medium">${getTeamLink(m.home)}</td>
           <td class="px-6 py-4 text-white font-medium">${getTeamLink(m.away)}</td>
           <td class="px-6 py-4 text-center">
@@ -1211,6 +1212,8 @@
               ${displayScore}
             </span>
           </td>
+          <td class="px-6 py-4 text-neutral-300">${m.location || '-'}</td>
+          <td class="px-6 py-4 font-semibold text-white">${m.matchday || '-'}</td>
         </tr>
       `;
     }
