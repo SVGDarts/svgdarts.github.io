@@ -132,28 +132,14 @@
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Kopfzeile beim Herunterscrollen der Seite festkleben lassen (auf allen Geräten!) */
+    /* 2D-Sticky: Kopfzeile klebt am oberen Rand des scrollbaren Kasten-Containers */
     table thead th {
       position: sticky !important;
-      top: 156px !important; /* Ungefähre Höhe des zweizeiligen Handy-Menüs */
+      top: 0 !important; /* Wichtig: Klebt am oberen Rand des Kastens, nicht der Seite! */
       z-index: 30;
-      background-color: #121212 !important; /* Verhindert das Durchschimmern */
-      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1); /* Trennlinie */
+      background-color: #121212 !important; /* Entspricht der glass-card */
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1); /* Trennlinie nach unten */
     }
-
-    /* Auf dem PC (ab md-Breite) ist das Menü flacher */
-    @media (min-width: 768px) {
-      table thead th {
-        top: 80px !important; /* Höhe des PC-Menüs */
-      }
-    }
-
-    /* Wichtig: Lässt horizontales Wischen zu, reicht vertikales Sticky aber an das Fenster durch! */
-    .table-responsive-container {
-      overflow-x: auto !important;
-      overflow-y: clip !important; 
-    }
-
 
     /* Höherer z-index für die Schnittstellen (obere linke Ecke der fixierten Spalten) */
     table thead th.sticky-col-1,
@@ -540,7 +526,7 @@
       </div>
 
       <!-- Wisch- & scrollbarer Container mit klebrigen Spalten und Zeilen -->
-      <div class="glass-card rounded-2xl table-responsive-container shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-auto max-h-[450px] shadow-2xl">
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
@@ -588,7 +574,7 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl table-responsive-container shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-auto max-h-[450px] shadow-2xl">
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
@@ -636,7 +622,7 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl table-responsive-container shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-auto max-h-[450px] shadow-2xl">
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
