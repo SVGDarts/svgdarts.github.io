@@ -106,6 +106,15 @@
       font-weight: 900 !important;
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
     }
+        /* Verringert global Schriftgröße und Spaltenabstände in allen Tabellen */
+    table th, table td {
+      padding-left: 0.75rem !important;   /* Deutlich engerer Abstand zwischen den Spalten (px-3 statt px-6) */
+      padding-right: 0.75rem !important;
+      padding-top: 0.6rem !important;     /* Flachere, kompaktere Zeilenhöhe */
+      padding-bottom: 0.6rem !important;
+      font-size: 0.75rem !important;      /* Kleinere, schärfere Schriftgröße (text-xs) */
+    }
+
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased text-neutral-200">
