@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
   
   <style>
-        html { overflow-x: auto; }
+    html { overflow-x: auto; }
     body {
       background-color: #000000;
       background-image: 
@@ -23,6 +23,7 @@
       background-attachment: fixed;
       color: #F3F4F6;
       font-family: 'Inter', sans-serif;
+      min-width: 1280px;
       width: 100%;
       overflow-x: auto;
     }
@@ -63,22 +64,6 @@
       background-color: rgba(255, 255, 255, 0.05);
       color: #ffffff;
     }
-
-    /* FIXIERTE SPALTEN BEIM WISCHEN (NEU) */
-    .sticky-col-1 {
-      position: sticky !important;
-      left: 0;
-      background-color: #121212 !important; /* Entspricht dem Dunkelwert deiner glass-card */
-      z-index: 20;
-    }
-    .sticky-col-2 {
-      position: sticky !important;
-      left: 48px; /* Exakte Breite der ersten Spalte (Rang-Spalte: w-12 = 48px) */
-      background-color: #121212 !important;
-      z-index: 20;
-      border-right: 1px solid rgba(255, 255, 255, 0.1); /* Kleine Trennlinie beim Scrollen */
-    }
-
 
     /* ERGEBNIS-FARBEN (WIN = GRÜN, LOSS = ROT) */
     .score-win {
@@ -121,15 +106,6 @@
       font-weight: 900 !important;
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
     }
-        /* Scrollbar für das Navigationsmenü auf Handys ausblenden */
-    .scrollbar-none::-webkit-scrollbar {
-      display: none;
-    }
-    .scrollbar-none {
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;  /* Firefox */
-    }
-
   </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased text-neutral-200">
@@ -210,33 +186,32 @@
         </div>
       </div>
 
-    <nav class="flex flex-nowrap space-x-1.5 md:space-x-2 pb-3 pt-1 text-xs md:text-sm border-t border-neutral-800/60 overflow-x-auto whitespace-nowrap scrollbar-none">
-      <button onclick="switchTab('home')" id="tab-home" class="tab-btn active px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-house text-xs"></i> Startseite
-      </button>
-      <button onclick="switchTab('livegames')" id="tab-livegames" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-tower-broadcast text-xs"></i> Livespiele
-      </button>
-      <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-calendar-days text-xs"></i> Spielplan
-      </button>
-      <button onclick="switchTab('tables')" id="tab-tables" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-table text-xs"></i> Tabelle
-      </button>
-      <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-users text-xs"></i> Spielerdatenbank
-      </button>
-      <button onclick="switchTab('gameStats')" id="tab-gameStats" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-bullseye text-xs"></i> Spielstatistiken
-      </button>
-      <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-chart-line text-xs"></i> Averages
-      </button>
-      <button onclick="switchTab('records')" id="tab-records" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
-        <i class="fa-solid fa-trophy text-xs"></i> Bestleistungen
-      </button>
-    </nav>
-
+      <nav class="flex space-x-2 pb-3 pt-1 text-sm border-t border-neutral-800/60">
+        <button onclick="switchTab('home')" id="tab-home" class="tab-btn active px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-house text-xs"></i> Startseite
+        </button>
+        <button onclick="switchTab('livegames')" id="tab-livegames" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-tower-broadcast text-xs"></i> Livespiele
+        </button>
+        <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-calendar-days text-xs"></i> Spielplan
+        </button>
+        <button onclick="switchTab('tables')" id="tab-tables" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-table text-xs"></i> Tabelle
+        </button>
+        <button onclick="switchTab('players')" id="tab-players" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-users text-xs"></i> Spielerdatenbank
+        </button>
+        <button onclick="switchTab('gameStats')" id="tab-gameStats" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-bullseye text-xs"></i> Spielstatistiken
+        </button>
+        <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-chart-line text-xs"></i> Averages
+        </button>
+        <button onclick="switchTab('records')" id="tab-records" class="tab-btn px-4 py-2 rounded-lg border border-transparent flex items-center gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-trophy text-xs"></i> Bestleistungen
+        </button>
+      </nav>
     </div>
   </header>
   <!-- Main Content Area -->
@@ -269,7 +244,7 @@
             <i class="fa-solid fa-clock-rotate-left text-neutral-400 text-sm"></i> Vergangene Spiele
           </h2>
         </div>
-        <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+        <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
           <div>
             <table class="w-full text-left text-sm text-neutral-300">
               <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -322,7 +297,7 @@
           </div>
         </div>
 
-        <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+        <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
           <div>
             <table class="w-full text-left text-sm text-neutral-300">
               <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -393,7 +368,7 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -491,7 +466,7 @@
         </div>
       </div>
     </section>
-        <!-- Reiter 3: Spielstatistiken -->
+    <!-- Reiter 3: Spielstatistiken -->
     <section id="content-gameStats" class="space-y-6 hidden">
       <div class="flex flex-row justify-between items-center gap-4">
         <div>
@@ -500,13 +475,13 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-4 py-4 w-12 text-center sticky-col-1">Rang</th>
-                <th onclick="setGameStatsSort('player')" class="px-4 py-4 sortable-header sticky-col-2">
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setGameStatsSort('player')" class="px-4 py-4 sortable-header">
                   Spieler <span id="gsort-icon-player" class="ml-1"></span>
                 </th>
                 <th onclick="setGameStatsSort('games')" class="px-4 py-4 sortable-header">
@@ -550,13 +525,13 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-4 py-4 w-12 text-center sticky-col-1">Rang</th>
-                <th onclick="setStatsSort('player')" class="px-4 py-4 sortable-header sticky-col-2">
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setStatsSort('player')" class="px-4 py-4 sortable-header">
                   Spieler <span id="sort-icon-player" class="ml-1"></span>
                 </th>
                 <th onclick="setStatsSort('avgSingle')" class="px-4 py-4 sortable-header">
@@ -600,13 +575,13 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-hidden shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-4 py-4 w-12 text-center sticky-col-1">Rang</th>
-                <th onclick="setRecordsSort('player')" class="px-4 py-4 sortable-header sticky-col-2">
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setRecordsSort('player')" class="px-4 py-4 sortable-header">
                   Spieler <span id="rsort-icon-player" class="ml-1"></span>
                 </th>
                 <th onclick="setRecordsSort('specials')" class="px-4 py-4 sortable-header">
@@ -640,7 +615,6 @@
         </div>
       </div>
     </section>
-
 
   </main>
   <footer class="mt-auto py-6 border-t border-neutral-800/60 text-center text-xs text-neutral-500">
@@ -1349,7 +1323,7 @@
       `).join('');
     }
 
-        // 13. Sortierung & Rendering: Spielstatistiken (mit klebrigen Spalten)
+    // 13. Sortierung & Rendering: Spielstatistiken
     function setGameStatsSort(key) {
       if (currentGameStatsSortKey === key) {
         currentGameStatsSortAsc = !currentGameStatsSortAsc;
@@ -1462,8 +1436,8 @@
         const playerName = g.player || g.name || '-';
         return `
           <tr class="hover:bg-neutral-900/60 transition">
-            <td class="px-4 py-4 text-center text-neutral-500 font-bold sticky-col-1">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap sticky-col-2" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-neutral-300">${calculatePlayerGamesDisplay(playerName, g.games ?? g.spiele ?? 0)}</td>
             <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
@@ -1477,7 +1451,7 @@
       }).join('');
     }
 
-    // 14. Sortierung & Rendering: Averages (mit klebrigen Spalten & AvgDouble Fallback)
+    // 14. Sortierung & Rendering: Averages
     function setStatsSort(key) {
       if (currentStatsSortKey === key) currentStatsSortAsc = !currentStatsSortAsc;
       else {
@@ -1488,7 +1462,7 @@
     }
 
     function updateStatsSortIcons() {
-      const keys = ['player', 'avgSingle', 'avgDouble', 'first9Single', 'first9Double', 'maxAvgSingle', 'maxAvgDouble', 'maxFirst9Single', 'maxFirst9Double'];
+      const keys = ['player', 'avgSingle', 'AvgDouble', 'first9Single', 'first9Double', 'maxAvgSingle', 'maxAvgDouble', 'maxFirst9Single', 'maxFirst9Double'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`sort-icon-${k}`);
         if (!iconEl) return;
@@ -1514,8 +1488,8 @@
 
       const getVal = (item, key) => {
         if (key === 'player') return item.player || item.name || '';
-        if (key === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avgSingle ?? item.avg_single ?? item.avg);
-        if (key === 'avgDouble') return parseNumeric(item.AvgDouble ?? item.avgDouble ?? item.avg_double);
+        if (key === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avg_single ?? item.avg);
+        if (key === 'avgDouble') return parseNumeric(item.AvgDouble ?? item.avg_double);
         if (key === 'first9Single') return parseNumeric(item.first9Single ?? item.first9_single ?? item.first9);
         if (key === 'first9Double') return parseNumeric(item.first9Double ?? item.first9_double);
         if (key === 'maxAvgSingle') return parseNumeric(item.maxAvgSingle ?? item.max_avg_single);
@@ -1549,10 +1523,10 @@
         const playerName = s.player || s.name || '-';
         return `
           <tr class="hover:bg-neutral-900/60 transition">
-            <td class="px-4 py-4 text-center text-neutral-500 font-bold sticky-col-1">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap sticky-col-2" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-            <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.AvgSingle ?? s.avgSingle ?? s.avg_single ?? s.avg)}</td>
-            <td class="px-4 py-4 text-neutral-200">${formatNumber(s.AvgDouble ?? s.avgDouble ?? s.avg_double)}</td>
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
+            <td class="px-4 py-4 text-neutral-200">${formatNumber(s.AvgDouble ?? s.avg_double)}</td>
             <td class="px-4 py-4 text-neutral-200">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
             <td class="px-4 py-4 text-neutral-300">${formatNumber(s.first9Double ?? s.first9_double)}</td>
             <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxAvgSingle ?? s.max_avg_single)}</td>
@@ -1564,7 +1538,7 @@
       }).join('');
     }
 
-    // 15. Sortierung & Rendering: Bestleistungen (mit klebrigen Spalten)
+    // 15. Sortierung & Rendering: Bestleistungen
     function setRecordsSort(key) {
       if (currentRecordsSortKey === key) currentRecordsSortAsc = !currentRecordsSortAsc;
       else {
@@ -1636,8 +1610,8 @@
         const playerName = r.player || r.name || '-';
         return `
           <tr class="hover:bg-neutral-900/60 transition">
-            <td class="px-4 py-4 text-center text-neutral-500 font-bold sticky-col-1">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap sticky-col-2" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-white font-bold">${r.specials ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r180 ?? r['180'] ?? 0}</td>
             <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
@@ -1650,7 +1624,6 @@
         `;
       }).join('');
     }
-
         // 16. Spieler-Profil Modal Steuerung
     function openPlayerModal(playerName) {
       const modal = document.getElementById('playerModal');
@@ -1721,4 +1694,3 @@
   </script>
 </body>
 </html>
-
