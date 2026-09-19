@@ -130,13 +130,20 @@
     }
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
-    /* Kopfzeile der Tabellen beim Herunterscrollen oben fixieren */
+    /* Kopfzeile unter dem Hauptmenü festkleben lassen, wenn die SEITE scrollt */
     table thead th {
       position: sticky !important;
-      top: 0;
+      top: 156px !important; /* Ungefähre Höhe des zweizeiligen Handy-Menüs */
       z-index: 30;
       background-color: #121212 !important; /* Entspricht der glass-card */
       box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1); /* Trennlinie nach unten */
+    }
+
+    /* Auf dem PC (ab md/Tablet-Breite) ist das Menü flacher */
+    @media (min-width: 768px) {
+      table thead th {
+        top: 80px !important; /* Höhe des flachen PC-Menüs */
+      }
     }
 
     /* Höherer z-index für die Schnittstellen (obere linke Ecke der fixierten Spalten) */
