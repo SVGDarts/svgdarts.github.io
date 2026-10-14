@@ -147,7 +147,7 @@
       z-index: 40 !important;
     }
 
-    /* Herausgezoomter Iframe Style */
+    /* Höhergezoomter Iframe Style */
     .zoomed-out-iframe-container {
       position: relative;
       overflow: hidden;
@@ -749,7 +749,7 @@
 
 
     // 2. Globale Konstanten & App-Daten
-    const CACHE_KEY = "svg_dart_app_data_v4";
+    const CACHE_KEY = "svg_dart_app_data_v5";
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
       "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
@@ -1627,10 +1627,10 @@
         try {
           appData = JSON.parse(cached);
           appData.matches = firebaseListToArray(appData.matches);
-          appData.squad = firebaseListToArray(appData.squad || appData.players);
-          appData.stats = firebaseListToArray(appData.stats);
-          appData.records = firebaseListToArray(appData.records);
-          appData.gameStats = firebaseListToArray(appData.gameStats);
+          appData.squad = firebaseListToArray(appData.squad || appData.Kader || appData.players);
+          appData.stats = firebaseListToArray(appData.stats || appData.Averages);
+          appData.records = firebaseListToArray(appData.records || appData.Bestleistungen);
+          appData.gameStats = firebaseListToArray(appData.gameStats || appData.Spielstatistiken);
           
           populateMatchFilters();
           renderAllTables();
