@@ -737,7 +737,7 @@
   <script type="module">
     // 1. Firebase SDK Imports & Initialisierung
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
-    import { getDatabase, ref, onValue, push, remove } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js';
+    import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js';
 
     const firebaseConfig = {
       projectId: "svg-darts",
@@ -748,8 +748,8 @@
     const db = getDatabase(app);
 
 
-        // 2. Globale Konstanten & App-Daten
-    const CACHE_KEY = "svg_dart_app_data_v3";
+    // 2. Globale Konstanten & App-Daten
+    const CACHE_KEY = "svg_dart_app_data_v4";
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
       "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
@@ -887,7 +887,7 @@
     }
 
 
-        // 5. Tab-Wechsel-System
+    // 5. Tab-Wechsel-System
     function switchTab(tabId) {
       activeTab = tabId;
       document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
@@ -968,7 +968,7 @@
       }).join('');
     }
 
-    // 7. Globale Spielersuche
+    // 7. Globale Spielersuche (Hervorhebung statt Filtern)
     function handleGlobalSearch() {
       const searchInput = document.getElementById('globalPlayerSearch');
       const clearBtn = document.getElementById('clearSearchBtn');
@@ -992,12 +992,11 @@
       handleGlobalSearch();
     }
 
-    // 8. Firebase Echtzeit-Datenbank Synchronisation (mit Konvertierungsschutz & deutschen Fallbacks)
+    // 8. Firebase Echtzeit-Datenbank Synchronisation
     function listenToDatabase() {
       onValue(ref(db, '/'), (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
-          const rawNotes = data.Vorschläge || data.Notizen || data.notes || {};
 
           appData = {
             matches: firebaseListToArray(data.Spielplan || data.Spiele || data.matches),
@@ -1010,7 +1009,6 @@
           localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
           populateMatchFilters();
           renderAllTables();
-          renderNotes();
           if (activeTab === 'livegames') {
             renderLiveGames();
           }
@@ -1018,9 +1016,7 @@
       });
     }
 
-
-
-    // 10. Filter-Populierungen & Resets
+    // 9. Filter-Populierungen & Resets
     function populateMatchFilters() {
       const matchdaySelect = document.getElementById('filterMatchday');
       const teamSelect = document.getElementById('filterTeam');
@@ -1078,7 +1074,7 @@
     }
 
 
-            // 11. Match-Zeilen Generierung & dynamische Farbgebung
+    // 10. Match-Zeilen Generierung & dynamische Farbgebung
     function createMatchRowHTML(m) {
       let scoreRaw = String(m.score || '-').trim();
       let scoreParts = scoreRaw.split(/[:\-]/).map(s => parseInt(s.trim(), 10));
@@ -1115,12 +1111,10 @@
         }
       }
 
-      // Datum und Uhrzeit sicher miteinander kombinieren
       const dateStr = formatDate(m.date);
       const timeStr = formatTime(m.time || m.uhrzeit);
       const combinedDateTime = dateStr !== '-' && timeStr !== '-' ? `${dateStr} - ${timeStr}` : (dateStr !== '-' ? dateStr : timeStr);
 
-      // Rückgabe der neu angeordneten Spaltenstruktur
       return `
         <tr class="hover:bg-neutral-900/60 transition">
           <td class="px-6 py-4 text-neutral-300">${combinedDateTime}</td>
@@ -1137,7 +1131,7 @@
       `;
     }
 
-    // 12. Render-Funktionen für Startseite, Spielplan & Spieler
+    // 11. Render-Funktionen für Startseite, Spielplan & Kader
     function renderHome() {
       const pastTbody = document.getElementById('homePastMatchesTable');
       const upcomingTbody = document.getElementById('homeUpcomingMatchesTable');
@@ -1247,8 +1241,7 @@
 
       const selectedFilter = document.getElementById('playerTeamFilter')?.value || '';
 
-      // Hier wird nur nach Team gefiltert, die globale Suche filtert nicht mehr heraus
-      let playersList = appData.players.filter(p => {
+      let playersList = appData.squad.filter(p => {
         if (!selectedFilter) return true;
         const { letter, numbers } = parsePlayerTeamTokens(p.team);
         if (/^[A-G]$/i.test(selectedFilter)) {
@@ -1259,7 +1252,6 @@
         return true;
       });
 
-      // Numerische, natürliche Sortierung nach ID
       playersList.sort((a, b) => {
         const idA = parseInt(a.id, 10);
         const idB = parseInt(b.id, 10);
@@ -1294,7 +1286,7 @@
     }
 
 
-        // 13. Sortierung & Rendering: Spielstatistiken
+    // 12. Sortierung & Rendering: Spielstatistiken
     function setGameStatsSort(key) {
       if (currentGameStatsSortKey === key) {
         currentGameStatsSortAsc = !currentGameStatsSortAsc;
@@ -1425,7 +1417,7 @@
       }).join('');
     }
 
-    // 14. Sortierung & Rendering: Averages
+    // 13. Sortierung & Rendering: Averages
     function setStatsSort(key) {
       if (currentStatsSortKey === key) currentStatsSortAsc = !currentStatsSortAsc;
       else {
@@ -1515,7 +1507,7 @@
       }).join('');
     }
 
-    // 15. Sortierung & Rendering: Bestleistungen
+    // 14. Sortierung & Rendering: Bestleistungen
     function setRecordsSort(key) {
       if (currentRecordsSortKey === key) currentRecordsSortAsc = !currentRecordsSortAsc;
       else {
@@ -1603,7 +1595,7 @@
       }).join('');
     }
 
-            // 16. Spieler-Profil Modal Steuerung
+    // 15. Spieler-Profil Modal Steuerung
     function openPlayerModal(playerName) {
       const modal = document.getElementById('playerModal');
       const playerInfo = appData.squad.find(p => p.name === playerName) || {};
@@ -1628,7 +1620,7 @@
       document.getElementById('playerModal').classList.add('hidden');
     }
 
-    // 17. Initialisierung beim Laden der Seite (inkl. Cache-Sicherung)
+    // 16. Initialisierung beim Laden der Seite
     window.addEventListener('DOMContentLoaded', () => {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -1642,17 +1634,15 @@
           
           populateMatchFilters();
           renderAllTables();
-          renderNotes();
         } catch (e) {
           console.error("Cache Read Error", e);
         }
       }
       
-      // Startet die Synchronisation
       listenToDatabase();
     });
 
-    // 18. Globale Schnittstelle für HTML-Inline-Events (da Modul-Scope)
+    // 17. Globale Schnittstelle für HTML-Inline-Events
     window.switchTab = switchTab;
     window.handleGlobalSearch = handleGlobalSearch;
     window.clearGlobalSearch = clearGlobalSearch;
