@@ -115,36 +115,16 @@
       font-size: 0.72rem !important;
     }
     
-    /* Fixiert Rang & Spieler links beim Wischen auf Handys */
-    .sticky-col-1 {
-      position: sticky !important;
-      left: 0;
-      background-color: #121212 !important;
-      z-index: 20;
-    }
-    .sticky-col-2 {
-      position: sticky !important;
-      left: 36px; /* Bündig neben der ersten Spalte */
-      background-color: #121212 !important;
-      z-index: 20;
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
-    }
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* 2D-Sticky: Kopfzeile klebt am oberen Rand des scrollbaren Kasten-Containers */
+    /* Klebrige Kopfzeile für Tabellencontainer */
     table thead th {
       position: sticky !important;
-      top: 0 !important; /* Wichtig: Klebt am oberen Rand des Kastens, nicht der Seite! */
+      top: 0 !important;
       z-index: 30;
-      background-color: #121212 !important; /* Entspricht der glass-card */
-      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1); /* Trennlinie nach unten */
-    }
-
-    /* Höherer z-index für die Schnittstellen (obere linke Ecke der fixierten Spalten) */
-    table thead th.sticky-col-1,
-    table thead th.sticky-col-2 {
-      z-index: 40 !important;
+      background-color: #121212 !important;
+      box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1);
     }
 
     /* Höhergezoomter Iframe Style */
@@ -271,8 +251,7 @@
             <i class="fa-solid fa-clock-rotate-left text-neutral-400 text-sm"></i> Vergangene Spiele
           </h2>
         </div>
-        <!-- Wischbarer Tabellencontainer mit neuer Spaltenreihenfolge -->
-        <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+        <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl max-h-[450px]">
           <div>
             <table class="w-full text-left text-sm text-neutral-300">
               <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -297,7 +276,6 @@
             <i class="fa-solid fa-calendar-check text-neutral-400 text-sm"></i> Aktuelle und bevorstehende Spiele
           </h2>
 
-          <!-- Responsive Filterleiste (flex-wrap) -->
           <div class="flex flex-wrap items-center gap-1.5 md:gap-2 glass-card p-1.5 md:p-2 rounded-2xl w-full lg:w-auto">
             <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
               <i class="fa-solid fa-filter text-white"></i> Filter:
@@ -325,8 +303,7 @@
           </div>
         </div>
 
-        <!-- Wischbarer Tabellencontainer mit neuer Spaltenreihenfolge -->
-        <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+        <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl max-h-[450px]">
           <div>
             <table class="w-full text-left text-sm text-neutral-300">
               <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -398,8 +375,7 @@
         </div>
       </div>
 
-      <!-- Wischbarer Tabellencontainer mit neuer Spaltenreihenfolge -->
-      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl max-h-[550px]">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -480,8 +456,7 @@
         </div>
       </div>
 
-      <!-- Wischbarer Tabellencontainer -->
-      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl">
+      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl max-h-[550px]">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs">
@@ -507,13 +482,12 @@
         </div>
       </div>
 
-      <!-- Wisch- & scrollbarer Container mit klebrigen Spalten und Zeilen -->
       <div class="glass-card rounded-2xl overflow-auto max-h-[450px] shadow-2xl">
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-4 py-4 w-12 text-center sticky-col-1">Rang</th>
-                <th onclick="setGameStatsSort('player')" class="px-4 py-4 sortable-header sticky-col-2">
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setGameStatsSort('player')" class="px-4 py-4 sortable-header">
                   Spieler <span id="gsort-icon-player" class="ml-1"></span>
                 </th>
                 <th onclick="setGameStatsSort('games')" class="px-4 py-4 sortable-header">
@@ -563,33 +537,27 @@
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-4 py-4 w-12 text-center sticky-col-1">Rang</th>
-                <th onclick="setStatsSort('player')" class="px-4 py-4 sortable-header sticky-col-2">
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setStatsSort('player')" class="px-4 py-4 sortable-header">
                   Spieler <span id="sort-icon-player" class="ml-1"></span>
                 </th>
                 <th onclick="setStatsSort('avgSingle')" class="px-4 py-4 sortable-header">
-                  Saison-Average (Einzel) <span id="sort-icon-avgSingle" class="ml-1"></span>
+                  Average (Einzel) <span id="sort-icon-avgSingle" class="ml-1"></span>
                 </th>
                 <th onclick="setStatsSort('avgDouble')" class="px-4 py-4 sortable-header">
-                  Saison-Average (Doppel) <span id="sort-icon-avgDouble" class="ml-1"></span>
+                  Average (Doppel) <span id="sort-icon-avgDouble" class="ml-1"></span>
                 </th>
                 <th onclick="setStatsSort('first9Single')" class="px-4 py-4 sortable-header">
-                  First-9-Saison-Average (Einzel) <span id="sort-icon-first9Single" class="ml-1"></span>
+                  First-9 Average (Einzel) <span id="sort-icon-first9Single" class="ml-1"></span>
                 </th>
                 <th onclick="setStatsSort('first9Double')" class="px-4 py-4 sortable-header">
-                  First-9-Saison-Average (Doppel) <span id="sort-icon-first9Double" class="ml-1"></span>
+                  First-9 Average (Doppel) <span id="sort-icon-first9Double" class="ml-1"></span>
                 </th>
-                <th onclick="setStatsSort('maxAvgSingle')" class="px-4 py-4 sortable-header">
-                  Höchster Average (Einzel) <span id="sort-icon-maxAvgSingle" class="ml-1"></span>
+                <th onclick="setStatsSort('avgOpponentSingle')" class="px-4 py-4 sortable-header">
+                  Average Gegner (Einzel) <span id="sort-icon-avgOpponentSingle" class="ml-1"></span>
                 </th>
-                <th onclick="setStatsSort('maxAvgDouble')" class="px-4 py-4 sortable-header">
-                  Höchster Average (Doppel) <span id="sort-icon-maxAvgDouble" class="ml-1"></span>
-                </th>
-                <th onclick="setStatsSort('maxFirst9Single')" class="px-4 py-4 sortable-header">
-                  Höchster First 9 (Einzel) <span id="sort-icon-maxFirst9Single" class="ml-1"></span>
-                </th>
-                <th onclick="setStatsSort('maxFirst9Double')" class="px-4 py-4 sortable-header">
-                  Höchster First 9 (Doppel) <span id="sort-icon-maxFirst9Double" class="ml-1"></span>
+                <th onclick="setStatsSort('avgOpponentDouble')" class="px-4 py-4 sortable-header">
+                  Average Gegner (Doppel) <span id="sort-icon-avgOpponentDouble" class="ml-1"></span>
                 </th>
               </tr>
             </thead>
@@ -611,8 +579,8 @@
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
-                <th class="px-4 py-4 w-12 text-center sticky-col-1">Rang</th>
-                <th onclick="setRecordsSort('player')" class="px-4 py-4 sortable-header sticky-col-2">
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setRecordsSort('player')" class="px-4 py-4 sortable-header">
                   Spieler <span id="rsort-icon-player" class="ml-1"></span>
                 </th>
                 <th onclick="setRecordsSort('specials')" class="px-4 py-4 sortable-header">
@@ -679,22 +647,22 @@
       <div class="p-6 space-y-5">
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Saison-Average</div>
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Average (Einzel)</div>
             <div id="modal3DartAvg" class="text-3xl font-black font-display text-white">-</div>
           </div>
           <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">First 9 (Saison)</div>
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">First-9 Avg (Einzel)</div>
             <div id="modalFirst9Avg" class="text-3xl font-black font-display text-neutral-300">-</div>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Höchster Avg (Einzel)</div>
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Average (Doppel)</div>
             <div id="modalMaxAvgSingle" class="text-2xl font-black font-display text-white">-</div>
           </div>
           <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Höchster Avg (Doppel)</div>
+            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">First-9 Avg (Doppel)</div>
             <div id="modalMaxAvgDouble" class="text-2xl font-black font-display text-neutral-300">-</div>
           </div>
         </div>
@@ -752,7 +720,7 @@
 
 
     // 2. Globale Konstanten & App-Daten
-    const CACHE_KEY = "svg_dart_app_data_v6";
+    const CACHE_KEY = "svg_dart_app_data_v7";
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
       "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
@@ -851,7 +819,6 @@
       return isNaN(num) ? val : num.toFixed(2);
     }
 
-    // Konvertiert Dezimalwerte (0.6, 1 etc.) oder Prozentwerte in einheitliche Prozentanzeige
     function formatPercent(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const str = String(val).replace(',', '.').trim();
@@ -860,14 +827,12 @@
       if (str.includes('%')) {
         return `${num.toFixed(1)}%`;
       }
-      // Wenn der Wert zwischen 0 und 1 liegt (oder genau 1), als Dezimalprozent interpretieren
       if (num >= 0 && num <= 1) {
         return `${(num * 100).toFixed(1)}%`.replace('.0%', '%');
       }
       return `${num.toFixed(1)}%`;
     }
 
-    // Spezifische Formatierung für die Shortgame-Chance
     function formatShortgameChance(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const str = String(val).replace(',', '.').trim();
@@ -876,7 +841,6 @@
       return `${(num * 100).toFixed(1)}%`.replace('.', ',');
     }
 
-    // Wandelt Strings sicher in Zahlen um
     function parseNumeric(val) {
       if (val === undefined || val === null || val === '-' || val === '') return 0;
       const cleanStr = String(val).replace('%', '').replace(',', '.').trim();
@@ -994,7 +958,7 @@
       }).join('');
     }
 
-    // 7. Globale Spielersuche (Hervorhebung statt Filtern)
+    // 7. Globale Spielersuche
     function handleGlobalSearch() {
       const searchInput = document.getElementById('globalPlayerSearch');
       const clearBtn = document.getElementById('clearSearchBtn');
@@ -1229,7 +1193,7 @@
       const selDate = document.getElementById('filterDate')?.value;
       const selLocation = document.getElementById('filterLocation')?.value;
 
-      const filtered = appData.matches.filter(m => {
+      let filtered = appData.matches.filter(m => {
         const matchdayMatches = !selMatchday || String(m.matchday) === selMatchday;
         const teamMatches = !selTeam || m.home === selTeam || m.away === selTeam;
         const dateMatches = !selDate || formatDate(m.date) === selDate;
@@ -1239,6 +1203,16 @@
           locationMatches = selLocation === 'Göttingen' ? loc.includes('göttingen') : !loc.includes('göttingen');
         }
         return matchdayMatches && teamMatches && dateMatches && locationMatches;
+      });
+
+      // Chronologische Sortierung: Spiele ohne Datum kommen ans Ende
+      filtered.sort((a, b) => {
+        const dateA = parseMatchDate(a.date);
+        const dateB = parseMatchDate(b.date);
+        if (!dateA && !dateB) return 0;
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        return dateA - dateB;
       });
 
       if (!filtered.length) {
@@ -1339,46 +1313,6 @@
       });
     }
 
-    function calculatePlayerGamesDisplay(playerName, actualGames) {
-      const playerObj = appData.squad.find(p => String(p.name || '').trim().toLowerCase() === String(playerName || '').trim().toLowerCase());
-      if (!playerObj || !playerObj.team) return `${actualGames || 0}/0`;
-
-      const teamParts = String(playerObj.team).split('/').map(s => s.trim());
-      if (!teamParts.length) return `${actualGames || 0}/0`;
-
-      const primaryLetter = teamParts.find(p => /^[A-Za-z]$/.test(p));
-      const numbers = teamParts.filter(p => /^\d+$/.test(p));
-
-      const activeTokens = [];
-      if (primaryLetter) activeTokens.push(primaryLetter.toUpperCase());
-      numbers.forEach(n => activeTokens.push(n));
-
-      let maxGames = 0;
-      activeTokens.forEach(token => {
-        let isMatch = (m) => false;
-        if (token === 'A') isMatch = (m) => /SVG\s*A\b/i.test(m.home) || /SVG\s*A\b/i.test(m.away);
-        else if (token === '8') isMatch = (m) => /SVG\s*8/i.test(m.home) || /SVG\s*8/i.test(m.away);
-        else if (/^[B-Z]$/.test(token)) {
-          const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
-          isMatch = (m) => regex.test(m.home) || regex.test(m.away);
-        } else if (/^\d+$/.test(token)) {
-          const regex = new RegExp(`SVG\\s*${token}\\b`, 'i');
-          isMatch = (m) => regex.test(m.home) || regex.test(m.away);
-        }
-
-        const teamMatches = appData.matches.filter(isMatch);
-        teamMatches.forEach(m => {
-          const homeStr = String(m.home || '').toLowerCase();
-          const awayStr = String(m.away || '').toLowerCase();
-          if (homeStr.includes('freilos') || awayStr.includes('freilos')) maxGames += 0;
-          else if (token === 'A') maxGames += 3;
-          else if (token === '8') maxGames += 2;
-          else maxGames += 4;
-        });
-      });
-      return `${actualGames || 0}/${maxGames}`;
-    }
-
     function renderGameStats() {
       const tbody = document.getElementById('gameStatsTable');
       if (!tbody) return;
@@ -1422,6 +1356,7 @@
           previousVal = val;
         }
         const playerName = g.player || g.name || '-';
+        const gamesValue = parseNumeric(g.games ?? g.spiele ?? 0);
         
         const isMatch = globalSearchQuery && playerName.toLowerCase().includes(globalSearchQuery);
         const rowClass = isMatch 
@@ -1430,9 +1365,9 @@
 
         return `
           <tr class="${rowClass}">
-            <td class="px-4 py-4 text-center text-neutral-500 font-bold sticky-col-1">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap sticky-col-2" onclick="openPlayerModal('${playerName}')">${playerName}</td>
-            <td class="px-4 py-4 text-neutral-300">${calculatePlayerGamesDisplay(playerName, g.games ?? g.spiele ?? 0)}</td>
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-neutral-300">${gamesValue}</td>
             <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
             <td class="px-4 py-4 text-neutral-200 font-semibold">${g.winsSingle ?? g.wins_single ?? g.siegeEinzel ?? '-'}</td>
@@ -1457,7 +1392,7 @@
     }
 
     function updateStatsSortIcons() {
-      const keys = ['player', 'avgSingle', 'AvgDouble', 'first9Single', 'first9Double', 'maxAvgSingle', 'maxAvgDouble', 'maxFirst9Single', 'maxFirst9Double'];
+      const keys = ['player', 'avgSingle', 'avgDouble', 'first9Single', 'first9Double', 'avgOpponentSingle', 'avgOpponentDouble'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`sort-icon-${k}`);
         if (!iconEl) return;
@@ -1481,13 +1416,11 @@
       const getVal = (item, key) => {
         if (key === 'player') return item.player || item.name || '';
         if (key === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avg_single ?? item.avg);
-        if (key === 'avgDouble') return parseNumeric(item.AvgDouble ?? item.avg_double);
+        if (key === 'avgDouble') return parseNumeric(item.avgDouble ?? item.avg_double);
         if (key === 'first9Single') return parseNumeric(item.first9Single ?? item.first9_single ?? item.first9);
         if (key === 'first9Double') return parseNumeric(item.first9Double ?? item.first9_double);
-        if (key === 'maxAvgSingle') return parseNumeric(item.maxAvgSingle ?? item.max_avg_single);
-        if (key === 'maxAvgDouble') return parseNumeric(item.maxAvgDouble ?? item.max_avg_double);
-        if (key === 'maxFirst9Single') return parseNumeric(item.maxFirst9Single ?? item.max_first9_single);
-        if (key === 'maxFirst9Double') return parseNumeric(item.maxFirst9Double ?? item.max_first9_double);
+        if (key === 'avgOpponentSingle') return parseNumeric(item.avgOpponentSingle ?? item.avg_opponent_single);
+        if (key === 'avgOpponentDouble') return parseNumeric(item.avgOpponentDouble ?? item.avg_opponent_double);
         return 0;
       };
 
@@ -1499,7 +1432,7 @@
       });
 
       if (!sortedStats.length) {
-        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-neutral-500">Keine Statistiken gefunden.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-8 text-center text-neutral-500">Keine Statistiken gefunden.</td></tr>`;
         return;
       }
 
@@ -1521,16 +1454,14 @@
 
         return `
           <tr class="${rowClass}">
-            <td class="px-4 py-4 text-center text-neutral-500 font-bold sticky-col-1">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap sticky-col-2" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
-            <td class="px-4 py-4 text-neutral-200">${formatNumber(s.AvgDouble ?? s.avg_double)}</td>
+            <td class="px-4 py-4 text-neutral-200">${formatNumber(s.avgDouble ?? s.avg_double)}</td>
             <td class="px-4 py-4 text-neutral-200">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
             <td class="px-4 py-4 text-neutral-300">${formatNumber(s.first9Double ?? s.first9_double)}</td>
-            <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxAvgSingle ?? s.max_avg_single)}</td>
-            <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxAvgDouble ?? s.max_avg_double)}</td>
-            <td class="px-4 py-4 text-neutral-300">${formatNumber(s.maxFirst9Single ?? s.max_first9_single)}</td>
-            <td class="px-4 py-4 text-neutral-400">${formatNumber(s.maxFirst9Double ?? s.max_first9_double)}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatNumber(s.avgOpponentSingle ?? s.avg_opponent_single)}</td>
+            <td class="px-4 py-4 text-neutral-400">${formatNumber(s.avgOpponentDouble ?? s.avg_opponent_double)}</td>
           </tr>
         `;
       }).join('');
@@ -1610,8 +1541,8 @@
 
         return `
           <tr class="${rowClass}">
-            <td class="px-4 py-4 text-center text-neutral-500 font-bold sticky-col-1">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap sticky-col-2" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-white font-bold">${r.specials ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r180 ?? r['180'] ?? 0}</td>
             <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
@@ -1635,8 +1566,8 @@
       document.getElementById('modalPlayerTeam').innerText = formatTeamDisplay(playerInfo.team);
       document.getElementById('modal3DartAvg').innerText = formatNumber(playerStats.avgSingle ?? playerStats.avg_single ?? playerStats.avg);
       document.getElementById('modalFirst9Avg').innerText = formatNumber(playerStats.first9Single ?? playerStats.first9_single ?? playerStats.first9);
-      document.getElementById('modalMaxAvgSingle').innerText = formatNumber(playerStats.maxAvgSingle ?? playerStats.max_avg_single);
-      document.getElementById('modalMaxAvgDouble').innerText = formatNumber(playerStats.maxAvgDouble ?? playerStats.max_avg_double);
+      document.getElementById('modalMaxAvgSingle').innerText = formatNumber(playerStats.avgDouble ?? playerStats.avg_double);
+      document.getElementById('modalMaxAvgDouble').innerText = formatNumber(playerStats.first9Double ?? playerStats.first9_double);
       document.getElementById('modal180s').innerText = playerRecords.r180 ?? playerRecords['180'] ?? 0;
       document.getElementById('modal140s').innerText = playerRecords.r140 ?? playerRecords['140'] ?? 0;
       document.getElementById('modalHighfinish').innerText = playerRecords.highfinish || 'Keine vorhanden';
