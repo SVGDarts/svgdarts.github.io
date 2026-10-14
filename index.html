@@ -118,7 +118,17 @@
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Klebrige Kopfzeile für Tabellencontainer */
+    /* Interner Tabellen-Scrollcontainer mit unsichtbarer Scrollbar und klebriger Kopfzeile */
+    .table-container {
+      max-height: 480px;
+      overflow-y: auto;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE/Edge */
+    }
+    .table-container::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+
     table thead th {
       position: sticky !important;
       top: 0 !important;
@@ -251,7 +261,7 @@
             <i class="fa-solid fa-clock-rotate-left text-neutral-400 text-sm"></i> Vergangene Spiele
           </h2>
         </div>
-        <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl max-h-[450px]">
+        <div class="glass-card rounded-2xl table-container shadow-2xl">
           <div>
             <table class="w-full text-left text-sm text-neutral-300">
               <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -303,7 +313,7 @@
           </div>
         </div>
 
-        <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl max-h-[450px]">
+        <div class="glass-card rounded-2xl table-container shadow-2xl">
           <div>
             <table class="w-full text-left text-sm text-neutral-300">
               <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -375,7 +385,7 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl max-h-[550px]">
+      <div class="glass-card rounded-2xl table-container shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
@@ -456,7 +466,7 @@
         </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-x-auto shadow-2xl max-h-[550px]">
+      <div class="glass-card rounded-2xl table-container shadow-2xl">
         <div>
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs">
@@ -475,14 +485,30 @@
 
             <!-- Reiter 3: Spielstatistiken -->
     <section id="content-gameStats" class="space-y-6 hidden">
-      <div class="flex flex-row justify-between items-center gap-4">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold font-display text-white">Spielstatistiken</h2>
           <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spaltenüberschrift, um nach dieser Kategorie zu sortieren.</p>
         </div>
+
+        <div class="flex items-center gap-2 glass-card p-1.5 md:p-2 rounded-2xl">
+          <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
+            <i class="fa-solid fa-filter text-white"></i> Team:
+          </div>
+          <select id="filterGameStatsTeam" onchange="renderGameStats()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
+            <option value="">Alle Teams</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+            <option value="F">F</option>
+            <option value="G">G</option>
+          </select>
+        </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-auto max-h-[450px] shadow-2xl">
+      <div class="glass-card rounded-2xl table-container shadow-2xl">
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
@@ -526,14 +552,30 @@
 
     <!-- Reiter 4: Averages -->
     <section id="content-stats" class="space-y-6 hidden">
-      <div class="flex flex-row justify-between items-center gap-4">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold font-display text-white">Averages</h2>
           <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spaltenüberschrift, um nach dieser Kategorie zu sortieren.</p>
         </div>
+
+        <div class="flex items-center gap-2 glass-card p-1.5 md:p-2 rounded-2xl">
+          <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
+            <i class="fa-solid fa-filter text-white"></i> Team:
+          </div>
+          <select id="filterStatsTeam" onchange="renderStats()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
+            <option value="">Alle Teams</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+            <option value="F">F</option>
+            <option value="G">G</option>
+          </select>
+        </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-auto max-h-[450px] shadow-2xl">
+      <div class="glass-card rounded-2xl table-container shadow-2xl">
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
@@ -568,14 +610,30 @@
 
     <!-- Reiter 5: Bestleistungen -->
     <section id="content-records" class="space-y-6 hidden">
-      <div class="flex flex-row justify-between items-center gap-4">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h2 class="text-2xl font-bold font-display text-white">Bestleistungen</h2>
           <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spaltenüberschrift, um nach dieser Kategorie zu sortieren.</p>
         </div>
+
+        <div class="flex items-center gap-2 glass-card p-1.5 md:p-2 rounded-2xl">
+          <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
+            <i class="fa-solid fa-filter text-white"></i> Team:
+          </div>
+          <select id="filterRecordsTeam" onchange="renderRecords()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
+            <option value="">Alle Teams</option>
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="D">D</option>
+            <option value="E">E</option>
+            <option value="F">F</option>
+            <option value="G">G</option>
+          </select>
+        </div>
       </div>
 
-      <div class="glass-card rounded-2xl overflow-auto max-h-[450px] shadow-2xl">
+      <div class="glass-card rounded-2xl table-container shadow-2xl">
           <table class="w-full text-left text-sm text-neutral-300">
             <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
               <tr>
@@ -720,7 +778,7 @@
 
 
     // 2. Globale Konstanten & App-Daten
-    const CACHE_KEY = "svg_dart_app_data_v7";
+    const CACHE_KEY = "svg_dart_app_data_v8";
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
       "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
@@ -767,6 +825,28 @@
       if (!dbKey) return '-';
       const match = String(dbKey).match(/(\d+)$/);
       return match ? match[1] : dbKey;
+    }
+
+    // Hilfsfunktionen für Team-Token-Parsing
+    function parsePlayerTeamTokens(teamStr) {
+      if (!teamStr || teamStr === '-') return { letter: null, numbers: [] };
+      const parts = String(teamStr).split('/');
+      let letter = null;
+      let numbers = [];
+      for (const part of parts) {
+        const cleaned = part.trim();
+        if (!letter && /^[A-G]$/i.test(cleaned)) letter = cleaned.toUpperCase();
+        if (/^\d+$/.test(cleaned)) numbers.push(cleaned);
+      }
+      return { letter, numbers };
+    }
+
+    function playerMatchesTeamFilter(playerName, teamFilterVal) {
+      if (!teamFilterVal) return true;
+      const playerObj = appData.squad.find(p => String(p.name || '').trim().toLowerCase() === String(playerName || '').trim().toLowerCase());
+      if (!playerObj || !playerObj.team) return false;
+      const { letter } = parsePlayerTeamTokens(playerObj.team);
+      return letter === teamFilterVal.toUpperCase();
     }
 
     // Hilfsfunktionen für Navigation, Iframe & Teams
@@ -1205,7 +1285,6 @@
         return matchdayMatches && teamMatches && dateMatches && locationMatches;
       });
 
-      // Chronologische Sortierung: Spiele ohne Datum kommen ans Ende
       filtered.sort((a, b) => {
         const dateA = parseMatchDate(a.date);
         const dateB = parseMatchDate(b.date);
@@ -1220,19 +1299,6 @@
         return;
       }
       tbody.innerHTML = filtered.map(createMatchRowHTML).join('');
-    }
-
-    function parsePlayerTeamTokens(teamStr) {
-      if (!teamStr || teamStr === '-') return { letter: null, numbers: [] };
-      const parts = String(teamStr).split('/');
-      let letter = null;
-      let numbers = [];
-      for (const part of parts) {
-        const cleaned = part.trim();
-        if (!letter && /^[A-G]$/i.test(cleaned)) letter = cleaned.toUpperCase();
-        if (/^\d+$/.test(cleaned)) numbers.push(cleaned);
-      }
-      return { letter, numbers };
     }
 
     function renderPlayers() {
@@ -1317,8 +1383,13 @@
       const tbody = document.getElementById('gameStatsTable');
       if (!tbody) return;
 
+      const teamFilter = document.getElementById('filterGameStatsTeam')?.value || '';
       updateGameStatsSortIcons();
-      let sortedData = [...appData.gameStats];
+      
+      let sortedData = appData.gameStats.filter(g => {
+        const playerName = g.player || g.name || '';
+        return playerMatchesTeamFilter(playerName, teamFilter);
+      });
 
       const getVal = (item, key) => {
         if (key === 'player') return item.player || item.name || '';
@@ -1410,8 +1481,13 @@
       const tbody = document.getElementById('statsTable');
       if (!tbody) return;
 
+      const teamFilter = document.getElementById('filterStatsTeam')?.value || '';
       updateStatsSortIcons();
-      let sortedStats = [...appData.stats];
+      
+      let sortedStats = appData.stats.filter(s => {
+        const playerName = s.player || s.name || '';
+        return playerMatchesTeamFilter(playerName, teamFilter);
+      });
 
       const getVal = (item, key) => {
         if (key === 'player') return item.player || item.name || '';
@@ -1496,8 +1572,13 @@
       const tbody = document.getElementById('recordsTable');
       if (!tbody) return;
 
+      const teamFilter = document.getElementById('filterRecordsTeam')?.value || '';
       updateRecordsSortIcons();
-      let sortedRecords = [...appData.records];
+      
+      let sortedRecords = appData.records.filter(r => {
+        const playerName = r.player || r.name || '';
+        return playerMatchesTeamFilter(playerName, teamFilter);
+      });
 
       const getVal = (item, key) => {
         if (key === 'player') return item.player || item.name || '';
@@ -1617,6 +1698,9 @@
     window.renderHome = renderHome;
     window.renderMatches = renderMatches;
     window.renderPlayers = renderPlayers;
+    window.renderGameStats = renderGameStats;
+    window.renderStats = renderStats;
+    window.renderRecords = renderRecords;
   </script>
 </body>
 </html>
