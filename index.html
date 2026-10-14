@@ -728,15 +728,195 @@
     </section>
 
     <!-- Reiter 7: Spielerprofil -->
-    <section id="content-playerProfile" class="space-y-6 hidden">
-      <div class="flex flex-row justify-between items-center gap-4">
-        <div>
-          <h2 class="text-2xl font-bold font-display text-white">Spielerprofil</h2>
-          <p class="text-xs text-neutral-400 mt-1">Hier entsteht die neue Spielerprofil-Ansicht.</p>
+    <section id="content-playerProfile" class="space-y-8 hidden">
+      <!-- Kopfbereich: Links Spieler-Dropdown & Team, Rechts Spiele & Legs -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-neutral-800 pb-6">
+        <div class="flex flex-col items-start gap-1">
+          <select id="profilePlayerSelect" onchange="renderPlayerProfile()" class="bg-transparent text-white font-black font-display text-2xl md:text-3xl rounded-xl px-2 py-1 border border-transparent hover:border-neutral-700 focus:outline-none cursor-pointer">
+            <option value="">Bitte wählen...</option>
+          </select>
+          <span id="profPlayerTeam" class="text-xs uppercase tracking-widest text-neutral-400 font-semibold px-2">Team -</span>
+        </div>
+
+        <div class="glass-card px-6 py-3 rounded-2xl flex flex-col gap-1 text-right">
+          <div class="text-xs text-neutral-300 font-medium">
+            Spiele: <span id="profGamesVal" class="font-bold text-white">-</span>
+          </div>
+          <div class="text-xs text-neutral-300 font-medium">
+            Legs: <span id="profLegsVal" class="font-bold text-white">-</span>
+          </div>
         </div>
       </div>
-      <div class="glass-card rounded-2xl p-8 text-center text-neutral-400">
-        Inhalt folgt...
+
+      <!-- Sektion 1: Spielstatistiken (2 Reihen mit je 6 Rechtecken) -->
+      <div class="space-y-4">
+        <h3 class="text-xs uppercase font-bold tracking-widest text-neutral-400">Spielstatistiken</h3>
+        
+        <!-- Reihe 1: Einzel -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+          <!-- Saison-Einzel -->
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Saison-Einzel</span>
+            <div class="mt-2">
+              <span id="stat-avgSingle" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-avgSingle" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <!-- First 9 Einzel -->
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">First 9 Einzel</span>
+            <div class="mt-2">
+              <span id="stat-first9Single" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-first9Single" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <!-- Bestes Einzel -->
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Bestes Einzel</span>
+            <div class="mt-2">
+              <span id="stat-maxAvgSingle" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-maxAvgSingle" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <!-- Bester Einzel-First 9 -->
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Bester Einzel-First 9</span>
+            <div class="mt-2">
+              <span id="stat-maxFirst9Single" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-maxFirst9Single" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <!-- Gegner-Einzelavg -->
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Gegner-Einzelavg</span>
+            <div class="mt-2">
+              <span id="stat-avgOpponentSingle" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-avgOpponentSingle" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <!-- Dauer Leg Einzel -->
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Dauer Leg Einzel</span>
+            <div class="mt-2">
+              <span id="stat-durationSingleLeg" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-durationSingleLeg" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reihe 2: Doppel -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+          <!-- Doppel-Average -->
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Doppel-Average</span>
+            <div class="mt-2">
+              <span id="stat-avgDouble" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-avgDouble" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <!-- First 9 Doppel -->
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">First 9 Doppel</span>
+            <div class="mt-2">
+              <span id="stat-first9Double" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-first9Double" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <!-- Bestes Doppel -->
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Bestes Doppel</span>
+            <div class="mt-2">
+              <span id="stat-maxAvgDouble" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-maxAvgDouble" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <!-- Bester Doppel-First 9 -->
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Bester Doppel-First 9</span>
+            <div class="mt-2">
+              <span id="stat-maxFirst9Double" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-maxFirst9Double" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <!-- Gegner-Doppelavg -->
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Gegner-Doppelavg</span>
+            <div class="mt-2">
+              <span id="stat-avgOpponentDouble" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-avgOpponentDouble" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <!-- Dauer Leg Doppel -->
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Dauer Leg Doppel</span>
+            <div class="mt-2">
+              <span id="stat-durationDoubleLeg" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-durationDoubleLeg" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sektion 2: Bestleistungen -->
+      <div class="space-y-4">
+        <h3 class="text-xs uppercase font-bold tracking-widest text-neutral-400">Bestleistungen</h3>
+        
+        <!-- Obere Reihe: Specials, 180er, 140+, Highfinish -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Specials</span>
+            <div class="mt-2">
+              <span id="rec-specials" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-specials" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">180er</span>
+            <div class="mt-2">
+              <span id="rec-r180" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-r180" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">140+</span>
+            <div class="mt-2">
+              <span id="rec-r140" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-r140" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Highfinish</span>
+            <div class="mt-2">
+              <span id="rec-highfinish" class="text-lg font-black font-display text-white block break-words">-</span>
+              <span id="rank-highfinish" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Untere Reihe: Chance Shortgame, Specials pro Spiel, Shortgames -->
+        <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-3">
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Chance auf Shortgame</span>
+            <div class="mt-2">
+              <span id="rec-shortgameChance" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-shortgameChance" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Specials pro Spiel</span>
+            <div class="mt-2">
+              <span id="rec-specialsPerGame" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-specialsPerGame" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Shortgames</span>
+            <div class="mt-2">
+              <span id="rec-shortgame" class="text-lg font-black font-display text-white block break-words">-</span>
+              <span id="rank-shortgame" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -753,85 +933,6 @@
       </a>
     </div>
   </footer>
-
-  <!-- Player Profile Modal -->
-  <div id="playerModal" class="fixed inset-0 bg-black bg-opacity-80 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="glass-card bg-black border border-neutral-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
-      <div class="bg-neutral-950 p-6 border-b border-neutral-800 flex justify-between items-start">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 rounded-2xl bg-black border border-neutral-700 flex items-center justify-center text-white font-bold text-xl">
-            <i class="fa-solid fa-user"></i>
-          </div>
-          <div>
-            <h3 id="modalPlayerName" class="text-xl font-bold font-display text-white"></h3>
-            <p id="modalPlayerTeam" class="text-xs font-semibold text-neutral-400 mt-0.5 uppercase tracking-wider"></p>
-          </div>
-        </div>
-        <button onclick="closePlayerModal()" class="text-neutral-400 hover:text-white p-2">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-      </div>
-
-      <div class="p-6 space-y-5">
-        <div class="grid grid-cols-2 gap-3">
-          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Average (Einzel)</div>
-            <div id="modal3DartAvg" class="text-3xl font-black font-display text-white">-</div>
-          </div>
-          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">First-9 Avg (Einzel)</div>
-            <div id="modalFirst9Avg" class="text-3xl font-black font-display text-neutral-300">-</div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">Average (Doppel)</div>
-            <div id="modalMaxAvgSingle" class="text-2xl font-black font-display text-white">-</div>
-          </div>
-          <div class="bg-black border border-neutral-800 p-4 rounded-2xl text-center">
-            <div class="text-xs uppercase font-bold tracking-wider text-neutral-400 mb-1">First-9 Avg (Doppel)</div>
-            <div id="modalMaxAvgDouble" class="text-2xl font-black font-display text-neutral-300">-</div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <i class="fa-solid fa-star text-white"></i>
-              <span class="text-xs font-medium text-neutral-300">180er</span>
-            </div>
-            <span id="modal180s" class="font-extrabold text-white text-base">0</span>
-          </div>
-          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-              <i class="fa-solid fa-fire text-neutral-400"></i>
-              <span class="text-xs font-medium text-neutral-300">140+</span>
-            </div>
-            <span id="modal140s" class="font-extrabold text-neutral-200 text-base">0</span>
-          </div>
-        </div>
-
-        <div class="space-y-2.5">
-          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl">
-            <span class="text-xs font-bold text-neutral-400 uppercase tracking-wider block mb-1">Highfinishes (100+)</span>
-            <span id="modalHighfinish" class="text-xs font-semibold text-white block break-words">Keine vorhanden</span>
-          </div>
-
-          <div class="bg-black border border-neutral-800 p-3.5 rounded-xl">
-            <span class="text-xs font-bold text-neutral-400 uppercase tracking-wider block mb-1">Shortgames (&le; 18 Darts)</span>
-            <span id="modalShortgames" class="text-xs font-semibold text-neutral-300 block break-words">Keine vorhanden</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-black px-6 py-4 border-t border-neutral-800 text-right">
-        <button onclick="closePlayerModal()" class="w-full py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white border border-neutral-700 text-xs font-semibold rounded-xl transition">
-          Schließen
-        </button>
-      </div>
-    </div>
-  </div>
 
   <script type="module">
     // 1. Firebase SDK Imports & Initialisierung
@@ -862,7 +963,7 @@
       "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree"
     };
 
-    let appData = { matches: [], squad: [], stats: [], records: [], gameStats: [], teamStats: [] };
+    let appData = { matches: [], squad: [], playerProfile: [], stats: [], records: [], gameStats: [], teamStats: [] };
     let activeTab = 'home';
     let globalSearchQuery = '';
 
@@ -875,18 +976,32 @@
     let currentTeamStatsSortKey = 'avg';
     let currentTeamStatsSortAsc = false;
 
-    // Hilfsfunktion: Wandelt z.B. "00:17:08" in "17:08" um
     function formatShortDuration(val) {
       if (!val || val === '-') return '-';
       let str = String(val).trim();
-      // Wenn es mit "00:" beginnt, entfernen wir die führenden "00:"
       if (str.startsWith('00:')) {
         str = str.substring(3);
       }
       return str;
     }
 
-    // Hilfsfunktion: Verwandelt Firebase-Objekte in Arrays und bewahrt den Key als Original-ID
+    function parseDurationToSeconds(val) {
+      if (!val || val === '-' || val === '') return 0;
+      const str = String(val).trim();
+      const parts = str.split(':').map(Number);
+      
+      if (parts.some(isNaN)) return 0;
+      
+      if (parts.length === 3) {
+        return parts[0] * 3600 + parts[1] * 60 + parts[2];
+      } else if (parts.length === 2) {
+        return parts[0] * 60 + parts[1];
+      } else if (parts.length === 1) {
+        return parts[0];
+      }
+      return 0;
+    }
+
     function firebaseListToArray(val) {
       if (!val) return [];
       if (Array.isArray(val)) {
@@ -902,14 +1017,12 @@
       return [];
     }
 
-    // Extrahiert eine numerische ID aus Keys wie "eintrag_1" -> 1
     function extractNumericId(dbKey) {
       if (!dbKey) return '-';
       const match = String(dbKey).match(/(\d+)$/);
       return match ? match[1] : dbKey;
     }
 
-    // Hilfsfunktionen für Team-Token-Parsing
     function parsePlayerTeamTokens(teamStr) {
       if (!teamStr || teamStr === '-') return { letter: null, numbers: [] };
       const parts = String(teamStr).split('/');
@@ -931,7 +1044,6 @@
       return letter === teamFilterVal.toUpperCase();
     }
 
-    // Hilfsfunktionen für Navigation, Iframe & Teams
     function changeTableIframe() {
       const select = document.getElementById('tableTeamFilter');
       const iframe = document.getElementById('tableIframe');
@@ -974,7 +1086,6 @@
       return resultParts.length > 0 ? resultParts.join(', ') : rawTeam;
     }
 
-    // Formatierungs- und Parsing-Utilities
     function formatNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const num = parseFloat(String(val).replace(',', '.'));
@@ -1000,7 +1111,7 @@
       const str = String(val).replace(',', '.').trim();
       const num = parseFloat(str);
       if (isNaN(num)) return val;
-      return `${(num * 100).toFixed(1)}%`.replace('.', ',');
+      return `${(num * 100).toFixed(1)}%`.replace(',', '.');
     }
 
     function parseNumeric(val) {
@@ -1047,7 +1158,6 @@
       return timeMatch ? `${timeMatch[1].padStart(2, '0')}:${timeMatch[2]}` : str;
     }
 
-    // 5. Tab-Wechsel-System
     function switchTab(tabId) {
       activeTab = tabId;
       document.querySelectorAll('main > section').forEach(el => el.classList.add('hidden'));
@@ -1061,10 +1171,11 @@
 
       if (tabId === 'livegames') {
         renderLiveGames();
+      } else if (tabId === 'playerProfile') {
+        populateProfileDropdown();
       }
     }
 
-    // 6. Live-Spiele (Iframe-Grid) rendern
     function renderLiveGames() {
       const gridContainer = document.getElementById('liveGamesGrid');
       if (!gridContainer) return;
@@ -1128,7 +1239,6 @@
       }).join('');
     }
 
-    // 7. Globale Spielersuche
     function handleGlobalSearch() {
       const searchInput = document.getElementById('globalPlayerSearch');
       const clearBtn = document.getElementById('clearSearchBtn');
@@ -1153,7 +1263,6 @@
       handleGlobalSearch();
     }
 
-    // 8. Firebase Echtzeit-Datenbank Synchronisation
     function listenToDatabase() {
       onValue(ref(db, '/'), (snapshot) => {
         if (snapshot.exists()) {
@@ -1162,6 +1271,7 @@
           appData = {
             matches: firebaseListToArray(data.Spielplan || data.Spiele || data.matches),
             squad: firebaseListToArray(data.Kader || data.Squad || data.squad || data.Spielerdatenbank || data.Spieler || data.players),
+            playerProfile: firebaseListToArray(data.Spielerprofil || data.playerProfile),
             stats: firebaseListToArray(data.Averages || data.stats),
             records: firebaseListToArray(data.Bestleistungen || data.records),
             gameStats: firebaseListToArray(data.Spielstatistiken || data.gameStats || data.game_stats),
@@ -1173,12 +1283,13 @@
           renderAllTables();
           if (activeTab === 'livegames') {
             renderLiveGames();
+          } else if (activeTab === 'playerProfile') {
+            populateProfileDropdown();
           }
         }
       });
     }
 
-    // 9. Filter-Populierungen & Resets
     function populateMatchFilters() {
       const matchdaySelect = document.getElementById('filterMatchday');
       const teamSelect = document.getElementById('filterTeam');
@@ -1208,6 +1319,185 @@
       if (homeTeamSelect) homeTeamSelect.innerHTML = teamOptions;
       if (homeDateSelect) homeDateSelect.innerHTML = dateOptions;
       if (homeLocationSelect) homeLocationSelect.innerHTML = locationOptions;
+    }
+
+    function populateProfileDropdown() {
+      const select = document.getElementById('profilePlayerSelect');
+      if (!select) return;
+      const currentVal = select.value;
+
+      const players = [...new Set(appData.squad.map(p => p.name).filter(Boolean))].sort();
+      if (!players.length) {
+        select.innerHTML = '<option value="">Keine Spieler gefunden</option>';
+        return;
+      }
+
+      select.innerHTML = players.map(name => `<option value="${name}">${name}</option>`).join('');
+      if (currentVal && players.includes(currentVal)) {
+        select.value = currentVal;
+      } else {
+        select.value = players[0];
+      }
+      renderPlayerProfile();
+    }
+
+    function getRankText(metricKey, playerName) {
+      const totalPlayers = appData.squad.length || 1;
+      let dataset = [];
+
+      if (metricKey === 'avgSingle') {
+        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.avgSingle ?? p.avg_single) }));
+      } else if (metricKey === 'first9Single') {
+        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.first9Single ?? p.first9_single) }));
+      } else if (metricKey === 'maxAvgSingle') {
+        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.maxAvgSingle ?? p.max_avg_single ?? p.bestAvgSingle) }));
+      } else if (metricKey === 'maxFirst9Single') {
+        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.maxFirst9Single ?? p.max_first_9_single ?? p.bestFirst9Single) }));
+      } else if (metricKey === 'avgOpponentSingle') {
+        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.avgOpponentSingle ?? p.avg_opponent_single) }));
+      } else if (metricKey === 'durationSingleLeg') {
+        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseDurationToSeconds(p.durationSingleLeg ?? p.duration_single_leg) }));
+      } else if (metricKey === 'avgDouble') {
+        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.avgDouble ?? p.avg_double) }));
+      } else if (metricKey === 'first9Double') {
+        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.first9Double ?? p.first9_double) }));
+      } else if (metricKey === 'maxAvgDouble') {
+        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.maxAvgDouble ?? p.max_avg_double ?? p.bestAvgDouble) }));
+      } else if (metricKey === 'maxFirst9Double') {
+        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.maxFirst9Double ?? p.max_first_9_double ?? p.bestFirst9Double) }));
+      } else if (metricKey === 'avgOpponentDouble') {
+        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.avgOpponentDouble ?? p.avg_opponent_double) }));
+      } else if (metricKey === 'durationDoubleLeg') {
+        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseDurationToSeconds(p.durationDoubleLeg ?? p.duration_double_leg) }));
+      } else if (metricKey === 'specials') {
+        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseNumeric(r.specials) }));
+      } else if (metricKey === 'r180') {
+        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseNumeric(r.r180 ?? r['180']) }));
+      } else if (metricKey === 'r140') {
+        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseNumeric(r.r140 ?? r['140']) }));
+      } else if (metricKey === 'highfinish') {
+        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseBracketsNumber(r.highfinish) }));
+      } else if (metricKey === 'shortgameChance') {
+        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseNumeric(r.shortgameChance ?? r.shortgame_chance) }));
+      } else if (metricKey === 'specialsPerGame') {
+        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseNumeric(r.specialsPerGame ?? r.specials_per_game) }));
+      } else if (metricKey === 'shortgame') {
+        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseBracketsNumber(r.shortgame) }));
+      }
+
+      if (metricKey.includes('duration')) {
+        dataset = dataset.filter(d => d.val > 0);
+        dataset.sort((a, b) => a.val - b.val);
+      } else {
+        dataset.sort((a, b) => b.val - a.val);
+      }
+
+      const index = dataset.findIndex(d => String(d.name).trim().toLowerCase() === String(playerName).trim().toLowerCase());
+      
+      if (index === -1) return `- von ${totalPlayers}`;
+      return `# ${index + 1} von ${totalPlayers}`;
+    }
+
+    function renderPlayerProfile() {
+      const select = document.getElementById('profilePlayerSelect');
+      if (!select) return;
+      const playerName = select.value;
+      if (!playerName) return;
+
+      const playerInfo = appData.squad.find(p => String(p.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || {};
+      const playerProfData = appData.playerProfile.find(p => String(p.player || p.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || playerInfo;
+      const gameStat = appData.gameStats.find(g => String(g.player || g.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || {};
+      const record = appData.records.find(r => String(r.player || r.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || {};
+
+      // Team unter dem Namen
+      document.getElementById('profPlayerTeam').innerText = formatTeamDisplay(playerInfo.team);
+
+      // Spiele & Legs oben rechts
+      const winsSingle = parseNumeric(gameStat.winsSingle ?? gameStat.wins_single ?? gameStat.siegeEinzel ?? 0);
+      const winsDouble = parseNumeric(gameStat.winsDouble ?? gameStat.wins_double ?? gameStat.siegeDoppel ?? 0);
+      const totalWins = winsSingle + winsDouble;
+      const totalGames = parseNumeric(gameStat.games ?? gameStat.spiele ?? 0);
+      const totalWinRate = totalGames > 0 ? ((totalWins / totalGames) * 100).toFixed(1) + '%' : '0.0%';
+      document.getElementById('profGamesVal').innerText = `${totalWins}/${totalGames} (${totalWinRate})`;
+
+      // Legs aus playerProfile (mit Fallback auf gameStat)
+      const rawWonLegs = playerProfData.wonLegs ?? playerProfData.won_legs ?? gameStat.wonLegs ?? gameStat.won_legs ?? '-';
+      document.getElementById('profLegsVal').innerText = String(rawWonLegs);
+
+      // Werte für Statistik-Boxen (Reihe 1: Einzel) aus playerProfile
+      const avgSingle = formatNumber(playerProfData.avgSingle ?? playerProfData.avg_single);
+      const first9Single = formatNumber(playerProfData.first9Single ?? playerProfData.first9_single);
+      const maxAvgSingle = formatNumber(playerProfData.maxAvgSingle ?? playerProfData.max_avg_single ?? playerProfData.bestAvgSingle);
+      const maxFirst9Single = formatNumber(playerProfData.maxFirst9Single ?? playerProfData.max_first_9_single ?? playerProfData.bestFirst9Single);
+      const avgOpponentSingle = formatNumber(playerProfData.avgOpponentSingle ?? playerProfData.avg_opponent_single);
+      const durationSingleLeg = formatShortDuration(playerProfData.durationSingleLeg ?? playerProfData.duration_single_leg ?? '-');
+
+      document.getElementById('stat-avgSingle').innerText = avgSingle;
+      document.getElementById('rank-avgSingle').innerText = getRankText('avgSingle', playerName);
+
+      document.getElementById('stat-first9Single').innerText = first9Single;
+      document.getElementById('rank-first9Single').innerText = getRankText('first9Single', playerName);
+
+      document.getElementById('stat-maxAvgSingle').innerText = maxAvgSingle; 
+      document.getElementById('rank-maxAvgSingle').innerText = getRankText('maxAvgSingle', playerName);
+
+      document.getElementById('stat-maxFirst9Single').innerText = maxFirst9Single; 
+      document.getElementById('rank-maxFirst9Single').innerText = getRankText('maxFirst9Single', playerName);
+
+      document.getElementById('stat-avgOpponentSingle').innerText = avgOpponentSingle;
+      document.getElementById('rank-avgOpponentSingle').innerText = getRankText('avgOpponentSingle', playerName);
+
+      document.getElementById('stat-durationSingleLeg').innerText = durationSingleLeg;
+      document.getElementById('rank-durationSingleLeg').innerText = getRankText('durationSingleLeg', playerName);
+
+      // Werte für Statistik-Boxen (Reihe 2: Doppel) aus playerProfile
+      const avgDouble = formatNumber(playerProfData.avgDouble ?? playerProfData.avg_double);
+      const first9Double = formatNumber(playerProfData.first9Double ?? playerProfData.first9_double);
+      const maxAvgDouble = formatNumber(playerProfData.maxAvgDouble ?? playerProfData.max_avg_double ?? playerProfData.bestAvgDouble);
+      const maxFirst9Double = formatNumber(playerProfData.maxFirst9Double ?? playerProfData.max_first_9_double ?? playerProfData.bestFirst9Double);
+      const avgOpponentDouble = formatNumber(playerProfData.avgOpponentDouble ?? playerProfData.avg_opponent_double);
+      const durationDoubleLeg = formatShortDuration(playerProfData.durationDoubleLeg ?? playerProfData.duration_double_leg ?? '-');
+
+      document.getElementById('stat-avgDouble').innerText = avgDouble;
+      document.getElementById('rank-avgDouble').innerText = getRankText('avgDouble', playerName);
+
+      document.getElementById('stat-first9Double').innerText = first9Double;
+      document.getElementById('rank-first9Double').innerText = getRankText('first9Double', playerName);
+
+      document.getElementById('stat-maxAvgDouble').innerText = maxAvgDouble;
+      document.getElementById('rank-maxAvgDouble').innerText = getRankText('maxAvgDouble', playerName);
+
+      document.getElementById('stat-maxFirst9Double').innerText = maxFirst9Double;
+      document.getElementById('rank-maxFirst9Double').innerText = getRankText('maxFirst9Double', playerName);
+
+      document.getElementById('stat-avgOpponentDouble').innerText = avgOpponentDouble;
+      document.getElementById('rank-avgOpponentDouble').innerText = getRankText('avgOpponentDouble', playerName);
+
+      document.getElementById('stat-durationDoubleLeg').innerText = durationDoubleLeg;
+      document.getElementById('rank-durationDoubleLeg').innerText = getRankText('durationDoubleLeg', playerName);
+
+      // Bestleistungen Boxen
+      document.getElementById('rec-specials').innerText = record.specials ?? '-';
+      document.getElementById('rank-specials').innerText = getRankText('specials', playerName);
+
+      document.getElementById('rec-r180').innerText = record.r180 ?? record['180'] ?? 0;
+      document.getElementById('rank-r180').innerText = getRankText('r180', playerName);
+
+      const r140val = record.r140 ?? record['140'];
+      document.getElementById('rec-r140').innerText = (r140val !== undefined && r140val !== null && r140val !== '') ? r140val : 0;
+      document.getElementById('rank-r140').innerText = getRankText('r140', playerName);
+
+      document.getElementById('rec-highfinish').innerText = record.highfinish || 'Keine';
+      document.getElementById('rank-highfinish').innerText = getRankText('highfinish', playerName);
+
+      document.getElementById('rec-shortgameChance').innerText = formatShortgameChance(record.shortgameChance ?? record.shortgame_chance);
+      document.getElementById('rank-shortgameChance').innerText = getRankText('shortgameChance', playerName);
+
+      document.getElementById('rec-specialsPerGame').innerText = formatNumber(record.specialsPerGame ?? record.specials_per_game ?? record.specialsPerMatchday ?? record.specials_per_matchday);
+      document.getElementById('rank-specialsPerGame').innerText = getRankText('specialsPerGame', playerName);
+
+      document.getElementById('rec-shortgame').innerText = record.shortgame || 'Keine';
+      document.getElementById('rank-shortgame').innerText = getRankText('shortgame', playerName);
     }
 
     function resetMatchFilters() {
@@ -1252,9 +1542,11 @@
       renderStats();
       renderRecords();
       renderTeamStats();
+      if (activeTab === 'playerProfile') {
+        populateProfileDropdown();
+      }
     }
 
-    // 10. Match-Zeilen Generierung & dynamische Farbgebung
     function createMatchRowHTML(m) {
       let scoreRaw = String(m.score || '-').trim();
       let scoreParts = scoreRaw.split(/[:\-]/).map(s => parseInt(s.trim(), 10));
@@ -1311,7 +1603,6 @@
       `;
     }
 
-    // 11. Render-Funktionen für Startseite, Spielplan & Kader
     function renderHome() {
       const pastTbody = document.getElementById('homePastMatchesTable');
       const upcomingTbody = document.getElementById('homeUpcomingMatchesTable');
@@ -1455,14 +1746,13 @@
         return `
           <tr class="${rowClass}">
             <td class="px-6 py-4 text-xs text-neutral-500 font-bold">${numericId}</td>
-            <td class="px-6 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-6 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="navigateToPlayerProfile('${playerName}')">${playerName}</td>
             <td class="px-6 py-4 text-neutral-300">${p.team || '-'}</td>
           </tr>
         `;
       }).join('');
     }
 
-    // 12. Sortierung & Rendering: Spielstatistiken
     function setGameStatsSort(key) {
       if (currentGameStatsSortKey === key) {
         currentGameStatsSortAsc = !currentGameStatsSortAsc;
@@ -1546,7 +1836,7 @@
         return `
           <tr class="${rowClass}">
             <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="navigateToPlayerProfile('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-neutral-300">${gamesValue}</td>
             <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
@@ -1561,7 +1851,6 @@
       }).join('');
     }
 
-    // 13. Sortierung & Rendering: Averages
     function setStatsSort(key) {
       if (currentStatsSortKey === key) currentStatsSortAsc = !currentStatsSortAsc;
       else {
@@ -1640,7 +1929,7 @@
         return `
           <tr class="${rowClass}">
             <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="navigateToPlayerProfile('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
             <td class="px-4 py-4 text-neutral-200">${formatNumber(s.avgDouble ?? s.avg_double)}</td>
             <td class="px-4 py-4 text-neutral-200">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
@@ -1652,7 +1941,6 @@
       }).join('');
     }
 
-    // 14. Sortierung & Rendering: Bestleistungen
     function setRecordsSort(key) {
       if (currentRecordsSortKey === key) currentRecordsSortAsc = !currentRecordsSortAsc;
       else {
@@ -1729,13 +2017,16 @@
           ? 'bg-yellow-500/20 border-l-4 border-yellow-400 transition' 
           : 'hover:bg-neutral-900/60 transition';
 
+        const r140val = r.r140 ?? r['140'];
+        const display140 = (r140val !== undefined && r140val !== null && r140val !== '') ? r140val : 0;
+
         return `
           <tr class="${rowClass}">
             <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="navigateToPlayerProfile('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-white font-bold">${r.specials ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r180 ?? r['180'] ?? 0}</td>
-            <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
+            <td class="px-4 py-4 text-neutral-200 font-semibold">${display140}</td>
             <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-400">${formatShortgameChance(r.shortgameChance ?? r.shortgame_chance)}</td>
@@ -1745,7 +2036,6 @@
       }).join('');
     }
 
-    // 15. Sortierung & Rendering: Teamstatistiken
     function setTeamStatsSort(key) {
       if (currentTeamStatsSortKey === key) {
         currentTeamStatsSortAsc = !currentTeamStatsSortAsc;
@@ -1834,32 +2124,22 @@
       }).join('');
     }
 
-    // 16. Spieler-Profil Modal Steuerung
-    function openPlayerModal(playerName) {
-      const modal = document.getElementById('playerModal');
-      const playerInfo = appData.squad.find(p => p.name === playerName) || {};
-      const playerStats = appData.stats.find(s => (s.player || s.name) === playerName) || {};
-      const playerRecords = appData.records.find(r => (r.player || r.name) === playerName) || {};
-
-      document.getElementById('modalPlayerName').innerText = playerName || 'Unbekannt';
-      document.getElementById('modalPlayerTeam').innerText = formatTeamDisplay(playerInfo.team);
-      document.getElementById('modal3DartAvg').innerText = formatNumber(playerStats.avgSingle ?? playerStats.avg_single ?? playerStats.avg);
-      document.getElementById('modalFirst9Avg').innerText = formatNumber(playerStats.first9Single ?? playerStats.first9_single ?? playerStats.first9);
-      document.getElementById('modalMaxAvgSingle').innerText = formatNumber(playerStats.avgDouble ?? playerStats.avg_double);
-      document.getElementById('modalMaxAvgDouble').innerText = formatNumber(playerStats.first9Double ?? playerStats.first9_double);
-      document.getElementById('modal180s').innerText = playerRecords.r180 ?? playerRecords['180'] ?? 0;
-      document.getElementById('modal140s').innerText = playerRecords.r140 ?? playerRecords['140'] ?? 0;
-      document.getElementById('modalHighfinish').innerText = playerRecords.highfinish || 'Keine vorhanden';
-      document.getElementById('modalShortgames').innerText = playerRecords.shortgame || 'Keine vorhanden';
-
-      modal.classList.remove('hidden');
+    function navigateToPlayerProfile(playerName) {
+      if (!playerName) return;
+      const select = document.getElementById('profilePlayerSelect');
+      if (select) {
+        if (!select.options.length || select.options[0].value === "") {
+          populateProfileDropdown();
+        }
+        let matchedOption = Array.from(select.options).find(opt => opt.value.trim().toLowerCase() === playerName.trim().toLowerCase());
+        if (matchedOption) {
+          select.value = matchedOption.value;
+        }
+      }
+      switchTab('playerProfile');
+      renderPlayerProfile();
     }
 
-    function closePlayerModal() {
-      document.getElementById('playerModal').classList.add('hidden');
-    }
-
-    // 17. Initialisierung beim Laden der Seite
     window.addEventListener('DOMContentLoaded', () => {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -1867,6 +2147,7 @@
           appData = JSON.parse(cached);
           appData.matches = firebaseListToArray(appData.matches);
           appData.squad = firebaseListToArray(appData.squad || appData.Kader || appData.players);
+          appData.playerProfile = firebaseListToArray(appData.playerProfile || appData.Spielerprofil);
           appData.stats = firebaseListToArray(appData.stats || appData.Averages);
           appData.records = firebaseListToArray(appData.records || appData.Bestleistungen);
           appData.gameStats = firebaseListToArray(appData.gameStats || appData.Spielstatistiken);
@@ -1882,7 +2163,6 @@
       listenToDatabase();
     });
 
-    // 18. Globale Schnittstelle für HTML-Inline-Events
     window.switchTab = switchTab;
     window.handleGlobalSearch = handleGlobalSearch;
     window.clearGlobalSearch = clearGlobalSearch;
@@ -1896,8 +2176,8 @@
     window.setStatsSort = setStatsSort;
     window.setRecordsSort = setRecordsSort;
     window.setTeamStatsSort = setTeamStatsSort;
-    window.openPlayerModal = openPlayerModal;
-    window.closePlayerModal = closePlayerModal;
+    window.navigateToPlayerProfile = navigateToPlayerProfile;
+    window.renderPlayerProfile = renderPlayerProfile;
     window.renderHome = renderHome;
     window.renderMatches = renderMatches;
     window.renderPlayers = renderPlayers;
