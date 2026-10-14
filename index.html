@@ -523,7 +523,7 @@
                   Legs <span id="gsort-icon-legs" class="ml-1"></span>
                 </th>
                 <th onclick="setGameStatsSort('legsWonPct')" class="px-4 py-4 sortable-header">
-                  gewonnene Legs in % <span id="gsort-icon-legsWonPct" class="ml-1"></span>
+                  Legquote <span id="gsort-icon-legsWonPct" class="ml-1"></span>
                 </th>
                 <th onclick="setGameStatsSort('winsSingle')" class="px-4 py-4 sortable-header">
                   Siege (Einzel) <span id="gsort-icon-winsSingle" class="ml-1"></span>
@@ -539,6 +539,9 @@
                 </th>
                 <th onclick="setGameStatsSort('winRateTotal')" class="px-4 py-4 sortable-header">
                   Siegquote (Gesamt) <span id="gsort-icon-winRateTotal" class="ml-1"></span>
+                </th>
+                <th onclick="setGameStatsSort('duration')" class="px-4 py-4 sortable-header">
+                  Gesamtspieldauer <span id="gsort-icon-duration" class="ml-1"></span>
                 </th>
               </tr>
             </thead>
@@ -749,7 +752,7 @@
 
 
     // 2. Globale Konstanten & App-Daten
-    const CACHE_KEY = "svg_dart_app_data_v5";
+    const CACHE_KEY = "svg_dart_app_data_v6";
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
       "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
@@ -775,12 +778,27 @@
     let currentRecordsSortKey = 'specials';
     let currentRecordsSortAsc = false;
 
-    // Hilfsfunktion: Verwandelt Firebase-Objektlisten sicher in echte Arrays
+    // Hilfsfunktion: Verwandelt Firebase-Objekte in Arrays und bewahrt den Key als Original-ID
     function firebaseListToArray(val) {
       if (!val) return [];
-      if (Array.isArray(val)) return val.filter(Boolean);
-      if (typeof val === 'object') return Object.keys(val).map(key => val[key]);
+      if (Array.isArray(val)) {
+        return val.map((item, index) => item ? { ...item, _dbKey: item.id || `eintrag_${index}` } : null).filter(Boolean);
+      }
+      if (typeof val === 'object') {
+        return Object.keys(val).map(key => {
+          const item = val[key];
+          if (!item) return null;
+          return { ...item, _dbKey: item.id || key };
+        }).filter(Boolean);
+      }
       return [];
+    }
+
+    // Extrahiert eine numerische ID aus Keys wie "eintrag_1" -> 1
+    function extractNumericId(dbKey) {
+      if (!dbKey) return '-';
+      const match = String(dbKey).match(/(\d+)$/);
+      return match ? match[1] : dbKey;
     }
 
     // Hilfsfunktionen für Navigation, Iframe & Teams
@@ -833,15 +851,23 @@
       return isNaN(num) ? val : num.toFixed(2);
     }
 
+    // Konvertiert Dezimalwerte (0.6, 1 etc.) oder Prozentwerte in einheitliche Prozentanzeige
     function formatPercent(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const str = String(val).replace(',', '.').trim();
       const num = parseFloat(str);
       if (isNaN(num)) return val;
-      return str.includes('%') ? str : `${num.toFixed(1)}%`;
+      if (str.includes('%')) {
+        return `${num.toFixed(1)}%`;
+      }
+      // Wenn der Wert zwischen 0 und 1 liegt (oder genau 1), als Dezimalprozent interpretieren
+      if (num >= 0 && num <= 1) {
+        return `${(num * 100).toFixed(1)}%`.replace('.0%', '%');
+      }
+      return `${num.toFixed(1)}%`;
     }
 
-    // Spezifische Formatierung für die Shortgame-Chance (Dezimalwert zu Prozent umrechnen)
+    // Spezifische Formatierung für die Shortgame-Chance
     function formatShortgameChance(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const str = String(val).replace(',', '.').trim();
@@ -1253,10 +1279,10 @@
       });
 
       playersList.sort((a, b) => {
-        const idA = parseInt(a.id, 10);
-        const idB = parseInt(b.id, 10);
+        const idA = parseInt(extractNumericId(a._dbKey), 10);
+        const idB = parseInt(extractNumericId(b._dbKey), 10);
         if (isNaN(idA) && isNaN(idB)) {
-          return String(a.id || '').localeCompare(String(b.id || ''), undefined, { numeric: true });
+          return String(a._dbKey || '').localeCompare(String(b._dbKey || ''), undefined, { numeric: true });
         }
         if (isNaN(idA)) return 1;
         if (isNaN(idB)) return -1;
@@ -1270,6 +1296,7 @@
 
       tbody.innerHTML = playersList.map(p => {
         const playerName = p.name || '';
+        const numericId = extractNumericId(p._dbKey);
         const isMatch = globalSearchQuery && playerName.toLowerCase().includes(globalSearchQuery);
         const rowClass = isMatch 
           ? 'bg-yellow-500/20 border-l-4 border-yellow-400 transition' 
@@ -1277,7 +1304,7 @@
 
         return `
           <tr class="${rowClass}">
-            <td class="px-6 py-4 text-xs text-neutral-500">${p.id || '-'}</td>
+            <td class="px-6 py-4 text-xs text-neutral-500 font-bold">${numericId}</td>
             <td class="px-6 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${playerName}')">${playerName}</td>
             <td class="px-6 py-4 text-neutral-300">${p.team || '-'}</td>
           </tr>
@@ -1292,13 +1319,13 @@
         currentGameStatsSortAsc = !currentGameStatsSortAsc;
       } else {
         currentGameStatsSortKey = key;
-        currentGameStatsSortAsc = key === 'player';
+        currentGameStatsSortAsc = key === 'player' || key === 'duration';
       }
       renderGameStats();
     }
 
     function updateGameStatsSortIcons() {
-      const keys = ['player', 'games', 'legs', 'legsWonPct', 'winsSingle', 'winRateSingle', 'winsDouble', 'winRateDouble', 'winRateTotal'];
+      const keys = ['player', 'games', 'legs', 'legsWonPct', 'winsSingle', 'winRateSingle', 'winsDouble', 'winRateDouble', 'winRateTotal', 'duration'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`gsort-icon-${k}`);
         if (!iconEl) return;
@@ -1369,6 +1396,7 @@
         if (key === 'winsDouble') return parseNumeric(item.winsDouble ?? item.wins_double ?? item.siegeDoppel);
         if (key === 'winRateDouble') return parseNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
         if (key === 'winRateTotal') return parseNumeric(item.winRateTotal ?? item.win_rate_total ?? item.siegquoteGesamt);
+        if (key === 'duration') return item.duration || '';
         return 0;
       };
 
@@ -1380,7 +1408,7 @@
       });
 
       if (!sortedData.length) {
-        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-neutral-500">Keine Spielstatistiken gefunden.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" class="px-6 py-8 text-center text-neutral-500">Keine Spielstatistiken gefunden.</td></tr>`;
         return;
       }
 
@@ -1412,6 +1440,7 @@
             <td class="px-4 py-4 text-neutral-300 font-semibold">${g.winsDouble ?? g.wins_double ?? g.siegeDoppel ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-300">${formatPercent(g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel)}</td>
             <td class="px-4 py-4 text-white font-extrabold">${formatPercent(g.winRateTotal ?? g.win_rate_total ?? g.siegquoteGesamt)}</td>
+            <td class="px-4 py-4 text-neutral-300">${g.duration || '-'}</td>
           </tr>
         `;
       }).join('');
