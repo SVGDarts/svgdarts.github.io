@@ -227,6 +227,12 @@
       <button onclick="switchTab('records')" id="tab-records" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
         <i class="fa-solid fa-trophy text-xs"></i> Bestleistungen
       </button>
+      <button onclick="switchTab('teamStats')" id="tab-teamStats" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-shield-halved text-xs"></i> Teamstatistiken
+      </button>
+      <button onclick="switchTab('playerProfile')" id="tab-playerProfile" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+        <i class="fa-solid fa-id-card text-xs"></i> Spielerprofil
+      </button>
     </nav>
 
     </div>
@@ -678,6 +684,64 @@
       </div>
     </section>
 
+    <!-- Reiter 6: Teamstatistiken -->
+    <section id="content-teamStats" class="space-y-6 hidden">
+      <div class="flex flex-row justify-between items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold font-display text-white">Teamstatistiken</h2>
+          <p class="text-xs text-neutral-400 mt-1">Klicke auf eine Spaltenüberschrift, um nach dieser Kategorie zu sortieren.</p>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl table-container shadow-2xl">
+          <table class="w-full text-left text-sm text-neutral-300">
+            <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
+              <tr>
+                <th class="px-4 py-4 w-12 text-center">Rang</th>
+                <th onclick="setTeamStatsSort('team')" class="px-4 py-4 sortable-header">
+                  Team <span id="tsort-icon-team" class="ml-1"></span>
+                </th>
+                <th onclick="setTeamStatsSort('avg')" class="px-4 py-4 sortable-header">
+                  Average <span id="tsort-icon-avg" class="ml-1"></span>
+                </th>
+                <th onclick="setTeamStatsSort('first9')" class="px-4 py-4 sortable-header">
+                  First 9 <span id="tsort-icon-first9" class="ml-1"></span>
+                </th>
+                <th onclick="setTeamStatsSort('avgSingle')" class="px-4 py-4 sortable-header">
+                  Average (Einzel) <span id="tsort-icon-avgSingle" class="ml-1"></span>
+                </th>
+                <th onclick="setTeamStatsSort('avgDouble')" class="px-4 py-4 sortable-header">
+                  Average (Doppel) <span id="tsort-icon-avgDouble" class="ml-1"></span>
+                </th>
+                <th onclick="setTeamStatsSort('durationMatchday')" class="px-4 py-4 sortable-header">
+                  Dauer Spieltag <span id="tsort-icon-durationMatchday" class="ml-1"></span>
+                </th>
+                <th onclick="setTeamStatsSort('durationPerSingle')" class="px-4 py-4 sortable-header">
+                  Dauer Einzel <span id="tsort-icon-durationPerSingle" class="ml-1"></span>
+                </th>
+                <th onclick="setTeamStatsSort('durationPerDouble')" class="px-4 py-4 sortable-header">
+                  Dauer Doppel <span id="tsort-icon-durationPerDouble" class="ml-1"></span>
+                </th>
+              </tr>
+            </thead>
+            <tbody id="teamStatsTable" class="divide-y divide-neutral-800/60"></tbody>
+          </table>
+      </div>
+    </section>
+
+    <!-- Reiter 7: Spielerprofil -->
+    <section id="content-playerProfile" class="space-y-6 hidden">
+      <div class="flex flex-row justify-between items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold font-display text-white">Spielerprofil</h2>
+          <p class="text-xs text-neutral-400 mt-1">Hier entsteht die neue Spielerprofil-Ansicht.</p>
+        </div>
+      </div>
+      <div class="glass-card rounded-2xl p-8 text-center text-neutral-400">
+        Inhalt folgt...
+      </div>
+    </section>
+
 
   </main>
 
@@ -787,7 +851,7 @@
 
 
     // 2. Globale Konstanten & App-Daten
-    const CACHE_KEY = "svg_dart_app_data_v9";
+    const CACHE_KEY = "svg_dart_app_data_v10";
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
       "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
@@ -802,7 +866,7 @@
       "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree"
     };
 
-    let appData = { matches: [], squad: [], stats: [], records: [], gameStats: [] };
+    let appData = { matches: [], squad: [], stats: [], records: [], gameStats: [], teamStats: [] };
     let activeTab = 'home';
     let globalSearchQuery = '';
 
@@ -812,6 +876,8 @@
     let currentStatsSortAsc = false;
     let currentRecordsSortKey = 'specials';
     let currentRecordsSortAsc = false;
+    let currentTeamStatsSortKey = 'avg';
+    let currentTeamStatsSortAsc = false;
 
     // Hilfsfunktion: Verwandelt Firebase-Objekte in Arrays und bewahrt den Key als Original-ID
     function firebaseListToArray(val) {
@@ -937,7 +1003,6 @@
       return isNaN(num) ? 0 : num;
     }
 
-    // Extrahiert die erste Zahl aus Strings wie "120 (1x)" oder "14 Darts"
     function parseBracketsNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return 0;
       const str = String(val);
@@ -1073,6 +1138,7 @@
       renderGameStats();
       renderStats();
       renderRecords();
+      renderTeamStats();
     }
 
     function clearGlobalSearch() {
@@ -1092,7 +1158,8 @@
             squad: firebaseListToArray(data.Kader || data.Squad || data.squad || data.Spielerdatenbank || data.Spieler || data.players),
             stats: firebaseListToArray(data.Averages || data.stats),
             records: firebaseListToArray(data.Bestleistungen || data.records),
-            gameStats: firebaseListToArray(data.Spielstatistiken || data.gameStats || data.game_stats)
+            gameStats: firebaseListToArray(data.Spielstatistiken || data.gameStats || data.game_stats),
+            teamStats: firebaseListToArray(data.Teamstatistiken || data.teamStats || data.team_stats)
           };
 
           localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
@@ -1178,6 +1245,7 @@
       renderGameStats();
       renderStats();
       renderRecords();
+      renderTeamStats();
     }
 
 
@@ -1673,7 +1741,96 @@
       }).join('');
     }
 
-    // 15. Spieler-Profil Modal Steuerung
+    // 15. Sortierung & Rendering: Teamstatistiken
+    function setTeamStatsSort(key) {
+      if (currentTeamStatsSortKey === key) {
+        currentTeamStatsSortAsc = !currentTeamStatsSortAsc;
+      } else {
+        currentTeamStatsSortKey = key;
+        currentTeamStatsSortAsc = key === 'team' || key.includes('duration');
+      }
+      renderTeamStats();
+    }
+
+    function updateTeamStatsSortIcons() {
+      const keys = ['team', 'avg', 'first9', 'avgSingle', 'avgDouble', 'durationMatchday', 'durationPerSingle', 'durationPerDouble'];
+      keys.forEach(k => {
+        const iconEl = document.getElementById(`tsort-icon-${k}`);
+        if (!iconEl) return;
+        if (k === currentTeamStatsSortKey) {
+          iconEl.innerHTML = currentTeamStatsSortAsc 
+            ? '<i class="fa-solid fa-arrow-up text-white"></i>' 
+            : '<i class="fa-solid fa-arrow-down text-white"></i>';
+        } else {
+          iconEl.innerHTML = '<i class="fa-solid fa-sort text-neutral-600"></i>';
+        }
+      });
+    }
+
+    function renderTeamStats() {
+      const tbody = document.getElementById('teamStatsTable');
+      if (!tbody) return;
+
+      updateTeamStatsSortIcons();
+      let sortedTeamData = [...appData.teamStats];
+
+      const getVal = (item, key) => {
+        if (key === 'team') return item.team || item.name || '';
+        if (key === 'avg') return parseNumeric(item.avg);
+        if (key === 'first9') return parseNumeric(item.first9 ?? item.first_9);
+        if (key === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avg_single);
+        if (key === 'avgDouble') return parseNumeric(item.avgDouble ?? item.avg_double);
+        if (key === 'durationMatchday') return item.durationMatchday || item.duration_matchday || '';
+        if (key === 'durationPerSingle') return item.durationPerSingle || item.duration_per_single || '';
+        if (key === 'durationPerDouble') return item.durationPerDouble || item.duration_per_double || '';
+        return 0;
+      };
+
+      sortedTeamData.sort((a, b) => {
+        const valA = getVal(a, currentTeamStatsSortKey);
+        const valB = getVal(b, currentTeamStatsSortKey);
+        if (typeof valA === 'string') return currentTeamStatsSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        return currentTeamStatsSortAsc ? valA - valB : valB - valA;
+      });
+
+      if (!sortedTeamData.length) {
+        tbody.innerHTML = `<tr><td colspan="9" class="px-6 py-8 text-center text-neutral-500">Keine Teamstatistiken gefunden.</td></tr>`;
+        return;
+      }
+
+      let currentRank = 0;
+      let previousVal = null;
+
+      tbody.innerHTML = sortedTeamData.map((t, idx) => {
+        const val = getVal(t, currentTeamStatsSortKey);
+        if (val !== previousVal) {
+          currentRank = idx + 1;
+          previousVal = val;
+        }
+        const teamName = t.team || t.name || '-';
+
+        const isMatch = globalSearchQuery && teamName.toLowerCase().includes(globalSearchQuery);
+        const rowClass = isMatch 
+          ? 'bg-yellow-500/20 border-l-4 border-yellow-400 transition' 
+          : 'hover:bg-neutral-900/60 transition';
+
+        return `
+          <tr class="${rowClass}">
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white whitespace-nowrap">${teamName}</td>
+            <td class="px-4 py-4 text-white font-extrabold">${formatNumber(t.avg)}</td>
+            <td class="px-4 py-4 text-neutral-200">${formatNumber(t.first9 ?? t.first_9)}</td>
+            <td class="px-4 py-4 text-neutral-200">${formatNumber(t.avgSingle ?? t.avg_single)}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatNumber(t.avgDouble ?? t.avg_double)}</td>
+            <td class="px-4 py-4 text-neutral-300">${t.durationMatchday || t.duration_matchday || '-'}</td>
+            <td class="px-4 py-4 text-neutral-300">${t.durationPerSingle || t.duration_per_single || '-'}</td>
+            <td class="px-4 py-4 text-neutral-400">${t.durationPerDouble || t.duration_per_double || '-'}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // 16. Spieler-Profil Modal Steuerung
     function openPlayerModal(playerName) {
       const modal = document.getElementById('playerModal');
       const playerInfo = appData.squad.find(p => p.name === playerName) || {};
@@ -1698,7 +1855,7 @@
       document.getElementById('playerModal').classList.add('hidden');
     }
 
-    // 16. Initialisierung beim Laden der Seite
+    // 17. Initialisierung beim Laden der Seite
     window.addEventListener('DOMContentLoaded', () => {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -1709,6 +1866,7 @@
           appData.stats = firebaseListToArray(appData.stats || appData.Averages);
           appData.records = firebaseListToArray(appData.records || appData.Bestleistungen);
           appData.gameStats = firebaseListToArray(appData.gameStats || appData.Spielstatistiken);
+          appData.teamStats = firebaseListToArray(appData.teamStats || appData.Teamstatistiken);
           
           populateMatchFilters();
           renderAllTables();
@@ -1720,7 +1878,7 @@
       listenToDatabase();
     });
 
-    // 17. Globale Schnittstelle für HTML-Inline-Events
+    // 18. Globale Schnittstelle für HTML-Inline-Events
     window.switchTab = switchTab;
     window.handleGlobalSearch = handleGlobalSearch;
     window.clearGlobalSearch = clearGlobalSearch;
@@ -1733,6 +1891,7 @@
     window.setGameStatsSort = setGameStatsSort;
     window.setStatsSort = setStatsSort;
     window.setRecordsSort = setRecordsSort;
+    window.setTeamStatsSort = setTeamStatsSort;
     window.openPlayerModal = openPlayerModal;
     window.closePlayerModal = closePlayerModal;
     window.renderHome = renderHome;
@@ -1741,6 +1900,7 @@
     window.renderGameStats = renderGameStats;
     window.renderStats = renderStats;
     window.renderRecords = renderRecords;
+    window.renderTeamStats = renderTeamStats;
   </script>
 </body>
 </html>
