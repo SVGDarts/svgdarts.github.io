@@ -764,7 +764,7 @@
       "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree"
     };
 
-    let appData = { matches: [], players: [], stats: [], records: [], gameStats: [], notes: [] };
+    let appData = { matches: [], squad: [], stats: [], records: [], gameStats: [] };
     let activeTab = 'home';
     let globalSearchQuery = '';
 
@@ -1001,7 +1001,7 @@
 
           appData = {
             matches: firebaseListToArray(data.Spielplan || data.Spiele || data.matches),
-            players: firebaseListToArray(data.Spielerdatenbank || data.Spieler || data.players),
+            squad: firebaseListToArray(data.Kader || data.Squad || data.squad || data.Spielerdatenbank || data.Spieler || data.players),
             stats: firebaseListToArray(data.Averages || data.stats),
             records: firebaseListToArray(data.Bestleistungen || data.records),
             gameStats: firebaseListToArray(data.Spielstatistiken || data.gameStats || data.game_stats)
@@ -1321,7 +1321,7 @@
     }
 
     function calculatePlayerGamesDisplay(playerName, actualGames) {
-      const playerObj = appData.players.find(p => String(p.name || '').trim().toLowerCase() === String(playerName || '').trim().toLowerCase());
+      const playerObj = appData.squad.find(p => String(p.name || '').trim().toLowerCase() === String(playerName || '').trim().toLowerCase());
       if (!playerObj || !playerObj.team) return `${actualGames || 0}/0`;
 
       const teamParts = String(playerObj.team).split('/').map(s => s.trim());
@@ -1606,7 +1606,7 @@
             // 16. Spieler-Profil Modal Steuerung
     function openPlayerModal(playerName) {
       const modal = document.getElementById('playerModal');
-      const playerInfo = appData.players.find(p => p.name === playerName) || {};
+      const playerInfo = appData.squad.find(p => p.name === playerName) || {};
       const playerStats = appData.stats.find(s => (s.player || s.name) === playerName) || {};
       const playerRecords = appData.records.find(r => (r.player || r.name) === playerName) || {};
 
@@ -1635,7 +1635,7 @@
         try {
           appData = JSON.parse(cached);
           appData.matches = firebaseListToArray(appData.matches);
-          appData.players = firebaseListToArray(appData.players);
+          appData.squad = firebaseListToArray(appData.squad || appData.players);
           appData.stats = firebaseListToArray(appData.stats);
           appData.records = firebaseListToArray(appData.records);
           appData.gameStats = firebaseListToArray(appData.gameStats);
