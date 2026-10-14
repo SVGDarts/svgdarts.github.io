@@ -976,9 +976,6 @@
 
       if (globalSearchQuery.length > 0) {
         clearBtn.classList.remove('hidden');
-        if (activeTab === 'matches' || activeTab === 'home' || activeTab === 'tables' || activeTab === 'livegames') {
-          switchTab('players');
-        }
       } else {
         clearBtn.classList.add('hidden');
       }
@@ -1245,16 +1242,14 @@
     }
 
     function renderPlayers() {
-      const tbody = document.getElementById('playersTable');
+      const tbody = document.getElementById('squad');
       if (!tbody) return;
 
       const selectedFilter = document.getElementById('playerTeamFilter')?.value || '';
 
-      let filteredPlayers = appData.players.filter(p => {
-        const nameMatch = !globalSearchQuery || String(p.name || '').toLowerCase().includes(globalSearchQuery);
-        if (!nameMatch) return false;
+      // Hier wird nur nach Team gefiltert, die globale Suche filtert nicht mehr heraus
+      let playersList = appData.players.filter(p => {
         if (!selectedFilter) return true;
-        
         const { letter, numbers } = parsePlayerTeamTokens(p.team);
         if (/^[A-G]$/i.test(selectedFilter)) {
           return letter === selectedFilter.toUpperCase();
@@ -1264,8 +1259,8 @@
         return true;
       });
 
-      // Numerische, natürliche Sortierung nach ID (1, 2, 3 ... statt 1, 10, 13)
-      filteredPlayers.sort((a, b) => {
+      // Numerische, natürliche Sortierung nach ID
+      playersList.sort((a, b) => {
         const idA = parseInt(a.id, 10);
         const idB = parseInt(b.id, 10);
         if (isNaN(idA) && isNaN(idB)) {
@@ -1276,18 +1271,26 @@
         return idA - idB;
       });
 
-      if (!filteredPlayers.length) {
+      if (!playersList.length) {
         tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-neutral-500">Keine Spieler gefunden.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = filteredPlayers.map(p => `
-        <tr class="hover:bg-neutral-900/60 transition">
-          <td class="px-6 py-4 text-xs text-neutral-500">${p.id || '-'}</td>
-          <td class="px-6 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${p.name}')">${p.name || '-'}</td>
-          <td class="px-6 py-4 text-neutral-300">${p.team || '-'}</td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = playersList.map(p => {
+        const playerName = p.name || '';
+        const isMatch = globalSearchQuery && playerName.toLowerCase().includes(globalSearchQuery);
+        const rowClass = isMatch 
+          ? 'bg-yellow-500/20 border-l-4 border-yellow-400 transition' 
+          : 'hover:bg-neutral-900/60 transition';
+
+        return `
+          <tr class="${rowClass}">
+            <td class="px-6 py-4 text-xs text-neutral-500">${p.id || '-'}</td>
+            <td class="px-6 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="openPlayerModal('${playerName}')">${playerName}</td>
+            <td class="px-6 py-4 text-neutral-300">${p.team || '-'}</td>
+          </tr>
+        `;
+      }).join('');
     }
 
 
@@ -1362,10 +1365,7 @@
       if (!tbody) return;
 
       updateGameStatsSortIcons();
-      let sortedData = appData.gameStats.filter(g => {
-        const name = g.player || g.name || '';
-        return !globalSearchQuery || name.toLowerCase().includes(globalSearchQuery);
-      });
+      let sortedData = [...appData.gameStats];
 
       const getVal = (item, key) => {
         if (key === 'player') return item.player || item.name || '';
@@ -1402,8 +1402,14 @@
           previousVal = val;
         }
         const playerName = g.player || g.name || '-';
+        
+        const isMatch = globalSearchQuery && playerName.toLowerCase().includes(globalSearchQuery);
+        const rowClass = isMatch 
+          ? 'bg-yellow-500/20 border-l-4 border-yellow-400 transition' 
+          : 'hover:bg-neutral-900/60 transition';
+
         return `
-          <tr class="hover:bg-neutral-900/60 transition">
+          <tr class="${rowClass}">
             <td class="px-4 py-4 text-center text-neutral-500 font-bold sticky-col-1">${currentRank}</td>
             <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap sticky-col-2" onclick="openPlayerModal('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-neutral-300">${calculatePlayerGamesDisplay(playerName, g.games ?? g.spiele ?? 0)}</td>
@@ -1449,10 +1455,7 @@
       if (!tbody) return;
 
       updateStatsSortIcons();
-      let sortedStats = appData.stats.filter(s => {
-        const name = s.player || s.name || '';
-        return !globalSearchQuery || name.toLowerCase().includes(globalSearchQuery);
-      });
+      let sortedStats = [...appData.stats];
 
       const getVal = (item, key) => {
         if (key === 'player') return item.player || item.name || '';
@@ -1489,8 +1492,14 @@
           previousVal = val;
         }
         const playerName = s.player || s.name || '-';
+
+        const isMatch = globalSearchQuery && playerName.toLowerCase().includes(globalSearchQuery);
+        const rowClass = isMatch 
+          ? 'bg-yellow-500/20 border-l-4 border-yellow-400 transition' 
+          : 'hover:bg-neutral-900/60 transition';
+
         return `
-          <tr class="hover:bg-neutral-900/60 transition">
+          <tr class="${rowClass}">
             <td class="px-4 py-4 text-center text-neutral-500 font-bold sticky-col-1">${currentRank}</td>
             <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap sticky-col-2" onclick="openPlayerModal('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
@@ -1536,10 +1545,7 @@
       if (!tbody) return;
 
       updateRecordsSortIcons();
-      let sortedRecords = appData.records.filter(r => {
-        const name = r.player || r.name || '';
-        return !globalSearchQuery || name.toLowerCase().includes(globalSearchQuery);
-      });
+      let sortedRecords = [...appData.records];
 
       const getVal = (item, key) => {
         if (key === 'player') return item.player || item.name || '';
@@ -1575,8 +1581,14 @@
           previousVal = val;
         }
         const playerName = r.player || r.name || '-';
+
+        const isMatch = globalSearchQuery && playerName.toLowerCase().includes(globalSearchQuery);
+        const rowClass = isMatch 
+          ? 'bg-yellow-500/20 border-l-4 border-yellow-400 transition' 
+          : 'hover:bg-neutral-900/60 transition';
+
         return `
-          <tr class="hover:bg-neutral-900/60 transition">
+          <tr class="${rowClass}">
             <td class="px-4 py-4 text-center text-neutral-500 font-bold sticky-col-1">${currentRank}</td>
             <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap sticky-col-2" onclick="openPlayerModal('${playerName}')">${playerName}</td>
             <td class="px-4 py-4 text-white font-bold">${r.specials ?? '-'}</td>
