@@ -202,36 +202,6 @@
             </button>
           </div>
 
-          <div class="relative">
-            <button id="notesToggleBtn" onclick="toggleNotesDropdown()" class="px-3 py-2 bg-black hover:bg-neutral-900 text-white rounded-xl flex items-center gap-2 border border-neutral-700 transition shadow-sm text-xs font-semibold">
-              <i class="fa-solid fa-pen-to-square text-yellow-400"></i>
-              <span>Vorschläge</span>
-              <span id="notesBadge" class="hidden bg-neutral-700 text-white text-xs px-1.5 py-0.5 rounded-full font-mono">0</span>
-            </button>
-
-            <div id="notesDropdown" class="hidden absolute right-0 mt-2 w-80 sm:w-96 glass-card bg-neutral-950 border border-neutral-800 rounded-2xl shadow-2xl p-4 z-50">
-              <div class="flex items-center justify-between border-b border-neutral-800 pb-2 mb-3">
-                <h3 class="text-sm font-bold font-display text-white flex items-center gap-2">
-                  <i class="fa-solid fa-pen-to-square text-yellow-400"></i> Änderungen
-                </h3>
-                <button onclick="toggleNotesDropdown()" class="text-neutral-400 hover:text-white text-xs">
-                  <i class="fa-solid fa-xmark"></i>
-                </button>
-              </div>
-
-              <div class="space-y-2 mb-4">
-                <textarea id="newNoteInput" rows="2" placeholder="Änderung eintragen..." class="w-full bg-black border border-neutral-700 rounded-xl p-2.5 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-white resize-none"></textarea>
-                <button onclick="submitNewNote()" id="submitNoteBtn" class="w-full py-2 bg-white text-black font-bold text-xs rounded-xl hover:bg-neutral-200 transition flex items-center justify-center gap-1.5">
-                  <i class="fa-solid fa-paper-plane"></i> Vorschlag speichern
-                </button>
-              </div>
-
-              <div class="space-y-2 max-h-60 overflow-y-auto pr-1" id="notesListContainer">
-                <div class="text-center py-4 text-xs text-neutral-500">Lade Vorschläge...</div>
-              </div>
-            </div>
-          </div>
-
           <a href="https://www.instagram.com/svgdarts/?hl=de" target="_blank" rel="noopener noreferrer" title="SVG Göttingen Darts auf Instagram" class="p-2.5 bg-black hover:bg-neutral-900 text-white hover:text-pink-500 rounded-xl flex items-center justify-center border border-neutral-700 transition shadow-sm text-sm font-medium">
             <i class="fa-brands fa-instagram text-lg"></i>
           </a>
@@ -1037,8 +1007,7 @@
             players: firebaseListToArray(data.Spielerdatenbank || data.Spieler || data.players),
             stats: firebaseListToArray(data.Averages || data.stats),
             records: firebaseListToArray(data.Bestleistungen || data.records),
-            gameStats: firebaseListToArray(data.Spielstatistiken || data.gameStats || data.game_stats),
-            notes: Object.keys(rawNotes).map(key => ({ rowIndex: key, ...rawNotes[key] }))
+            gameStats: firebaseListToArray(data.Spielstatistiken || data.gameStats || data.game_stats)
           };
 
           localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
@@ -1053,81 +1022,6 @@
     }
 
 
-
-                // 9. Vorschlagswesen (Notes) - Echtzeit über Firebase (Datenbankpfad: 'Vorschläge')
-    function toggleNotesDropdown() {
-      const dropdown = document.getElementById('notesDropdown');
-      dropdown.classList.toggle('hidden');
-    }
-
-    function renderNotes() {
-      const container = document.getElementById('notesListContainer');
-      const badge = document.getElementById('notesBadge');
-      const notes = appData.notes || [];
-
-      if (notes.length > 0) {
-        badge.innerText = notes.length;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
-      }
-
-      if (!notes.length) {
-        container.innerHTML = `<div class="text-center py-4 text-xs text-neutral-500">Keine Änderungen vorhanden.</div>`;
-        return;
-      }
-
-      container.innerHTML = notes.slice().reverse().map(note => {
-        return `
-          <div class="bg-black border border-neutral-800 rounded-xl p-3 flex items-start justify-between gap-2">
-            <div class="space-y-1 overflow-hidden">
-              <p class="text-xs font-medium text-white break-words leading-snug">
-                ${note.text}${note.datum ? ` (${note.datum})` : ''}
-              </p>
-            </div>
-            <button onclick="deleteNote('${note.rowIndex}')" class="text-neutral-500 hover:text-red-400 p-1 transition flex-shrink-0" title="Löschen">
-              <i class="fa-solid fa-trash-can text-xs"></i>
-            </button>
-          </div>
-        `;
-      }).join('');
-    }
-
-    async function submitNewNote() {
-      const input = document.getElementById('newNoteInput');
-      const text = input.value.trim();
-      if (!text) return;
-
-      const btn = document.getElementById('submitNoteBtn');
-      btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Speichern...`;
-
-      const now = new Date();
-      const pad = n => String(n).padStart(2, '0');
-      const nowStr = `${pad(now.getDate())}.${pad(now.getMonth() + 1)}.${now.getFullYear()}, ${pad(now.getHours())}:${pad(now.getMinutes())}`;
-
-      try {
-        // Pfad in Firebase angepasst auf 'Vorschläge'
-        await push(ref(db, 'Vorschläge'), { text, datum: nowStr });
-        input.value = '';
-      } catch (err) {
-        console.error("Fehler beim Speichern:", err);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Vorschlag speichern`;
-      }
-    }
-
-    async function deleteNote(noteId) {
-      if (confirm("Möchtest du diese Änderung wirklich löschen?")) {
-        try {
-          // Pfad in Firebase angepasst auf 'Vorschläge'
-          await remove(ref(db, `Vorschläge/${noteId}`));
-        } catch (err) {
-          console.error("Fehler beim Löschen:", err);
-        }
-      }
-    }
 
     // 10. Filter-Populierungen & Resets
     function populateMatchFilters() {
@@ -1748,9 +1642,6 @@
 
     // 18. Globale Schnittstelle für HTML-Inline-Events (da Modul-Scope)
     window.switchTab = switchTab;
-    window.deleteNote = deleteNote;
-    window.submitNewNote = submitNewNote;
-    window.toggleNotesDropdown = toggleNotesDropdown;
     window.handleGlobalSearch = handleGlobalSearch;
     window.clearGlobalSearch = clearGlobalSearch;
     window.changeTableIframe = changeTableIframe;
