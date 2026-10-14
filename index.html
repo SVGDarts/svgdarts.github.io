@@ -12,6 +12,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+  <!-- HTML2PDF und HTML2Canvas für den Export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   
     <style>
     html { overflow-x: auto; }
@@ -729,7 +732,7 @@
 
     <!-- Reiter 7: Spielerprofil -->
     <section id="content-playerProfile" class="space-y-8 hidden">
-      <!-- Kopfbereich: Links Spieler-Dropdown & Team, Rechts Spiele & Legs -->
+      <!-- Kopfbereich: Links Spieler-Dropdown & Team, Rechts Spiele, Legs & Download-Buttons -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-neutral-800 pb-6">
         <div class="flex flex-col items-start gap-1">
           <select id="profilePlayerSelect" onchange="renderPlayerProfile()" class="bg-transparent text-white font-black font-display text-2xl md:text-3xl rounded-xl px-2 py-1 border border-transparent hover:border-neutral-700 focus:outline-none cursor-pointer">
@@ -738,120 +741,132 @@
           <span id="profPlayerTeam" class="text-xs uppercase tracking-widest text-neutral-400 font-semibold px-2">Team -</span>
         </div>
 
-        <div class="glass-card px-6 py-3 rounded-2xl flex flex-col gap-1 text-right">
-          <div class="text-xs text-neutral-300 font-medium">
-            Spiele: <span id="profGamesVal" class="font-bold text-white">-</span>
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Download Buttons -->
+          <div class="flex items-center gap-2">
+            <button onclick="downloadPlayerProfilePDF()" title="Als PDF herunterladen" class="px-3 py-2 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
+              <i class="fa-solid fa-file-pdf text-red-500 text-sm"></i> PDF
+            </button>
+            <button onclick="sharePlayerProfileImage()" title="Als Bild herunterladen" class="px-3 py-2 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
+              <i class="fa-brands fa-instagram text-pink-500 text-sm"></i> Bild
+            </button>
           </div>
-          <div class="text-xs text-neutral-300 font-medium">
-            Legs: <span id="profLegsVal" class="font-bold text-white">-</span>
+
+          <div class="glass-card px-4 py-2.5 rounded-2xl flex flex-col gap-0.5 text-right">
+            <div class="text-[11px] text-neutral-300 font-medium">
+              Spiele: <span id="profGamesVal" class="font-bold text-white">-</span>
+            </div>
+            <div class="text-[11px] text-neutral-300 font-medium">
+              Legs: <span id="profLegsVal" class="font-bold text-white">-</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Sektion 1: Spielstatistiken (2 Reihen mit je 6 Rechtecken) -->
+      <!-- Sektion 1: Spielstatistiken (Erzwungene 6er-Reihe mit angepasster kleiner Schrift für Mobilgeräte) -->
       <div class="space-y-4">
         <h3 class="text-xs uppercase font-bold tracking-widest text-neutral-400">Spielstatistiken</h3>
         
         <!-- Reihe 1: Einzel -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+        <div class="grid grid-cols-6 gap-1.5 md:gap-3">
           <!-- Saison-Einzel -->
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Saison-Einzel</span>
-            <div class="mt-2">
-              <span id="stat-avgSingle" class="text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-avgSingle" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
+            <span class="text-[5.5px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Saison-Einzel</span>
+            <div class="mt-1 md:mt-2">
+              <span id="stat-avgSingle" class="text-xs sm:text-lg md:text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-avgSingle" class="text-[5px] sm:text-[6px] text-neutral-500 font-medium block mt-0.5">-</span>
             </div>
           </div>
           <!-- First 9 Einzel -->
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">First 9 Einzel</span>
-            <div class="mt-2">
-              <span id="stat-first9Single" class="text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-first9Single" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
+            <span class="text-[5.5px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">First 9 Einzel</span>
+            <div class="mt-1 md:mt-2">
+              <span id="stat-first9Single" class="text-xs sm:text-lg md:text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-first9Single" class="text-[5px] sm:text-[6px] text-neutral-500 font-medium block mt-0.5">-</span>
             </div>
           </div>
           <!-- Bestes Einzel -->
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Bestes Einzel</span>
-            <div class="mt-2">
-              <span id="stat-maxAvgSingle" class="text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-maxAvgSingle" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
+            <span class="text-[5.5px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Bestes Einzel</span>
+            <div class="mt-1 md:mt-2">
+              <span id="stat-maxAvgSingle" class="text-xs sm:text-lg md:text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-maxAvgSingle" class="text-[5px] sm:text-[6px] text-neutral-500 font-medium block mt-0.5">-</span>
             </div>
           </div>
           <!-- Bester Einzel-First 9 -->
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Bester Einzel-First 9</span>
-            <div class="mt-2">
-              <span id="stat-maxFirst9Single" class="text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-maxFirst9Single" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
+            <span class="text-[5.5px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Bester Einzel-First 9</span>
+            <div class="mt-1 md:mt-2">
+              <span id="stat-maxFirst9Single" class="text-xs sm:text-lg md:text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-maxFirst9Single" class="text-[5px] sm:text-[6px] text-neutral-500 font-medium block mt-0.5">-</span>
             </div>
           </div>
           <!-- Gegner-Einzelavg -->
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Gegner-Einzelavg</span>
-            <div class="mt-2">
-              <span id="stat-avgOpponentSingle" class="text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-avgOpponentSingle" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
+            <span class="text-[5.5px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Gegner-Einzelavg</span>
+            <div class="mt-1 md:mt-2">
+              <span id="stat-avgOpponentSingle" class="text-xs sm:text-lg md:text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-avgOpponentSingle" class="text-[5px] sm:text-[6px] text-neutral-500 font-medium block mt-0.5">-</span>
             </div>
           </div>
           <!-- Dauer Leg Einzel -->
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Dauer Leg Einzel</span>
-            <div class="mt-2">
-              <span id="stat-durationSingleLeg" class="text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-durationSingleLeg" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
+            <span class="text-[5.5px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Dauer Leg Einzel</span>
+            <div class="mt-1 md:mt-2">
+              <span id="stat-durationSingleLeg" class="text-xs sm:text-base md:text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-durationSingleLeg" class="text-[5px] sm:text-[6px] text-neutral-500 font-medium block mt-0.5">-</span>
             </div>
           </div>
         </div>
 
         <!-- Reihe 2: Doppel -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
+        <div class="grid grid-cols-6 gap-1.5 md:gap-3">
           <!-- Doppel-Average -->
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Doppel-Average</span>
-            <div class="mt-2">
-              <span id="stat-avgDouble" class="text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-avgDouble" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
+            <span class="text-[5.5px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Doppel-Average</span>
+            <div class="mt-1 md:mt-2">
+              <span id="stat-avgDouble" class="text-xs sm:text-lg md:text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-avgDouble" class="text-[5px] sm:text-[6px] text-neutral-500 font-medium block mt-0.5">-</span>
             </div>
           </div>
           <!-- First 9 Doppel -->
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">First 9 Doppel</span>
-            <div class="mt-2">
-              <span id="stat-first9Double" class="text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-first9Double" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
+            <span class="text-[5.5px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">First 9 Doppel</span>
+            <div class="mt-1 md:mt-2">
+              <span id="stat-first9Double" class="text-xs sm:text-lg md:text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-first9Double" class="text-[5px] sm:text-[6px] text-neutral-500 font-medium block mt-0.5">-</span>
             </div>
           </div>
           <!-- Bestes Doppel -->
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Bestes Doppel</span>
-            <div class="mt-2">
-              <span id="stat-maxAvgDouble" class="text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-maxAvgDouble" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
+            <span class="text-[5.5px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Bestes Doppel</span>
+            <div class="mt-1 md:mt-2">
+              <span id="stat-maxAvgDouble" class="text-xs sm:text-lg md:text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-maxAvgDouble" class="text-[5px] sm:text-[6px] text-neutral-500 font-medium block mt-0.5">-</span>
             </div>
           </div>
           <!-- Bester Doppel-First 9 -->
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Bester Doppel-First 9</span>
-            <div class="mt-2">
-              <span id="stat-maxFirst9Double" class="text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-maxFirst9Double" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
+            <span class="text-[5.5px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Bester Doppel-First 9</span>
+            <div class="mt-1 md:mt-2">
+              <span id="stat-maxFirst9Double" class="text-xs sm:text-lg md:text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-maxFirst9Double" class="text-[5px] sm:text-[6px] text-neutral-500 font-medium block mt-0.5">-</span>
             </div>
           </div>
           <!-- Gegner-Doppelavg -->
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Gegner-Doppelavg</span>
-            <div class="mt-2">
-              <span id="stat-avgOpponentDouble" class="text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-avgOpponentDouble" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
+            <span class="text-[5.5px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Gegner-Doppelavg</span>
+            <div class="mt-1 md:mt-2">
+              <span id="stat-avgOpponentDouble" class="text-xs sm:text-lg md:text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-avgOpponentDouble" class="text-[5px] sm:text-[6px] text-neutral-500 font-medium block mt-0.5">-</span>
             </div>
           </div>
           <!-- Dauer Leg Doppel -->
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Dauer Leg Doppel</span>
-            <div class="mt-2">
-              <span id="stat-durationDoubleLeg" class="text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-durationDoubleLeg" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
+          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
+            <span class="text-[5.5px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Dauer Leg Doppel</span>
+            <div class="mt-1 md:mt-2">
+              <span id="stat-durationDoubleLeg" class="text-xs sm:text-base md:text-2xl font-black font-display text-white block">-</span>
+              <span id="rank-durationDoubleLeg" class="text-[5px] sm:text-[6px] text-neutral-500 font-medium block mt-0.5">-</span>
             </div>
           </div>
         </div>
@@ -861,58 +876,58 @@
       <div class="space-y-4">
         <h3 class="text-xs uppercase font-bold tracking-widest text-neutral-400">Bestleistungen</h3>
         
-        <!-- Obere Reihe: Specials, 180er, 140+, Highfinish -->
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Specials</span>
+        <!-- Obere Reihe: Specials, 180er, 140+, Highfinish (4er Raster) -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
+          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Specials</span>
             <div class="mt-2">
-              <span id="rec-specials" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rec-specials" class="text-lg md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-specials" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
             </div>
           </div>
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">180er</span>
+          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">180er</span>
             <div class="mt-2">
-              <span id="rec-r180" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rec-r180" class="text-lg md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-r180" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
             </div>
           </div>
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">140+</span>
+          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">140+</span>
             <div class="mt-2">
-              <span id="rec-r140" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rec-r140" class="text-lg md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-r140" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
             </div>
           </div>
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Highfinish</span>
+          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[7px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Highfinish</span>
             <div class="mt-2">
-              <span id="rec-highfinish" class="text-lg font-black font-display text-white block break-words">-</span>
+              <span id="rec-highfinish" class="text-base md:text-lg font-black font-display text-white block break-words">-</span>
               <span id="rank-highfinish" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
             </div>
           </div>
         </div>
 
-        <!-- Untere Reihe: Chance Shortgame, Specials pro Spiel, Shortgames -->
-        <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-3">
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Chance auf Shortgame</span>
+        <!-- Untere Reihe: Chance Shortgame, Specials pro Spiel, Shortgames (3er Raster) -->
+        <div class="grid grid-cols-3 gap-2 md:gap-3">
+          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[6px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Chance auf Shortgame</span>
             <div class="mt-2">
-              <span id="rec-shortgameChance" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rec-shortgameChance" class="text-sm md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-shortgameChance" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
             </div>
           </div>
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Specials pro Spiel</span>
+          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[6px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Specials pro Spiel</span>
             <div class="mt-2">
-              <span id="rec-specialsPerGame" class="text-2xl font-black font-display text-white block">-</span>
+              <span id="rec-specialsPerGame" class="text-sm md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-specialsPerGame" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
             </div>
           </div>
-          <div class="glass-card p-4 rounded-2xl flex flex-col justify-between">
-            <span class="text-[7px] uppercase font-bold tracking-wider text-neutral-400">Shortgames</span>
+          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
+            <span class="text-[6px] sm:text-[7px] uppercase font-bold tracking-wider text-neutral-400">Shortgames</span>
             <div class="mt-2">
-              <span id="rec-shortgame" class="text-lg font-black font-display text-white block break-words">-</span>
+              <span id="rec-shortgame" class="text-sm md:text-lg font-black font-display text-white block break-words">-</span>
               <span id="rank-shortgame" class="text-[6px] text-neutral-500 font-medium block mt-1">-</span>
             </div>
           </div>
@@ -2185,6 +2200,54 @@
     window.renderStats = renderStats;
     window.renderRecords = renderRecords;
     window.renderTeamStats = renderTeamStats;
+    // ==========================================
+    // EXPORT-FUNKTIONEN (PDF & INSTAGRAM BILD)
+    // ==========================================
+
+    // 1. PDF-Erstellung (A4 Querformat)
+    function downloadPlayerProfilePDF() {
+      // Greift das Element des Spielerprofils ab
+      const element = document.getElementById('content-playerProfile');
+      const select = document.getElementById('profilePlayerSelect');
+      const playerName = (select && select.value) ? select.value : 'Spielerprofil';
+
+      // Konfiguration für das PDF-Dokument
+      const opt = {
+        margin:       [10, 10, 10, 10], // Seitenränder oben, links, unten, rechts in mm
+        filename:     `${playerName.replace(/\s+/g, '_')}_Profil.pdf`, // Dateiname z. B. Max_Mustermann_Profil.pdf
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#000000' }, // Scharfe Auflösung & schwarzer Hintergrund
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' } // A4 Querformat
+      };
+
+      // Generiert die PDF-Datei und startet den Download
+      html2pdf().set(opt).from(element).save();
+    }
+
+    // 2. Bild-Erstellung als PNG (Ideal für Instagram / Fotogalerie)
+    function sharePlayerProfileImage() {
+      const element = document.getElementById('content-playerProfile');
+      const select = document.getElementById('profilePlayerSelect');
+      const playerName = (select && select.value) ? select.value : 'Spielerprofil';
+
+      const options = {
+        backgroundColor: '#000000', // Dunkler Hintergrund wird beibehalten
+        scale: 2,                   // Erhöhte Auflösung (2-fache Pixeldichte)
+        useCORS: true               // Ermöglicht das Laden externer Bilder (z. B. Logos)
+      };
+
+      // Konvertiert die HTML-Ansicht in ein PNG-Bild und lädt es herunter
+      html2canvas(element, options).then(canvas => {
+        const link = document.createElement('a');
+        link.download = `${playerName.replace(/\s+/g, '_')}_SVG_Darts.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+
+    // Macht die Funktionen für die HTML-Buttons (onclick="...") global verfügbar
+    window.downloadPlayerProfilePDF = downloadPlayerProfilePDF;
+    window.sharePlayerProfileImage = sharePlayerProfileImage;
   </script>
 </body>
 </html>
