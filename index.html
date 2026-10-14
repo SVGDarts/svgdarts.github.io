@@ -505,6 +505,9 @@
             <option value="F">F</option>
             <option value="G">G</option>
           </select>
+          <button onclick="resetGameStatsTeamFilter()" class="text-xs bg-black hover:bg-neutral-900 text-neutral-300 px-3 py-2 rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-left text-white"></i> Reset
+          </button>
         </div>
       </div>
 
@@ -572,6 +575,9 @@
             <option value="F">F</option>
             <option value="G">G</option>
           </select>
+          <button onclick="resetStatsTeamFilter()" class="text-xs bg-black hover:bg-neutral-900 text-neutral-300 px-3 py-2 rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-left text-white"></i> Reset
+          </button>
         </div>
       </div>
 
@@ -630,6 +636,9 @@
             <option value="F">F</option>
             <option value="G">G</option>
           </select>
+          <button onclick="resetRecordsTeamFilter()" class="text-xs bg-black hover:bg-neutral-900 text-neutral-300 px-3 py-2 rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-left text-white"></i> Reset
+          </button>
         </div>
       </div>
 
@@ -778,7 +787,7 @@
 
 
     // 2. Globale Konstanten & App-Daten
-    const CACHE_KEY = "svg_dart_app_data_v8";
+    const CACHE_KEY = "svg_dart_app_data_v9";
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
       "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
@@ -925,6 +934,16 @@
       if (val === undefined || val === null || val === '-' || val === '') return 0;
       const cleanStr = String(val).replace('%', '').replace(',', '.').trim();
       const num = parseFloat(cleanStr);
+      return isNaN(num) ? 0 : num;
+    }
+
+    // Extrahiert die erste Zahl aus Strings wie "120 (1x)" oder "14 Darts"
+    function parseBracketsNumber(val) {
+      if (val === undefined || val === null || val === '-' || val === '') return 0;
+      const str = String(val);
+      const match = str.match(/\d+/);
+      if (!match) return 0;
+      const num = parseFloat(match[0]);
       return isNaN(num) ? 0 : num;
     }
 
@@ -1132,6 +1151,24 @@
       document.getElementById('filterHomeDate').value = "";
       document.getElementById('filterHomeLocation').value = "";
       renderHome();
+    }
+
+    function resetGameStatsTeamFilter() {
+      const select = document.getElementById('filterGameStatsTeam');
+      if (select) select.value = "";
+      renderGameStats();
+    }
+
+    function resetStatsTeamFilter() {
+      const select = document.getElementById('filterStatsTeam');
+      if (select) select.value = "";
+      renderStats();
+    }
+
+    function resetRecordsTeamFilter() {
+      const select = document.getElementById('filterRecordsTeam');
+      if (select) select.value = "";
+      renderRecords();
     }
 
     function renderAllTables() {
@@ -1585,8 +1622,8 @@
         if (key === 'specials') return parseNumeric(item.specials);
         if (key === 'r180') return parseNumeric(item.r180 ?? item['180']);
         if (key === 'r140') return parseNumeric(item.r140 ?? item['140']);
-        if (key === 'highfinish') return parseNumeric(item.highfinish);
-        if (key === 'shortgame') return parseNumeric(item.shortgame);
+        if (key === 'highfinish') return parseBracketsNumber(item.highfinish);
+        if (key === 'shortgame') return parseBracketsNumber(item.shortgame);
         if (key === 'shortgameChance') return parseNumeric(item.shortgameChance ?? item.shortgame_chance);
         if (key === 'specialsPerGame') return parseNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday ?? item.specials_per_matchday);
         return 0;
@@ -1690,6 +1727,9 @@
     window.changeTableIframe = changeTableIframe;
     window.resetMatchFilters = resetMatchFilters;
     window.resetHomeMatchFilters = resetHomeMatchFilters;
+    window.resetGameStatsTeamFilter = resetGameStatsTeamFilter;
+    window.resetStatsTeamFilter = resetStatsTeamFilter;
+    window.resetRecordsTeamFilter = resetRecordsTeamFilter;
     window.setGameStatsSort = setGameStatsSort;
     window.setStatsSort = setStatsSort;
     window.setRecordsSort = setRecordsSort;
