@@ -660,9 +660,6 @@
                 <th onclick="setRecordsSort('shortgameChance')" class="px-4 py-4 sortable-header">
                   Chance auf Shortgame <span id="rsort-icon-shortgameChance" class="ml-1"></span>
                 </th>
-                <th onclick="setRecordsSort('maxSpecialsMatchday')" class="px-4 py-4 sortable-header">
-                  Meiste Specials an einem Spieltag <span id="rsort-icon-maxSpecialsMatchday" class="ml-1"></span>
-                </th>
                 <th onclick="setRecordsSort('specialsPerGame')" class="px-4 py-4 sortable-header">
                   Specials pro Spiel <span id="rsort-icon-specialsPerGame" class="ml-1"></span>
                 </th>
@@ -872,6 +869,15 @@
       const num = parseFloat(str);
       if (isNaN(num)) return val;
       return str.includes('%') ? str : `${num.toFixed(1)}%`;
+    }
+
+    // Spezifische Formatierung für die Shortgame-Chance (Dezimalwert zu Prozent umrechnen)
+    function formatShortgameChance(val) {
+      if (val === undefined || val === null || val === '-' || val === '') return '-';
+      const str = String(val).replace(',', '.').trim();
+      const num = parseFloat(str);
+      if (isNaN(num)) return val;
+      return `${(num * 100).toFixed(1)}%`.replace('.', ',');
     }
 
     // Wandelt Strings sicher in Zahlen um
@@ -1617,7 +1623,7 @@
     }
 
     function updateRecordsSortIcons() {
-      const keys = ['player', 'specials', 'r180', 'r140', 'highfinish', 'shortgame', 'shortgameChance', 'maxSpecialsMatchday', 'specialsPerGame'];
+      const keys = ['player', 'specials', 'r180', 'r140', 'highfinish', 'shortgame', 'shortgameChance', 'specialsPerGame'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`rsort-icon-${k}`);
         if (!iconEl) return;
@@ -1649,7 +1655,6 @@
         if (key === 'highfinish') return parseNumeric(item.highfinish);
         if (key === 'shortgame') return parseNumeric(item.shortgame);
         if (key === 'shortgameChance') return parseNumeric(item.shortgameChance ?? item.shortgame_chance);
-        if (key === 'maxSpecialsMatchday') return parseNumeric(item.maxSpecialsMatchday ?? item.max_specials_matchday);
         if (key === 'specialsPerGame') return parseNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday ?? item.specials_per_matchday);
         return 0;
       };
@@ -1662,7 +1667,7 @@
       });
 
       if (!sortedRecords.length) {
-        tbody.innerHTML = `<tr><td colspan="10" class="px-6 py-8 text-center text-neutral-500">Keine Bestleistungen gefunden.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="px-6 py-8 text-center text-neutral-500">Keine Bestleistungen gefunden.</td></tr>`;
         return;
       }
 
@@ -1685,8 +1690,7 @@
             <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r140 ?? r['140'] ?? 0}</td>
             <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
-            <td class="px-4 py-4 text-neutral-400">${formatPercent(r.shortgameChance ?? r.shortgame_chance)}</td>
-            <td class="px-4 py-4 text-neutral-400">${r.maxSpecialsMatchday ?? r.max_specials_matchday ?? '-'}</td>
+            <td class="px-4 py-4 text-neutral-400">${formatShortgameChance(r.shortgameChance ?? r.shortgame_chance)}</td>
             <td class="px-4 py-4 text-neutral-400">${formatNumber(r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday)}</td>
           </tr>
         `;
