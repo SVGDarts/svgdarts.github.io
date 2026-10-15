@@ -150,7 +150,7 @@
     #content-teamStats table th:nth-child(2),
     #content-teamStats table td:nth-child(2) {
       position: sticky !important;
-      left: 48px !important; /* Breite der ersten Spalte */
+      left: 48px !important;
       z-index: 20;
       background-color: #121212 !important;
       box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.1);
@@ -163,8 +163,8 @@
       width: 100%;
     }
     .zoomed-out-iframe-container iframe {
-      width: 117.65%; /* 100 / 0.85 */
-      height: 529px;   /* 450 / 0.85 um die ursprüngliche Höhe zu wahren */
+      width: 117.65%;
+      height: 529px;
       transform: scale(0.85);
       transform-origin: top left;
       border: 0;
@@ -200,7 +200,7 @@
       font-size: 1.3rem;
       font-weight: 900;
       color: #ffffff;
-      text-align: left; /* Linksbündig */
+      text-align: left;
       margin: auto 0;
     }
 
@@ -208,7 +208,7 @@
       font-size: 0.55rem;
       font-weight: 500;
       color: #737373;
-      text-align: left; /* Linksbündig */
+      text-align: left;
     }
   </style>
 
@@ -798,13 +798,20 @@
           <span id="profPlayerTeam" class="text-xs font-semibold text-neutral-400 px-2">-</span>
         </div>
 
-        <!-- Rechte Seite: Spiele & Legs Rechteck (linksbündig ausgerichtet) -->
-        <div class="glass-card px-4 py-2.5 rounded-2xl flex flex-col justify-center items-start text-left" style="min-width: 130px; height: 60px;">
-          <div class="text-xs text-neutral-300 font-medium leading-tight text-left">
-            Spiele: <span id="profGamesVal" class="font-bold text-white">-</span>
-          </div>
-          <div class="text-xs text-neutral-300 font-medium leading-tight mt-1 text-left">
-            Legs: <span id="profLegsVal" class="font-bold text-white">-</span>
+        <div class="flex items-center gap-3">
+          <!-- Download Button (Wird dank data-html2canvas-ignore automatisch beim Bildexport ausgeblendet) -->
+          <button onclick="downloadPlayerProfileImage()" data-html2canvas-ignore class="px-3.5 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-xl text-xs font-semibold transition flex items-center gap-2 border border-neutral-700 shadow-sm">
+            <i class="fa-solid fa-download text-neutral-300"></i> Profil als Bild (1080x1350)
+          </button>
+
+          <!-- Rechte Seite: Spiele & Legs Rechteck (linksbündig ausgerichtet) -->
+          <div class="glass-card px-4 py-2.5 rounded-2xl flex flex-col justify-center items-start text-left" style="min-width: 130px; height: 60px;">
+            <div class="text-xs text-neutral-300 font-medium leading-tight text-left">
+              Spiele: <span id="profGamesVal" class="font-bold text-white">-</span>
+            </div>
+            <div class="text-xs text-neutral-300 font-medium leading-tight mt-1 text-left">
+              Legs: <span id="profLegsVal" class="font-bold text-white">-</span>
+            </div>
           </div>
         </div>
       </div>
@@ -897,7 +904,7 @@
       <div class="space-y-4 pt-4">
         <h3 class="text-xs font-semibold text-neutral-400 text-left">Bestleistungen</h3>
         
-        <!-- PC-Ansicht (lg:block hidden): Behält das originale 5er/2er-Grid-Layout -->
+        <!-- PC-Ansicht (lg:block hidden) -->
         <div class="hidden lg:block space-y-3">
           <div class="grid grid-cols-5 gap-3">
             <div class="glass-card rounded-2xl profile-card">
@@ -940,9 +947,8 @@
           </div>
         </div>
 
-        <!-- Handy-Ansicht (block lg:hidden): 6-Spalten-Raster für exakte Breitenverhältnisse -->
+        <!-- Handy-Ansicht (block lg:hidden) -->
         <div class="grid grid-cols-6 gap-3 lg:hidden">
-          <!-- Reihe 1: Specials, Chance auf Shortgame, Specials pro Spiel (je 2 Spalten = normale Größe wie Spielstatistiken im 3er-Raster) -->
           <div class="glass-card rounded-2xl profile-card col-span-2">
             <span class="profile-card-title">Specials</span>
             <span id="rec-specials-m" class="profile-card-value">-</span>
@@ -959,7 +965,6 @@
             <span id="rank-specialsPerGame-m" class="profile-card-rank">-</span>
           </div>
 
-          <!-- Reihe 2: 180er und 140+ (je 3 Spalten = 1,5-fache Breite) -->
           <div class="glass-card rounded-2xl profile-card col-span-3">
             <span class="profile-card-title">180er</span>
             <span id="rec-r180-m" class="profile-card-value">-</span>
@@ -971,14 +976,12 @@
             <span id="rank-r140-m" class="profile-card-rank">-</span>
           </div>
 
-          <!-- Reihe 3: Highfinish (6 Spalten = 3-fache Breite / volle Breite) -->
           <div class="glass-card rounded-2xl profile-card col-span-6">
             <span class="profile-card-title">Highfinish</span>
             <span id="rec-highfinish-m" class="profile-card-value">-</span>
             <span id="rank-highfinish-m" class="profile-card-rank">-</span>
           </div>
 
-          <!-- Reihe 4: Shortgames (6 Spalten = 3-fache Breite / volle Breite) -->
           <div class="glass-card rounded-2xl profile-card col-span-6">
             <span class="profile-card-title">Shortgames</span>
             <span id="rec-shortgames-m" class="profile-card-value">-</span>
@@ -1445,7 +1448,6 @@
         dataset.sort((a, b) => b.val - a.val);
       }
 
-      // Rang mit Berücksichtigung gleicher Werte bei Gleichstand
       let currentRank = 0;
       let previousVal = null;
       let playerRank = '-';
@@ -1472,12 +1474,10 @@
       const playerInfo = appData.squad.find(p => String(p.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || {};
       const p = appData.playerProfile.find(item => String(item.player || item.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || {};
 
-      // Team & Kopfbereich
       document.getElementById('profPlayerTeam').innerText = playerInfo.team ? `Team: ${playerInfo.team}` : 'Team: -';
       document.getElementById('profGamesVal').innerText = p.wonGames ?? p.spiele ?? '-';
       document.getElementById('profLegsVal').innerText = p.wonLegs ?? p.legs ?? '-';
 
-      // Spielstatistiken
       document.getElementById('stat-avgSingle').innerText = formatNumber(p.avgSingle ?? p.avg_single);
       document.getElementById('rank-avgSingle').innerText = getRankText('avgSingle', playerName);
 
@@ -1514,7 +1514,6 @@
       document.getElementById('stat-durationDoubleLeg').innerText = formatShortDuration(p.durationDoubleLeg ?? p.duration_double_leg ?? '-');
       document.getElementById('rank-durationDoubleLeg').innerText = getRankText('durationDoubleLeg', playerName);
 
-      // Bestleistungen Data Binding (PC und Handy)
       const specialsVal = p.specials ?? '-';
       const specialsRank = getRankText('specials', playerName);
       const elRecSpecials = document.getElementById('rec-specials');
@@ -1591,6 +1590,63 @@
       if (shortgamesM) shortgamesM.innerText = shortgamesVal;
       const rankShortgamesM = document.getElementById('rank-shortgames-m');
       if (rankShortgamesM) rankShortgamesM.innerText = shortgamesRank;
+    }
+
+    // Funktion zum Herunterladen des Spielerprofils im Format 1080x1350px
+    function downloadPlayerProfileImage() {
+      const container = document.getElementById('content-playerProfile');
+      if (!container) return;
+
+      const select = document.getElementById('profilePlayerSelect');
+      const playerName = select ? select.value || 'Spielerprofil' : 'Spielerprofil';
+
+      // html2canvas Optionen für exakte Skalierung auf 1080x1350
+      const targetWidth = 1080;
+      const targetHeight = 1350;
+      const currentWidth = container.offsetWidth || 800;
+      const scaleFactor = targetWidth / currentWidth;
+
+      html2canvas(container, {
+        scale: scaleFactor > 0 ? scaleFactor : 2,
+        useCORS: true,
+        backgroundColor: '#000000',
+        logging: false,
+        ignoreElements: (element) => {
+          // Ignoriere den Download-Button und Elemente mit data-html2canvas-ignore
+          return element.hasAttribute('data-html2canvas-ignore');
+        }
+      }).then(canvas => {
+        // Falls gewünscht, exakt auf 1080x1350 zuschneiden/skalieren falls der Inhalt abweicht
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = targetWidth;
+        finalCanvas.height = targetHeight;
+        const ctx = finalCanvas.getContext('2d');
+        
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+        // Zentriertes oder oberengerechtes Zeichnen
+        const srcWidth = canvas.width;
+        const srcHeight = canvas.height;
+        const hRatio = targetWidth / srcWidth;
+        const vRatio = targetHeight / srcHeight;
+        const ratio = Math.min(hRatio, vRatio);
+        
+        const centerShiftX = (targetWidth - srcWidth * ratio) / 2;
+        const centerShiftY = (targetHeight - srcHeight * ratio) / 2;
+
+        ctx.drawImage(canvas, 0, 0, srcWidth, srcHeight, centerShiftX, centerShiftY, srcWidth * ratio, srcHeight * ratio);
+
+        const imageURL = finalCanvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = imageURL;
+        link.download = `SVG-Darts-Profil_${playerName.replace(/\s+/g, '_')}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }).catch(err => {
+        console.error("Fehler beim Erstellen des Bildes:", err);
+      });
     }
 
     function resetMatchFilters() {
@@ -2278,6 +2334,7 @@
     window.renderStats = renderStats;
     window.renderRecords = renderRecords;
     window.renderTeamStats = renderTeamStats;
+    window.downloadPlayerProfileImage = downloadPlayerProfileImage;
   </script>
 </body>
 </html>
