@@ -1566,26 +1566,25 @@
       const btnInClone = clone.querySelector('button');
       if (btnInClone) btnInClone.remove();
 
-      // EXKLUSIVE ANPASSUNGEN NUR FÜR DAS EXPORT-BILD GEMÄß ANWEISUNG:
-      
-      // 1. Kopfbereich: Name, Team & Spiele/Legs-Rechteck ganz rechts auf Team-Höhe platzieren
+      // 1. Kopfbereich anpassen: Dropdown durch reinen Text (Spielername) ersetzen
       const headerDiv = clone.querySelector('.flex.flex-col.md\\:flex-row');
       if (headerDiv) {
         headerDiv.className = "flex flex-row justify-between items-center w-full";
       }
 
-      // Name größer (+2 Stufen: text-3xl -> text-5xl)
-      const nameSelect = clone.querySelector('#profilePlayerSelect');
-      if (nameSelect) {
-        nameSelect.style.fontSize = "3rem";
-        nameSelect.style.fontWeight = "900";
-        nameSelect.style.lineHeight = "1";
-        nameSelect.style.padding = "0";
-        nameSelect.style.border = "none";
-        nameSelect.style.background = "transparent";
+      const selectInClone = clone.querySelector('#profilePlayerSelect');
+      if (selectInClone) {
+        const nameHeading = document.createElement('div');
+        nameHeading.innerText = playerName;
+        nameHeading.style.fontSize = "3rem";
+        nameHeading.style.fontWeight = "900";
+        nameHeading.style.fontFamily = "'Montserrat', sans-serif";
+        nameHeading.style.color = "#FFFFFF";
+        nameHeading.style.lineHeight = "1";
+        selectInClone.parentNode.replaceChild(nameHeading, selectInClone);
       }
 
-      // Team größer (+2 Stufen: text-xs -> text-base)
+      // Team größer (+2 Stufen)
       const teamSpan = clone.querySelector('#profPlayerTeam');
       if (teamSpan) {
         teamSpan.style.fontSize = "1rem";
@@ -1594,7 +1593,7 @@
         teamSpan.style.display = "block";
       }
 
-      // Spiele & Legs Rechteck rechts auf Teamhöhe, mit perfektem vertikalem Abstand (padding top/bottom gleich)
+      // Spiele & Legs Rechteck rechts auf Teamhöhe, mit perfektem vertikalem Abstand
       const gamesLegsBox = clone.querySelector('.glass-card.px-4.py-2\\.5');
       if (gamesLegsBox) {
         gamesLegsBox.style.padding = "18px 24px";
@@ -1605,24 +1604,22 @@
         gamesLegsBox.style.justifyContent = "center";
         gamesLegsBox.style.alignItems = "flex-start";
         
-        // Texte darin vergrößern
         const innerTexts = gamesLegsBox.querySelectorAll('div');
-        texts = Array.from(innerTexts);
-        texts.forEach(el => {
+        innerTexts.forEach(el => {
           el.style.fontSize = "1.1rem";
           el.style.lineHeight = "1.4";
           el.style.textAlign = "left";
         });
       }
 
-      // 2. Überschriften "Spielstatistiken" und "Bestleistungen" um zwei Schriftgrößen vergrößern (text-xs -> text-lg)
+      // 2. Überschriften "Spielstatistiken" und "Bestleistungen" vergrößern
       const sectionHeadings = clone.querySelectorAll('h3');
       sectionHeadings.forEach(h => {
         h.style.fontSize = "1.125rem";
         h.style.fontWeight = "700";
       });
 
-      // 3. In den Rechtecken: Überschriften (Titel) +3 Stufen, Ränge +2 Stufen
+      // 3. In den Rechtecken: Überschriften +3 Stufen, Ränge +2 Stufen
       const profileCards = clone.querySelectorAll('.profile-card');
       profileCards.forEach(card => {
         card.style.padding = "1.2rem 1.4rem";
@@ -1630,7 +1627,6 @@
 
         const titleEl = card.querySelector('.profile-card-title');
         if (titleEl) {
-          // +3 Schriftgrößen vergrößert
           titleEl.style.fontSize = "1.25rem";
           titleEl.style.lineHeight = "1.3";
           titleEl.style.whiteSpace = "nowrap";
@@ -1643,7 +1639,6 @@
 
         const rankEl = card.querySelector('.profile-card-rank');
         if (rankEl) {
-          // +2 Schriftgrößen vergrößert
           rankEl.style.fontSize = "1rem";
         }
       });
