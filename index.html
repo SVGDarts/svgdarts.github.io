@@ -181,7 +181,7 @@
     }
     
     .profile-card-title {
-      font-size: 10px; /* Kleinere Größe auf Handys, damit nichts abgeschnitten wird */
+      font-size: 8.5px; /* Noch kleiner für Handys, um Wrapping/Abschneiden komplett zu verhindern */
       font-weight: 600;
       color: #d4d4d4;
       white-space: nowrap;
@@ -897,60 +897,61 @@
       <div class="space-y-4 pt-4">
         <h3 class="text-xs font-semibold text-neutral-400 text-left">Bestleistungen</h3>
         
-        <!-- 1. Reihe: Auf Handy 3 (Specials, Shortgame-Chance, Specials/Spiel), auf PC 5 (plus 180er, 140+) -->
+        <!-- PC: 1. Reihe (5 Elemente: Specials, Chance auf Shortgame, Specials pro Spiel, 180er, 140+) -->
+        <!-- Handy: 1. Reihe (3 Elemente: Specials, Chance auf Shortgame, Specials pro Spiel) -->
         <div class="grid grid-cols-3 lg:grid-cols-5 gap-3">
-          <!-- 1. Specials -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Specials</span>
             <span id="rec-specials" class="profile-card-value">-</span>
             <span id="rank-specials" class="profile-card-rank">-</span>
           </div>
-          <!-- 2. Chance auf Shortgame -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Chance auf Shortgame</span>
             <span id="rec-shortgameChance" class="profile-card-value">-</span>
             <span id="rank-shortgameChance" class="profile-card-rank">-</span>
           </div>
-          <!-- 3. Specials pro Spiel -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Specials pro Spiel</span>
             <span id="rec-specialsPerGame" class="profile-card-value">-</span>
             <span id="rank-specialsPerGame" class="profile-card-rank">-</span>
           </div>
-          <!-- 4. 180er (Auf Handy rutscht dies in Reihe 2) -->
-          <div class="glass-card rounded-2xl profile-card">
+          <!-- Auf PC Teil von Reihe 1 -->
+          <div class="glass-card rounded-2xl profile-card hidden lg:flex">
             <span class="profile-card-title">180er</span>
-            <span id="rec-r180" class="profile-card-value">-</span>
-            <span id="rank-r180" class="profile-card-rank">-</span>
+            <span id="rec-r180-pc" class="profile-card-value">-</span>
+            <span id="rank-r180-pc" class="profile-card-rank">-</span>
           </div>
-          <!-- 5. 140+ (Auf Handy rutscht dies in Reihe 2) -->
-          <div class="glass-card rounded-2xl profile-card">
+          <!-- Auf PC Teil von Reihe 1 -->
+          <div class="glass-card rounded-2xl profile-card hidden lg:flex">
             <span class="profile-card-title">140+</span>
-            <span id="rec-r140" class="profile-card-value">-</span>
-            <span id="rank-r140" class="profile-card-rank">-</span>
+            <span id="rec-r140-pc" class="profile-card-value">-</span>
+            <span id="rank-r140-pc" class="profile-card-rank">-</span>
           </div>
         </div>
 
-        <!-- 2. Reihe: Auf Handy 3 (180er, 140+, Highfinish), auf PC 2 (Highfinish, Shortgames) -->
-        <div class="grid grid-cols-3 lg:grid-cols-2 gap-3">
-          <!-- Hinweis für Mobilansicht: Die 180er und 140+ werden hier auf Smartphones dargestellt, während auf PC die obere Reihe 5 Elemente hat -->
-          <div class="glass-card rounded-2xl profile-card lg:hidden">
+        <!-- Handy Reihe 2: 180er und 140+ (2 Elemente) -->
+        <div class="grid grid-cols-2 gap-3 lg:hidden">
+          <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">180er</span>
             <span id="rec-r180-mob" class="profile-card-value">-</span>
             <span id="rank-r180-mob" class="profile-card-rank">-</span>
           </div>
-          <div class="glass-card rounded-2xl profile-card lg:hidden">
+          <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">140+</span>
             <span id="rec-r140-mob" class="profile-card-value">-</span>
             <span id="rank-r140-mob" class="profile-card-rank">-</span>
           </div>
-          <!-- 6. Highfinish -->
+        </div>
+
+        <!-- PC: 2. Reihe (2 Elemente: Highfinish, Shortgames) -->
+        <!-- Handy Reihe 3: Highfinish (1 Element über volle Breite / zentriert) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Highfinish</span>
             <span id="rec-highfinish" class="profile-card-value">-</span>
             <span id="rank-highfinish" class="profile-card-rank">-</span>
           </div>
-          <!-- 7. Shortgames (Auf PC in dieser 2. Reihe zweites Element, auf Handy in eigener 3. Reihe) -->
+          <!-- Auf PC in Reihe 2 zweites Element -->
           <div class="glass-card rounded-2xl profile-card hidden lg:flex">
             <span class="profile-card-title">Shortgames</span>
             <span id="rec-shortgames-pc" class="profile-card-value">-</span>
@@ -958,7 +959,7 @@
           </div>
         </div>
 
-        <!-- 3. Reihe (Nur für Handy: Shortgames über volle Breite) -->
+        <!-- Handy Reihe 4: Shortgames (1 Element über volle Breite) -->
         <div class="grid grid-cols-1 gap-3 lg:hidden">
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Shortgames</span>
@@ -1482,7 +1483,7 @@
       document.getElementById('stat-durationDoubleLeg').innerText = formatShortDuration(p.durationDoubleLeg ?? p.duration_double_leg ?? '-');
       document.getElementById('rank-durationDoubleLeg').innerText = getRankText('durationDoubleLeg', playerName);
 
-      // Bestleistungen
+      // Bestleistungen Data Binding
       const specialsVal = p.specials ?? '-';
       const specialsRank = getRankText('specials', playerName);
       document.getElementById('rec-specials').innerText = specialsVal;
@@ -1500,8 +1501,10 @@
 
       const r180Val = p.r180 ?? p['180'] ?? 0;
       const r180Rank = getRankText('r180', playerName);
-      document.getElementById('rec-r180').innerText = r180Val;
-      document.getElementById('rank-r180').innerText = r180Rank;
+      const r180PC = document.getElementById('rec-r180-pc');
+      if (r180PC) r180PC.innerText = r180Val;
+      const rankR180PC = document.getElementById('rank-r180-pc');
+      if (rankR180PC) rankR180PC.innerText = r180Rank;
       const r180Mob = document.getElementById('rec-r180-mob');
       if (r180Mob) r180Mob.innerText = r180Val;
       const rankR180Mob = document.getElementById('rank-r180-mob');
@@ -1509,8 +1512,10 @@
 
       const r140Val = p.r140 ?? p['140'] ?? 0;
       const r140Rank = getRankText('r140', playerName);
-      document.getElementById('rec-r140').innerText = r140Val;
-      document.getElementById('rank-r140').innerText = r140Rank;
+      const r140PC = document.getElementById('rec-r140-pc');
+      if (r140PC) r140PC.innerText = r140Val;
+      const rankR140PC = document.getElementById('rank-r140-pc');
+      if (rankR140PC) rankR140PC.innerText = r140Rank;
       const r140Mob = document.getElementById('rec-r140-mob');
       if (r140Mob) r140Mob.innerText = r140Val;
       const rankR140Mob = document.getElementById('rank-r140-mob');
@@ -1523,12 +1528,10 @@
 
       const shortgamesVal = p.shortgame ?? p.shortgames ?? '-';
       const shortgamesRank = getRankText('shortgames', playerName);
-      
       const shortgamesPC = document.getElementById('rec-shortgames-pc');
       if (shortgamesPC) shortgamesPC.innerText = shortgamesVal;
       const rankShortgamesPC = document.getElementById('rank-shortgames-pc');
       if (rankShortgamesPC) rankShortgamesPC.innerText = shortgamesRank;
-
       const shortgamesMob = document.getElementById('rec-shortgames-mob');
       if (shortgamesMob) shortgamesMob.innerText = shortgamesVal;
       const rankShortgamesMob = document.getElementById('rank-shortgames-mob');
