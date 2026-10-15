@@ -169,7 +169,11 @@
       transform-origin: top left;
       border: 0;
     }
-
+/* Zahlenwerte in den Statistik-Rechtecken weiter oben positionieren */
+    .card-value-upper {
+      margin-top: 0px !important;
+      margin-bottom: 2px !important;
+    }
     /* Responsive Kartentitel: Auf PC größer, auf Handy kleiner */
     .card-title-small {
       font-size: 7px !important;
@@ -772,26 +776,26 @@
 
     <!-- Reiter 7: Spielerprofil -->
     <section id="content-playerProfile" class="space-y-8 hidden">
-      <!-- Kopfbereich: Links Name & Team, Rechts Spiele & Legs (Inklusive auf Bild, exklusive Button) -->
+      <!-- Kopfbereich: Links Name & kleineres Team, Rechts Spiele & Legs (mittig ausgerichtet) -->
       <div id="profileHeaderControls" class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-neutral-800 pb-6">
-        <div class="flex flex-col items-start gap-1">
+        <div class="flex flex-col items-start gap-0.5">
           <select id="profilePlayerSelect" onchange="renderPlayerProfile()" class="bg-transparent text-white font-black font-display text-xl md:text-3xl rounded-xl px-2 py-1 border border-transparent hover:border-neutral-700 focus:outline-none cursor-pointer">
             <option value="">Bitte wählen...</option>
           </select>
-          <span id="profPlayerTeam" class="text-[10px] md:text-xs uppercase tracking-widest text-neutral-400 font-semibold px-2">Team -</span>
+          <span id="profPlayerTeam" class="text-[9px] md:text-[11px] uppercase tracking-widest text-neutral-400 font-semibold px-2">Team -</span>
         </div>
 
-        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-          <!-- Nur der Button bekommt die ID zum Ausblenden beim Screenshot -->
+        <!-- Rechte Seite: Button & Box für Spiele/Legs vertikal zentriert -->
+        <div class="flex items-center gap-3 w-full md:w-auto justify-end">
           <button id="imageDownloadBtn" onclick="sharePlayerProfileImage()" title="Als Bild herunterladen" class="px-3 py-2 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
             <i class="fa-brands fa-instagram text-pink-500 text-sm"></i> Bild
           </button>
 
-          <div class="glass-card px-3 md:px-4 py-2 rounded-xl md:rounded-2xl flex flex-col gap-0.5 text-right">
-            <div style="font-size: 10px !important;" class="text-neutral-300 font-medium">
+          <div class="glass-card px-3 md:px-4 py-2 rounded-xl md:rounded-2xl flex flex-col justify-center text-right" style="height: 44px !important;">
+            <div style="font-size: 10px !important; line-height: 1.2 !important;" class="text-neutral-300 font-medium">
               Spiele: <span id="profGamesVal" style="font-size: 10px !important;" class="font-bold text-white">-</span>
             </div>
-            <div style="font-size: 10px !important;" class="text-neutral-300 font-medium">
+            <div style="font-size: 10px !important; line-height: 1.2 !important;" class="text-neutral-300 font-medium">
               Legs: <span id="profLegsVal" style="font-size: 10px !important;" class="font-bold text-white">-</span>
             </div>
           </div>
@@ -807,7 +811,7 @@
           <!-- Saison-Einzel -->
           <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Saison-Einzel</span>
-            <div class="mt-1 md:mt-2">
+            <div class="card-value-upper">
               <span id="stat-avgSingle" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-avgSingle" class="card-rank-small block mt-0.5">-</span>
             </div>
@@ -815,7 +819,7 @@
           <!-- First 9 Einzel -->
           <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">First 9 Einzel</span>
-            <div class="mt-1 md:mt-2">
+            <div class="card-value-upper">
               <span id="stat-first9Single" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-first9Single" class="card-rank-small block mt-0.5">-</span>
             </div>
@@ -823,7 +827,7 @@
           <!-- Bestes Einzel -->
           <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Bestes Einzel</span>
-            <div class="mt-1 md:mt-2">
+            <div class="card-value-upper">
               <span id="stat-maxAvgSingle" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-maxAvgSingle" class="card-rank-small block mt-0.5">-</span>
             </div>
@@ -831,7 +835,7 @@
           <!-- Bester Einzel-First 9 -->
           <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Bester Einzel-First 9</span>
-            <div class="mt-1 md:mt-2">
+            <div class="card-value-upper">
               <span id="stat-maxFirst9Single" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-maxFirst9Single" class="card-rank-small block mt-0.5">-</span>
             </div>
@@ -839,7 +843,7 @@
           <!-- Gegner-Einzelavg -->
           <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Gegner-Einzelavg</span>
-            <div class="mt-1 md:mt-2">
+            <div class="card-value-upper">
               <span id="stat-avgOpponentSingle" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-avgOpponentSingle" class="card-rank-small block mt-0.5">-</span>
             </div>
@@ -847,7 +851,7 @@
           <!-- Dauer Leg Einzel -->
           <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Dauer Leg Einzel</span>
-            <div class="mt-1 md:mt-2">
+            <div class="card-value-upper">
               <span id="stat-durationSingleLeg" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-durationSingleLeg" class="card-rank-small block mt-0.5">-</span>
             </div>
@@ -859,7 +863,7 @@
           <!-- Doppel-Average -->
           <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Doppel-Average</span>
-            <div class="mt-1 md:mt-2">
+            <div class="card-value-upper">
               <span id="stat-avgDouble" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-avgDouble" class="card-rank-small block mt-0.5">-</span>
             </div>
@@ -867,7 +871,7 @@
           <!-- First 9 Doppel -->
           <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">First 9 Doppel</span>
-            <div class="mt-1 md:mt-2">
+            <div class="card-value-upper">
               <span id="stat-first9Double" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-first9Double" class="card-rank-small block mt-0.5">-</span>
             </div>
@@ -875,7 +879,7 @@
           <!-- Bestes Doppel -->
           <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Bestes Doppel</span>
-            <div class="mt-1 md:mt-2">
+            <div class="card-value-upper">
               <span id="stat-maxAvgDouble" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-maxAvgDouble" class="card-rank-small block mt-0.5">-</span>
             </div>
@@ -883,7 +887,7 @@
           <!-- Bester Doppel-First 9 -->
           <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Bester Doppel-First 9</span>
-            <div class="mt-1 md:mt-2">
+            <div class="card-value-upper">
               <span id="stat-maxFirst9Double" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-maxFirst9Double" class="card-rank-small block mt-0.5">-</span>
             </div>
@@ -891,7 +895,7 @@
           <!-- Gegner-Doppelavg -->
           <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Gegner-Doppelavg</span>
-            <div class="mt-1 md:mt-2">
+            <div class="card-value-upper">
               <span id="stat-avgOpponentDouble" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-avgOpponentDouble" class="card-rank-small block mt-0.5">-</span>
             </div>
@@ -899,7 +903,7 @@
           <!-- Dauer Leg Doppel -->
           <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Dauer Leg Doppel</span>
-            <div class="mt-1 md:mt-2">
+            <div class="card-value-upper">
               <span id="stat-durationDoubleLeg" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-durationDoubleLeg" class="card-rank-small block mt-0.5">-</span>
             </div>
@@ -915,28 +919,28 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
           <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Specials</span>
-            <div class="mt-2">
+            <div class="card-value-upper">
               <span id="rec-specials" class="text-lg md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-specials" class="card-rank-small block mt-1">-</span>
             </div>
           </div>
           <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">180er</span>
-            <div class="mt-2">
+            <div class="card-value-upper">
               <span id="rec-r180" class="text-lg md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-r180" class="card-rank-small block mt-1">-</span>
             </div>
           </div>
           <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">140+</span>
-            <div class="mt-2">
+            <div class="card-value-upper">
               <span id="rec-r140" class="text-lg md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-r140" class="card-rank-small block mt-1">-</span>
             </div>
           </div>
           <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Highfinish</span>
-            <div class="mt-2">
+            <div class="card-value-upper">
               <span id="rec-highfinish" class="text-base md:text-lg font-black font-display text-white block break-words">-</span>
               <span id="rank-highfinish" class="card-rank-small block mt-1">-</span>
             </div>
@@ -947,21 +951,21 @@
         <div class="grid grid-cols-3 gap-2 md:gap-3">
           <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Chance auf Shortgame</span>
-            <div class="mt-2">
+            <div class="card-value-upper">
               <span id="rec-shortgameChance" class="text-sm md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-shortgameChance" class="card-rank-small block mt-1">-</span>
             </div>
           </div>
           <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Specials pro Spiel</span>
-            <div class="mt-2">
+            <div class="card-value-upper">
               <span id="rec-specialsPerGame" class="text-sm md:text-2xl font-black font-display text-white block">-</span>
               <span id="rank-specialsPerGame" class="card-rank-small block mt-1">-</span>
             </div>
           </div>
           <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
             <span class="card-title-small">Shortgames</span>
-            <div class="mt-2">
+            <div class="card-value-upper">
               <span id="rec-shortgame" class="text-sm md:text-lg font-black font-display text-white block break-words">-</span>
               <span id="rank-shortgame" class="card-rank-small block mt-1">-</span>
             </div>
