@@ -1612,19 +1612,21 @@
         });
       }
 
-      // 2. Überschriften "Spielstatistiken" und "Bestleistungen" vergrößern & Abstand nach oben schaffen
+      // 2. Überschriften "Spielstatistiken" und "Bestleistungen" formatieren & Abstände anpassen
       const sectionHeadings = clone.querySelectorAll('h3');
       sectionHeadings.forEach((h, idx) => {
         h.style.fontSize = "1.125rem";
         h.style.fontWeight = "700";
         if (idx === 0) {
-          h.style.marginTop = "10px"; // Abstand zwischen erstem Block und Trennlinie/Kopf
+          h.style.marginTop = "10px"; 
+          h.style.marginBottom = "14px"; // Abstand zwischen Überschrift "Spielstatistiken" und den Boxen darunter
         } else if (idx === 1) {
-          h.style.marginTop = "25px"; // Abstand zwischen Spielstatistiken-Raster und Bestleistungen-Überschrift
+          h.style.marginTop = "15px"; // Reduzierter Abstand zwischen Spielstatistiken-Boxen und Bestleistungen-Überschrift
+          h.style.marginBottom = "14px"; // Abstand zwischen Überschrift "Bestleistungen" und den Boxen darunter
         }
       });
 
-      // 3. In den Rechtecken: Überschriften (Titel) Schriftgröße um 1 verringert (von 1.25rem auf 1.1rem) & Abstand zur oberen Kante reduziert
+      // 3. In den Rechtecken: Überschriften, um 2 verkleinerte Zahlenwerte und Abstände
       const profileCards = clone.querySelectorAll('.profile-card');
       profileCards.forEach(card => {
         card.style.padding = "0.9rem 1.2rem";
@@ -1635,19 +1637,19 @@
           titleEl.style.fontSize = "1.1rem";
           titleEl.style.lineHeight = "1.2";
           titleEl.style.whiteSpace = "nowrap";
-          titleEl.style.marginBottom = "auto"; // Drückt die Überschrift an den oberen Rand
+          titleEl.style.marginBottom = "auto"; 
         }
 
         const valEl = card.querySelector('.profile-card-value');
         if (valEl) {
-          valEl.style.fontSize = "2.2rem";
+          valEl.style.fontSize = "1.7rem"; // Zahlenwerte um 2 verringert (von 2.2rem auf 1.7rem)
           valEl.style.margin = "auto 0";
         }
 
         const rankEl = card.querySelector('.profile-card-rank');
         if (rankEl) {
           rankEl.style.fontSize = "1rem";
-          rankEl.style.marginTop = "auto"; // Hält den Rang unten
+          rankEl.style.marginTop = "auto"; 
         }
       });
 
