@@ -1340,7 +1340,7 @@
       const matchdays = [...new Set(appData.matches.map(m => m.matchday).filter(Boolean))];
       const svgTeams = [...new Set(appData.matches.flatMap(m => [m.home, m.away]).filter(t => t && /SVG[\w\d]*/i.test(t)))].sort();
       
-      // Datumswerte sammeln, sauber parsen und chronologisch sortieren (aufsteigend)
+      // Eindeutige Roh-Daten parsen und chronologisch sortieren (aufsteigend)
       const rawDates = [...new Set(appData.matches.map(m => m.date).filter(Boolean))];
       rawDates.sort((a, b) => {
         const dateA = parseMatchDate(a);
@@ -1348,13 +1348,15 @@
         if (!dateA && !dateB) return 0;
         if (!dateA) return 1;
         if (!dateB) return -1;
-        return dateA - dateB; // Chronologisch: Ältestes Datum zuerst
+        return dateA - dateB;
       });
-      const dates = rawDates.map(d => formatDate(d)).filter(d => d && d !== '-');
+
+      // Nur formatierte, eindeutige Datumswerte (Duplikate über formatierten String mittels Set entfernen)
+      const uniqueFormattedDates = [...new Set(rawDates.map(d => formatDate(d)).filter(d => d && d !== '-'))];
 
       const matchdayOptions = '<option value="">Spieltag</option>' + matchdays.map(md => `<option value="${md}">${md}</option>`).join('');
       const teamOptions = '<option value="">Teams</option>' + svgTeams.map(t => `<option value="${t}">${t}</option>`).join('');
-      const dateOptions = '<option value="">Datum</option>' + dates.map(d => `<option value="${d}">${d}</option>`).join('');
+      const dateOptions = '<option value="">Datum</option>' + uniqueFormattedDates.map(d => `<option value="${d}">${d}</option>`).join('');
       const locationOptions = '<option value="">Spielort</option><option value="Göttingen">Göttingen</option><option value="Auswärts">Auswärts</option>';
 
       if (matchdaySelect) matchdaySelect.innerHTML = matchdayOptions;
@@ -1551,7 +1553,6 @@
       const sourceSection = document.getElementById('content-playerProfile');
       if (!sourceSection) return;
 
-      // Erstelle ein unsichtbares Export-Container-Element im festen 1080x1350 Format
       const exportContainer = document.createElement('div');
       exportContainer.style.position = 'fixed';
       exportContainer.style.left = '-9999px';
@@ -1569,15 +1570,12 @@
       exportContainer.style.justifyContent = 'space-between';
       exportContainer.className = 'dark';
 
-      // Klone den Inhalt des Spielerprofils
       const clone = sourceSection.cloneNode(true);
       clone.classList.remove('hidden');
 
-      // Entferne den Download-Button aus dem Export-Klon
       const btnInClone = clone.querySelector('button');
       if (btnInClone) btnInClone.remove();
 
-      // 1. Kopfbereich anpassen: Dropdown durch reinen Text (Spielername) ersetzen
       const headerDiv = clone.querySelector('.flex.flex-col.md\\:flex-row');
       if (headerDiv) {
         headerDiv.className = "flex flex-row justify-between items-center w-full";
@@ -1595,7 +1593,6 @@
         selectInClone.parentNode.replaceChild(nameHeading, selectInClone);
       }
 
-      // Team größer (+2 Stufen) mit kleinem Abstand zum Namen
       const teamSpan = clone.querySelector('#profPlayerTeam');
       if (teamSpan) {
         teamSpan.style.fontSize = "1rem";
@@ -1604,15 +1601,14 @@
         teamSpan.style.display = "block";
       }
 
-      // Spiele & Legs Rechteck rechts auf Teamhöhe, mit exakter vertikaler Zentrierung des zweizeiligen Textes
       const gamesLegsBox = clone.querySelector('.glass-card.px-4.py-2\\.5');
       if (gamesLegsBox) {
-        gamesLegsBox.style.padding = "0 24px"; // Kein oberes/unteres Padding, da per flex centriert wird
+        gamesLegsBox.style.padding = "0 24px";
         gamesLegsBox.style.minWidth = "180px";
-        gamesLegsBox.style.height = "76px"; // Feste Höhe für perfekte Symmetrie
+        gamesLegsBox.style.height = "76px";
         gamesLegsBox.style.display = "flex";
         gamesLegsBox.style.flexDirection = "column";
-        gamesLegsBox.style.justifyContent = "center"; // Zentriert den gesamten zweizeiligen Text exakt vertikal
+        gamesLegsBox.style.justifyContent = "center";
         gamesLegsBox.style.alignItems = "flex-start";
         gamesLegsBox.style.marginTop = "12px";
         
@@ -1622,14 +1618,13 @@
           el.style.lineHeight = "1.2";
           el.style.textAlign = "left";
           if (index === 0) {
-            el.style.marginBottom = "4px"; // Gleichmäßiger Abstand zwischen Zeile 1 (Spiele) und Zeile 2 (Legs)
+            el.style.marginBottom = "4px";
           } else {
             el.style.marginBottom = "0";
           }
         });
       }
 
-      // 2. Überschriften "Spielstatistiken" und "Bestleistungen" formatieren & Abstände anpassen
       const sectionHeadings = clone.querySelectorAll('h3');
       sectionHeadings.forEach((h, idx) => {
         h.style.fontSize = "1.125rem";
@@ -1643,7 +1638,6 @@
         }
       });
 
-      // 3. In den Rechtecken: Überschriften mit verringertem Abstand zur oberen Kante
       const profileCards = clone.querySelectorAll('.profile-card');
       profileCards.forEach(card => {
         card.style.padding = "0.5rem 1.2rem 0.8rem 1.2rem";
