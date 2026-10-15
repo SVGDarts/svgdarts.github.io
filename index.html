@@ -1552,7 +1552,7 @@
       exportContainer.style.color = '#F3F4F6';
       exportContainer.style.fontFamily = "'Inter', sans-serif";
       exportContainer.style.boxSizing = 'border-box';
-      exportContainer.style.padding = '60px 80px';
+      exportContainer.style.padding = '40px 80px'; // Reduzierter Rahmen oben und unten (von 60px auf 40px)
       exportContainer.style.display = 'flex';
       exportContainer.style.flexDirection = 'column';
       exportContainer.style.justifyContent = 'space-between';
@@ -1593,21 +1593,22 @@
         teamSpan.style.display = "block";
       }
 
-      // Spiele & Legs Rechteck rechts auf Teamhöhe, mit perfektem vertikalem Abstand
+      // Spiele & Legs Rechteck rechts auf Teamhöhe, mit verringerter Höhe, kleinerer Schrift und leicht nach unten versetzt
       const gamesLegsBox = clone.querySelector('.glass-card.px-4.py-2\\.5');
       if (gamesLegsBox) {
-        gamesLegsBox.style.padding = "18px 24px";
-        gamesLegsBox.style.minWidth = "180px";
+        gamesLegsBox.style.padding = "10px 20px";
+        gamesLegsBox.style.minWidth = "170px";
         gamesLegsBox.style.height = "auto";
         gamesLegsBox.style.display = "flex";
         gamesLegsBox.style.flexDirection = "column";
         gamesLegsBox.style.justifyContent = "center";
         gamesLegsBox.style.alignItems = "flex-start";
+        gamesLegsBox.style.marginTop = "12px"; // Leicht nach unten versetzt
         
         const innerTexts = gamesLegsBox.querySelectorAll('div');
         innerTexts.forEach(el => {
-          el.style.fontSize = "1.1rem";
-          el.style.lineHeight = "1.4";
+          el.style.fontSize = "0.95rem"; // Schriftgröße von Spiele & Legs um 1 verkleinert
+          el.style.lineHeight = "1.3";
           el.style.textAlign = "left";
         });
       }
@@ -1618,11 +1619,11 @@
         h.style.fontSize = "1.125rem";
         h.style.fontWeight = "700";
         if (idx === 0) {
-          h.style.marginTop = "10px"; 
-          h.style.marginBottom = "14px"; // Abstand zwischen Überschrift "Spielstatistiken" und den Boxen darunter
+          h.style.marginTop = "6px"; 
+          h.style.marginBottom = "10px"; // Abstand zwischen Überschrift "Spielstatistiken" und den Boxen darunter
         } else if (idx === 1) {
-          h.style.marginTop = "15px"; // Reduzierter Abstand zwischen Spielstatistiken-Boxen und Bestleistungen-Überschrift
-          h.style.marginBottom = "14px"; // Abstand zwischen Überschrift "Bestleistungen" und den Boxen darunter
+          h.style.marginTop = "8px"; // Weiter verringerter Abstand zwischen Spielstatistiken-Boxen und Bestleistungen-Überschrift
+          h.style.marginBottom = "10px"; // Abstand zwischen Überschrift "Bestleistungen" und den Boxen darunter
         }
       });
 
@@ -1642,7 +1643,7 @@
 
         const valEl = card.querySelector('.profile-card-value');
         if (valEl) {
-          valEl.style.fontSize = "1.7rem"; // Zahlenwerte um 2 verringert (von 2.2rem auf 1.7rem)
+          valEl.style.fontSize = "1.7rem"; 
           valEl.style.margin = "auto 0";
         }
 
