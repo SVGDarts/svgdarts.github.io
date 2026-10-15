@@ -171,7 +171,7 @@
     }
 /* Zahlenwerte in den Statistik-Rechtecken weiter oben positionieren */
     .card-value-upper {
-      margin-top: -2px !important;
+      margin-top: 0px !important;
       margin-bottom: 2px !important;
     }
     /* Responsive Kartentitel: Auf PC größer, auf Handy kleiner */
@@ -782,7 +782,7 @@
           <select id="profilePlayerSelect" onchange="renderPlayerProfile()" class="bg-transparent text-white font-black font-display text-xl md:text-3xl rounded-xl px-2 py-1 border border-transparent hover:border-neutral-700 focus:outline-none cursor-pointer">
             <option value="">Bitte wählen...</option>
           </select>
-          <span id="profPlayerTeam" class="text-[7px] md:text-[9px] uppercase tracking-widest text-neutral-400 font-semibold px-2">Team -</span>
+          <span id="profPlayerTeam" class="text-[9px] md:text-[11px] uppercase tracking-widest text-neutral-400 font-semibold px-2">Team -</span>
         </div>
 
         <!-- Rechte Seite: Button & Box für Spiele/Legs vertikal zentriert -->
@@ -791,14 +791,16 @@
             <i class="fa-brands fa-instagram text-pink-500 text-sm"></i> Bild
           </button>
 
-          <<div class="glass-card px-3 md:px-4 py-2 rounded-xl md:rounded-2xl flex flex-col justify-center text-right card-value-upper" style="height: 40px !important;">
-            <div style="font-size: 9.5px !important; line-height: 1.1 !important;" class="text-neutral-300 font-medium">
-              Spiele: <span id="profGamesVal" style="font-size: 9.5px !important;" class="font-bold text-white">-</span>
+          <div class="glass-card px-3 md:px-4 py-2 rounded-xl md:rounded-2xl flex flex-col justify-center text-right" style="height: 44px !important;">
+            <div style="font-size: 10px !important; line-height: 1.2 !important;" class="text-neutral-300 font-medium">
+              Spiele: <span id="profGamesVal" style="font-size: 10px !important;" class="font-bold text-white">-</span>
             </div>
-            <div style="font-size: 9.5px !important; line-height: 1.1 !important;" class="text-neutral-300 font-medium mt-0.5">
-              Legs: <span id="profLegsVal" style="font-size: 9.5px !important;" class="font-bold text-white">-</span>
+            <div style="font-size: 10px !important; line-height: 1.2 !important;" class="text-neutral-300 font-medium">
+              Legs: <span id="profLegsVal" style="font-size: 10px !important;" class="font-bold text-white">-</span>
             </div>
           </div>
+        </div>
+      </div>
 
       <!-- Sektion 1: Spielstatistiken (Mobil 3 Spalten, ab md 6 Spalten) -->
       <div class="space-y-4">
