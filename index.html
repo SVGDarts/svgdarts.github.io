@@ -13,7 +13,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
 
-  <!-- html2canvas für den Bildupload / Download -->
+  <!-- html2canvas für den Bild-Download -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
@@ -1540,7 +1540,7 @@
       const sourceSection = document.getElementById('content-playerProfile');
       if (!sourceSection) return;
 
-      // Erstelle ein unsichtbares Export-Container-Element im festen 1080x1350 PC-Format
+      // Erstelle ein unsichtbares Export-Container-Element im festen 1080x1350 Format
       const exportContainer = document.createElement('div');
       exportContainer.style.position = 'fixed';
       exportContainer.style.left = '-9999px';
@@ -1565,6 +1565,88 @@
       // Entferne den Download-Button aus dem Export-Klon
       const btnInClone = clone.querySelector('button');
       if (btnInClone) btnInClone.remove();
+
+      // EXKLUSIVE ANPASSUNGEN NUR FÜR DAS EXPORT-BILD GEMÄß ANWEISUNG:
+      
+      // 1. Kopfbereich: Name, Team & Spiele/Legs-Rechteck ganz rechts auf Team-Höhe platzieren
+      const headerDiv = clone.querySelector('.flex.flex-col.md\\:flex-row');
+      if (headerDiv) {
+        headerDiv.className = "flex flex-row justify-between items-center w-full";
+      }
+
+      // Name größer (+2 Stufen: text-3xl -> text-5xl)
+      const nameSelect = clone.querySelector('#profilePlayerSelect');
+      if (nameSelect) {
+        nameSelect.style.fontSize = "3rem";
+        nameSelect.style.fontWeight = "900";
+        nameSelect.style.lineHeight = "1";
+        nameSelect.style.padding = "0";
+        nameSelect.style.border = "none";
+        nameSelect.style.background = "transparent";
+      }
+
+      // Team größer (+2 Stufen: text-xs -> text-base)
+      const teamSpan = clone.querySelector('#profPlayerTeam');
+      if (teamSpan) {
+        teamSpan.style.fontSize = "1rem";
+        teamSpan.style.paddingLeft = "0";
+        teamSpan.style.marginTop = "6px";
+        teamSpan.style.display = "block";
+      }
+
+      // Spiele & Legs Rechteck rechts auf Teamhöhe, mit perfektem vertikalem Abstand (padding top/bottom gleich)
+      const gamesLegsBox = clone.querySelector('.glass-card.px-4.py-2\\.5');
+      if (gamesLegsBox) {
+        gamesLegsBox.style.padding = "18px 24px";
+        gamesLegsBox.style.minWidth = "180px";
+        gamesLegsBox.style.height = "auto";
+        gamesLegsBox.style.display = "flex";
+        gamesLegsBox.style.flexDirection = "column";
+        gamesLegsBox.style.justifyContent = "center";
+        gamesLegsBox.style.alignItems = "flex-start";
+        
+        // Texte darin vergrößern
+        const innerTexts = gamesLegsBox.querySelectorAll('div');
+        texts = Array.from(innerTexts);
+        texts.forEach(el => {
+          el.style.fontSize = "1.1rem";
+          el.style.lineHeight = "1.4";
+          el.style.textAlign = "left";
+        });
+      }
+
+      // 2. Überschriften "Spielstatistiken" und "Bestleistungen" um zwei Schriftgrößen vergrößern (text-xs -> text-lg)
+      const sectionHeadings = clone.querySelectorAll('h3');
+      sectionHeadings.forEach(h => {
+        h.style.fontSize = "1.125rem";
+        h.style.fontWeight = "700";
+      });
+
+      // 3. In den Rechtecken: Überschriften (Titel) +3 Stufen, Ränge +2 Stufen
+      const profileCards = clone.querySelectorAll('.profile-card');
+      profileCards.forEach(card => {
+        card.style.padding = "1.2rem 1.4rem";
+        card.style.minHeight = "130px";
+
+        const titleEl = card.querySelector('.profile-card-title');
+        if (titleEl) {
+          // +3 Schriftgrößen vergrößert
+          titleEl.style.fontSize = "1.25rem";
+          titleEl.style.lineHeight = "1.3";
+          titleEl.style.whiteSpace = "nowrap";
+        }
+
+        const valEl = card.querySelector('.profile-card-value');
+        if (valEl) {
+          valEl.style.fontSize = "2.2rem";
+        }
+
+        const rankEl = card.querySelector('.profile-card-rank');
+        if (rankEl) {
+          // +2 Schriftgrößen vergrößert
+          rankEl.style.fontSize = "1rem";
+        }
+      });
 
       exportContainer.appendChild(clone);
       document.body.appendChild(exportContainer);
