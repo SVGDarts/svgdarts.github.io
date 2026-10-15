@@ -1667,8 +1667,6 @@
         const canvas = await html2canvas(exportContainer, {
           width: 1080,
           height: 1350,
-          windowWidth: 1080,
-          windowHeight: 1350,
           scale: 2,
           useCORS: true,
           backgroundColor: '#000000'
@@ -2339,7 +2337,7 @@
           appData.stats = firebaseListToArray(appData.stats || appData.Averages);
           appData.records = firebaseListToArray(appData.records || appData.Bestleistungen);
           appData.gameStats = firebaseListToArray(appData.gameStats || appData.Spielstatistiken);
-          appData.teamStats = firebaseListToArray(appData.teamStats || data.Teamstatistiken);
+          appData.teamStats = firebaseListToArray(appData.teamStats || appData.Teamstatistiken);
           
           populateMatchFilters();
           renderAllTables();
