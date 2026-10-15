@@ -2201,37 +2201,47 @@
       const select = document.getElementById('profilePlayerSelect');
       const playerName = (select && select.value) ? select.value : 'Spielerprofil';
 
-      // 1. Nur den Download-Button kurz unsichtbar schalten (Name & Stats bleiben da)
+      // 1. Nur den Download-Button kurz unsichtbar schalten
       if (downloadBtn) downloadBtn.style.display = 'none';
 
-      // 2. Äußeren Rand (Padding) und Hintergrund für das Bild definieren
+      // 2. Ursprüngliche Styles zwischenspeichern
       const originalPadding = element.style.padding;
       const originalBg = element.style.backgroundColor;
-      element.style.padding = '24px';
+      const originalWidth = element.style.width;
+
+      // 3. Dem Element temporär eine feste Breite im Hochformat-Verhältnis geben (z.B. 1080px Basis)
+      element.style.width = '1080px';
+      element.style.padding = '80px 60px'; // Schöner großzügiger Rand rundherum im 1080x1350 Format
       element.style.backgroundColor = '#000000';
 
+      // 4. Konfiguration für exakt 1080x1350 px Ausgangsauflösung
       const options = {
         backgroundColor: '#000000',
-        scale: 2,
+        width: 1080,
+        height: 1350,
+        scale: 1, // Da wir direkt mit 1080px arbeiten, sorgt scale: 1 für gestochen scharfe 1080x1350 Pixel
+        windowWidth: 1080,
         useCORS: true
       };
 
-      // 3. Bild generieren und herunterladen
+      // 5. Bild generieren und als PNG herunterladen
       html2canvas(element, options).then(canvas => {
         const link = document.createElement('a');
-        link.download = `${playerName.replace(/\s+/g, '_')}_SVG_Darts.png`;
+        link.download = `${playerName.replace(/\s+/g, '_')}_Instagram_1080x1350.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
 
-        // 4. Ursprünglichen Zustand der Seite wiederherstellen
+        // 6. Ursprünglichen Zustand der Seite & Styles wiederherstellen
         if (downloadBtn) downloadBtn.style.display = '';
         element.style.padding = originalPadding;
         element.style.backgroundColor = originalBg;
+        element.style.width = originalWidth;
       }).catch(err => {
         console.error("Fehler beim Erstellen des Bildes:", err);
         if (downloadBtn) downloadBtn.style.display = '';
         element.style.padding = originalPadding;
         element.style.backgroundColor = originalBg;
+        element.style.width = originalWidth;
       });
     }
 
