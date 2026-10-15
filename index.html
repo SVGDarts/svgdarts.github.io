@@ -12,9 +12,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-  
-  <!-- HTML2Canvas für den Bild-Export -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
     html { overflow-x: auto; }
@@ -318,7 +315,7 @@
           <i class="fa-solid fa-bullhorn text-neutral-400 text-sm"></i> Geplant (sofern umsetzbar)
         </h3>
         <div class="text-sm text-neutral-300 space-y-2">
-          <p>- 15.10.2026 Testphase - kein Abrufen der Daten </p>
+          <p>- 15.10.2026 Testphase - kein Abrufen der Daten[cite: 2]</p>
         </div>
       </div>
       <div class="space-y-4">
@@ -799,11 +796,6 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <!-- Download Button (Wird dank data-html2canvas-ignore automatisch beim Bildexport ausgeblendet) -->
-          <button onclick="downloadPlayerProfileImage()" data-html2canvas-ignore class="px-3.5 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-xl text-xs font-semibold transition flex items-center gap-2 border border-neutral-700 shadow-sm">
-            <i class="fa-solid fa-download text-neutral-300"></i> Profil als Bild (1080x1350)
-          </button>
-
           <!-- Rechte Seite: Spiele & Legs Rechteck (linksbündig ausgerichtet) -->
           <div class="glass-card px-4 py-2.5 rounded-2xl flex flex-col justify-center items-start text-left" style="min-width: 130px; height: 60px;">
             <div class="text-xs text-neutral-300 font-medium leading-tight text-left">
@@ -1592,63 +1584,6 @@
       if (rankShortgamesM) rankShortgamesM.innerText = shortgamesRank;
     }
 
-    // Funktion zum Herunterladen des Spielerprofils im Format 1080x1350px
-    function downloadPlayerProfileImage() {
-      const container = document.getElementById('content-playerProfile');
-      if (!container) return;
-
-      const select = document.getElementById('profilePlayerSelect');
-      const playerName = select ? select.value || 'Spielerprofil' : 'Spielerprofil';
-
-      // html2canvas Optionen für exakte Skalierung auf 1080x1350
-      const targetWidth = 1080;
-      const targetHeight = 1350;
-      const currentWidth = container.offsetWidth || 800;
-      const scaleFactor = targetWidth / currentWidth;
-
-      html2canvas(container, {
-        scale: scaleFactor > 0 ? scaleFactor : 2,
-        useCORS: true,
-        backgroundColor: '#000000',
-        logging: false,
-        ignoreElements: (element) => {
-          // Ignoriere den Download-Button und Elemente mit data-html2canvas-ignore
-          return element.hasAttribute('data-html2canvas-ignore');
-        }
-      }).then(canvas => {
-        // Falls gewünscht, exakt auf 1080x1350 zuschneiden/skalieren falls der Inhalt abweicht
-        const finalCanvas = document.createElement('canvas');
-        finalCanvas.width = targetWidth;
-        finalCanvas.height = targetHeight;
-        const ctx = finalCanvas.getContext('2d');
-        
-        ctx.fillStyle = '#000000';
-        ctx.fillRect(0, 0, targetWidth, targetHeight);
-
-        // Zentriertes oder oberengerechtes Zeichnen
-        const srcWidth = canvas.width;
-        const srcHeight = canvas.height;
-        const hRatio = targetWidth / srcWidth;
-        const vRatio = targetHeight / srcHeight;
-        const ratio = Math.min(hRatio, vRatio);
-        
-        const centerShiftX = (targetWidth - srcWidth * ratio) / 2;
-        const centerShiftY = (targetHeight - srcHeight * ratio) / 2;
-
-        ctx.drawImage(canvas, 0, 0, srcWidth, srcHeight, centerShiftX, centerShiftY, srcWidth * ratio, srcHeight * ratio);
-
-        const imageURL = finalCanvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.href = imageURL;
-        link.download = `SVG-Darts-Profil_${playerName.replace(/\s+/g, '_')}.png`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }).catch(err => {
-        console.error("Fehler beim Erstellen des Bildes:", err);
-      });
-    }
-
     function resetMatchFilters() {
       document.getElementById('filterMatchday').value = "";
       document.getElementById('filterTeam').value = "";
@@ -2334,7 +2269,6 @@
     window.renderStats = renderStats;
     window.renderRecords = renderRecords;
     window.renderTeamStats = renderTeamStats;
-    window.downloadPlayerProfileImage = downloadPlayerProfileImage;
   </script>
 </body>
 </html>
