@@ -13,6 +13,9 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" media="print" onload="this.media='all'">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
 
+  <!-- html2canvas für den Bildupload / Download -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <style>
     html { overflow-x: auto; }
     body {
@@ -167,45 +170,57 @@
       border: 0;
     }
 
-    /* Flexibles Box-Design (Alles linksbündig) */
+    /* Flexibles Box-Design (Alles linksbündig) mit angepassten PC-Größen & Schriftgrößen */
     .profile-card {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       text-align: left;
-      padding: 0.65rem 0.75rem;
-      min-height: 90px;
+      padding: 0.75rem 1rem;
+      min-height: 105px;
     }
     
     .profile-card-title {
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 600;
       color: #d4d4d4;
       white-space: normal;
-      line-height: 1.1;
+      line-height: 1.2;
       text-align: left;
     }
 
     @media (min-width: 768px) {
       .profile-card-title {
-        font-size: 0.75rem;
+        font-size: 0.9rem;
         white-space: nowrap;
       }
     }
 
     .profile-card-value {
-      font-size: 1.3rem;
+      font-size: 1.5rem;
       font-weight: 900;
       color: #ffffff;
       text-align: left;
       margin: auto 0;
     }
 
+    @media (min-width: 768px) {
+      .profile-card-value {
+        font-size: 1.8rem;
+      }
+    }
+
     .profile-card-rank {
-      font-size: 0.55rem;
+      font-size: 0.65rem;
       font-weight: 500;
       color: #737373;
       text-align: left;
+    }
+
+    @media (min-width: 768px) {
+      .profile-card-rank {
+        font-size: 0.75rem;
+      }
     }
   </style>
 
@@ -796,6 +811,11 @@
         </div>
 
         <div class="flex items-center gap-3">
+          <!-- Download Button -->
+          <button onclick="downloadPlayerProfileImage()" title="Spielerprofil herunterladen" class="px-4 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded-2xl border border-neutral-700 transition flex items-center gap-2 text-xs font-bold font-display shadow-sm">
+            <i class="fa-solid fa-download"></i> Download
+          </button>
+
           <!-- Rechte Seite: Spiele & Legs Rechteck (linksbündig ausgerichtet) -->
           <div class="glass-card px-4 py-2.5 rounded-2xl flex flex-col justify-center items-start text-left" style="min-width: 130px; height: 60px;">
             <div class="text-xs text-neutral-300 font-medium leading-tight text-left">
@@ -896,88 +916,44 @@
       <div class="space-y-4 pt-4">
         <h3 class="text-xs font-semibold text-neutral-400 text-left">Bestleistungen</h3>
         
-        <!-- PC-Ansicht (lg:block hidden) -->
-        <div class="hidden lg:block space-y-3">
-          <div class="grid grid-cols-5 gap-3">
-            <div class="glass-card rounded-2xl profile-card">
-              <span class="profile-card-title">Specials</span>
-              <span id="rec-specials" class="profile-card-value">-</span>
-              <span id="rank-specials" class="profile-card-rank">-</span>
-            </div>
-            <div class="glass-card rounded-2xl profile-card">
-              <span class="profile-card-title">Chance auf Shortgame</span>
-              <span id="rec-shortgameChance" class="profile-card-value">-</span>
-              <span id="rank-shortgameChance" class="profile-card-rank">-</span>
-            </div>
-            <div class="glass-card rounded-2xl profile-card">
-              <span class="profile-card-title">Specials pro Spiel</span>
-              <span id="rec-specialsPerGame" class="profile-card-value">-</span>
-              <span id="rank-specialsPerGame" class="profile-card-rank">-</span>
-            </div>
-            <div class="glass-card rounded-2xl profile-card">
-              <span class="profile-card-title">180er</span>
-              <span id="rec-r180-pc" class="profile-card-value">-</span>
-              <span id="rank-r180-pc" class="profile-card-rank">-</span>
-            </div>
-            <div class="glass-card rounded-2xl profile-card">
-              <span class="profile-card-title">140+</span>
-              <span id="rec-r140-pc" class="profile-card-value">-</span>
-              <span id="rank-r140-pc" class="profile-card-rank">-</span>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <div class="glass-card rounded-2xl profile-card">
-              <span class="profile-card-title">Highfinish</span>
-              <span id="rec-highfinish" class="profile-card-value">-</span>
-              <span id="rank-highfinish" class="profile-card-rank">-</span>
-            </div>
-            <div class="glass-card rounded-2xl profile-card">
-              <span class="profile-card-title">Shortgames</span>
-              <span id="rec-shortgames-pc" class="profile-card-value">-</span>
-              <span id="rank-shortgames-pc" class="profile-card-rank">-</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Handy-Ansicht (block lg:hidden) -->
-        <div class="grid grid-cols-6 gap-3 lg:hidden">
+        <div class="grid grid-cols-6 gap-3">
           <div class="glass-card rounded-2xl profile-card col-span-2">
             <span class="profile-card-title">Specials</span>
-            <span id="rec-specials-m" class="profile-card-value">-</span>
-            <span id="rank-specials-m" class="profile-card-rank">-</span>
+            <span id="rec-specials" class="profile-card-value">-</span>
+            <span id="rank-specials" class="profile-card-rank">-</span>
           </div>
           <div class="glass-card rounded-2xl profile-card col-span-2">
             <span class="profile-card-title">Chance auf Shortgame</span>
-            <span id="rec-shortgameChance-m" class="profile-card-value">-</span>
-            <span id="rank-shortgameChance-m" class="profile-card-rank">-</span>
+            <span id="rec-shortgameChance" class="profile-card-value">-</span>
+            <span id="rank-shortgameChance" class="profile-card-rank">-</span>
           </div>
           <div class="glass-card rounded-2xl profile-card col-span-2">
             <span class="profile-card-title">Specials pro Spiel</span>
-            <span id="rec-specialsPerGame-m" class="profile-card-value">-</span>
-            <span id="rank-specialsPerGame-m" class="profile-card-rank">-</span>
+            <span id="rec-specialsPerGame" class="profile-card-value">-</span>
+            <span id="rank-specialsPerGame" class="profile-card-rank">-</span>
           </div>
 
           <div class="glass-card rounded-2xl profile-card col-span-3">
             <span class="profile-card-title">180er</span>
-            <span id="rec-r180-m" class="profile-card-value">-</span>
-            <span id="rank-r180-m" class="profile-card-rank">-</span>
+            <span id="rec-r180" class="profile-card-value">-</span>
+            <span id="rank-r180" class="profile-card-rank">-</span>
           </div>
           <div class="glass-card rounded-2xl profile-card col-span-3">
             <span class="profile-card-title">140+</span>
-            <span id="rec-r140-m" class="profile-card-value">-</span>
-            <span id="rank-r140-m" class="profile-card-rank">-</span>
+            <span id="rec-r140" class="profile-card-value">-</span>
+            <span id="rank-r140" class="profile-card-rank">-</span>
           </div>
 
           <div class="glass-card rounded-2xl profile-card col-span-6">
             <span class="profile-card-title">Highfinish</span>
-            <span id="rec-highfinish-m" class="profile-card-value">-</span>
-            <span id="rank-highfinish-m" class="profile-card-rank">-</span>
+            <span id="rec-highfinish" class="profile-card-value">-</span>
+            <span id="rank-highfinish" class="profile-card-rank">-</span>
           </div>
 
           <div class="glass-card rounded-2xl profile-card col-span-6">
             <span class="profile-card-title">Shortgames</span>
-            <span id="rec-shortgames-m" class="profile-card-value">-</span>
-            <span id="rank-shortgames-m" class="profile-card-rank">-</span>
+            <span id="rec-shortgames" class="profile-card-value">-</span>
+            <span id="rank-shortgames" class="profile-card-rank">-</span>
           </div>
         </div>
       </div>
@@ -1512,10 +1488,6 @@
       if (elRecSpecials) elRecSpecials.innerText = specialsVal;
       const elRankSpecials = document.getElementById('rank-specials');
       if (elRankSpecials) elRankSpecials.innerText = specialsRank;
-      const elRecSpecialsM = document.getElementById('rec-specials-m');
-      if (elRecSpecialsM) elRecSpecialsM.innerText = specialsVal;
-      const elRankSpecialsM = document.getElementById('rank-specials-m');
-      if (elRankSpecialsM) elRankSpecialsM.innerText = specialsRank;
 
       const shortgameChanceVal = formatPercent(p.shortgameChance ?? p.shortgame_chance);
       const shortgameChanceRank = getRankText('shortgameChance', playerName);
@@ -1523,10 +1495,6 @@
       if (elRecSC) elRecSC.innerText = shortgameChanceVal;
       const elRankSC = document.getElementById('rank-shortgameChance');
       if (elRankSC) elRankSC.innerText = shortgameChanceRank;
-      const elRecSCM = document.getElementById('rec-shortgameChance-m');
-      if (elRecSCM) elRecSCM.innerText = shortgameChanceVal;
-      const elRankSCM = document.getElementById('rank-shortgameChance-m');
-      if (elRankSCM) elRankSCM.innerText = shortgameChanceRank;
 
       const specialsPerGameVal = formatNumber(p.specialsPerGame ?? p.specials_per_game);
       const specialsPerGameRank = getRankText('specialsPerGame', playerName);
@@ -1534,32 +1502,20 @@
       if (elRecSPG) elRecSPG.innerText = specialsPerGameVal;
       const elRankSPG = document.getElementById('rank-specialsPerGame');
       if (elRankSPG) elRankSPG.innerText = specialsPerGameRank;
-      const elRecSPGM = document.getElementById('rec-specialsPerGame-m');
-      if (elRecSPGM) elRecSPGM.innerText = specialsPerGameVal;
-      const elRankSPGM = document.getElementById('rank-specialsPerGame-m');
-      if (elRankSPGM) elRankSPGM.innerText = specialsPerGameRank;
 
       const r180Val = p.r180 ?? p['180'] ?? 0;
       const r180Rank = getRankText('r180', playerName);
-      const r180PC = document.getElementById('rec-r180-pc');
-      if (r180PC) r180PC.innerText = r180Val;
-      const rankR180PC = document.getElementById('rank-r180-pc');
-      if (rankR180PC) rankR180PC.innerText = r180Rank;
-      const r180M = document.getElementById('rec-r180-m');
-      if (r180M) r180M.innerText = r180Val;
-      const rankR180M = document.getElementById('rank-r180-m');
-      if (rankR180M) rankR180M.innerText = r180Rank;
+      const r180El = document.getElementById('rec-r180');
+      if (r180El) r180El.innerText = r180Val;
+      const rankR180El = document.getElementById('rank-r180');
+      if (rankR180El) rankR180El.innerText = r180Rank;
 
       const r140Val = p.r140 ?? p['140'] ?? 0;
       const r140Rank = getRankText('r140', playerName);
-      const r140PC = document.getElementById('rec-r140-pc');
-      if (r140PC) r140PC.innerText = r140Val;
-      const rankR140PC = document.getElementById('rank-r140-pc');
-      if (rankR140PC) rankR140PC.innerText = r140Rank;
-      const r140M = document.getElementById('rec-r140-m');
-      if (r140M) r140M.innerText = r140Val;
-      const rankR140M = document.getElementById('rank-r140-m');
-      if (rankR140M) rankR140M.innerText = r140Rank;
+      const r140El = document.getElementById('rec-r140');
+      if (r140El) r140El.innerText = r140Val;
+      const rankR140El = document.getElementById('rank-r140');
+      if (rankR140El) rankR140El.innerText = r140Rank;
 
       const highfinishVal = p.highfinish ?? '-';
       const highfinishRank = getRankText('highfinish', playerName);
@@ -1567,21 +1523,73 @@
       if (elRecHF) elRecHF.innerText = highfinishVal;
       const elRankHF = document.getElementById('rank-highfinish');
       if (elRankHF) elRankHF.innerText = highfinishRank;
-      const elRecHFM = document.getElementById('rec-highfinish-m');
-      if (elRecHFM) elRecHFM.innerText = highfinishVal;
-      const elRankHFM = document.getElementById('rank-highfinish-m');
-      if (elRankHFM) elRankHFM.innerText = highfinishRank;
 
       const shortgamesVal = p.shortgame ?? p.shortgames ?? '-';
       const shortgamesRank = getRankText('shortgames', playerName);
-      const shortgamesPC = document.getElementById('rec-shortgames-pc');
-      if (shortgamesPC) shortgamesPC.innerText = shortgamesVal;
-      const rankShortgamesPC = document.getElementById('rank-shortgames-pc');
-      if (rankShortgamesPC) rankShortgamesPC.innerText = shortgamesRank;
-      const shortgamesM = document.getElementById('rec-shortgames-m');
-      if (shortgamesM) shortgamesM.innerText = shortgamesVal;
-      const rankShortgamesM = document.getElementById('rank-shortgames-m');
-      if (rankShortgamesM) rankShortgamesM.innerText = shortgamesRank;
+      const shortgamesEl = document.getElementById('rec-shortgames');
+      if (shortgamesEl) shortgamesEl.innerText = shortgamesVal;
+      const rankShortgamesEl = document.getElementById('rank-shortgames');
+      if (rankShortgamesEl) rankShortgamesEl.innerText = shortgamesRank;
+    }
+
+    async function downloadPlayerProfileImage() {
+      const select = document.getElementById('profilePlayerSelect');
+      const playerName = select ? select.value : 'Spieler';
+      if (!playerName) return;
+
+      const sourceSection = document.getElementById('content-playerProfile');
+      if (!sourceSection) return;
+
+      // Erstelle ein unsichtbares Export-Container-Element im festen 1080x1350 PC-Format
+      const exportContainer = document.createElement('div');
+      exportContainer.style.position = 'fixed';
+      exportContainer.style.left = '-9999px';
+      exportContainer.style.top = '0';
+      exportContainer.style.width = '1080px';
+      exportContainer.style.height = '1350px';
+      exportContainer.style.backgroundColor = '#000000';
+      exportContainer.style.backgroundImage = 'radial-gradient(at 0% 0%, rgba(255, 255, 255, 0.03) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(255, 255, 255, 0.02) 0px, transparent 50%)';
+      exportContainer.style.color = '#F3F4F6';
+      exportContainer.style.fontFamily = "'Inter', sans-serif";
+      exportContainer.style.boxSizing = 'border-box';
+      exportContainer.style.padding = '60px 80px';
+      exportContainer.style.display = 'flex';
+      exportContainer.style.flexDirection = 'column';
+      exportContainer.style.justifyContent = 'space-between';
+      exportContainer.className = 'dark';
+
+      // Klone den Inhalt des Spielerprofils
+      const clone = sourceSection.cloneNode(true);
+      clone.classList.remove('hidden');
+
+      // Entferne den Download-Button aus dem Export-Klon
+      const btnInClone = clone.querySelector('button');
+      if (btnInClone) btnInClone.remove();
+
+      exportContainer.appendChild(clone);
+      document.body.appendChild(exportContainer);
+
+      try {
+        const canvas = await html2canvas(exportContainer, {
+          width: 1080,
+          height: 1350,
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#000000'
+        });
+
+        const imageURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.href = imageURL;
+        link.download = `Spielerprofil_${playerName.replace(/\s+/g, '_')}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } catch (err) {
+        console.error("Fehler beim Generieren des Profilbildes:", err);
+      } finally {
+        document.body.removeChild(exportContainer);
+      }
     }
 
     function resetMatchFilters() {
@@ -2269,6 +2277,7 @@
     window.renderStats = renderStats;
     window.renderRecords = renderRecords;
     window.renderTeamStats = renderTeamStats;
+    window.downloadPlayerProfileImage = downloadPlayerProfileImage;
   </script>
 </body>
 </html>
