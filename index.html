@@ -181,18 +181,18 @@
     }
     
     .profile-card-title {
-      font-size: 7px;
+      font-size: 9px;
       font-weight: 600;
       color: #d4d4d4;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      line-height: 1.1;
       text-align: left;
     }
 
     @media (min-width: 768px) {
       .profile-card-title {
         font-size: 0.75rem;
+        white-space: nowrap;
       }
     }
 
@@ -205,7 +205,7 @@
     }
 
     .profile-card-rank {
-      font-size: 0.65rem;
+      font-size: 0.55rem;
       font-weight: 500;
       color: #737373;
       text-align: left; /* Linksbündig */
@@ -798,12 +798,12 @@
           <span id="profPlayerTeam" class="text-xs font-semibold text-neutral-400 px-2">-</span>
         </div>
 
-        <!-- Rechte Seite: Spiele & Legs Rechteck (mittig ausgerichtet) -->
-        <div class="glass-card px-4 py-2.5 rounded-2xl flex flex-col justify-center items-center text-center" style="min-width: 130px; height: 60px;">
-          <div class="text-xs text-neutral-300 font-medium leading-tight">
+        <!-- Rechte Seite: Spiele & Legs Rechteck (linksbündig ausgerichtet) -->
+        <div class="glass-card px-4 py-2.5 rounded-2xl flex flex-col justify-center items-start text-left" style="min-width: 130px; height: 60px;">
+          <div class="text-xs text-neutral-300 font-medium leading-tight text-left">
             Spiele: <span id="profGamesVal" class="font-bold text-white">-</span>
           </div>
-          <div class="text-xs text-neutral-300 font-medium leading-tight mt-1">
+          <div class="text-xs text-neutral-300 font-medium leading-tight mt-1 text-left">
             Legs: <span id="profLegsVal" class="font-bold text-white">-</span>
           </div>
         </div>
@@ -1445,9 +1445,22 @@
         dataset.sort((a, b) => b.val - a.val);
       }
 
-      const index = dataset.findIndex(d => String(d.name).trim().toLowerCase() === String(playerName).trim().toLowerCase());
-      if (index === -1) return `# - von ${totalPlayers}`;
-      return `# ${index + 1} von ${totalPlayers}`;
+      // Rang mit Berücksichtigung gleicher Werte bei Gleichstand
+      let currentRank = 0;
+      let previousVal = null;
+      let playerRank = '-';
+
+      dataset.forEach((d, idx) => {
+        if (d.val !== previousVal) {
+          currentRank = idx + 1;
+          previousVal = d.val;
+        }
+        if (String(d.name).trim().toLowerCase() === String(playerName).trim().toLowerCase()) {
+          playerRank = `# ${currentRank} von ${totalPlayers}`;
+        }
+      });
+
+      return playerRank;
     }
 
     function renderPlayerProfile() {
