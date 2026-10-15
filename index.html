@@ -1339,7 +1339,18 @@
 
       const matchdays = [...new Set(appData.matches.map(m => m.matchday).filter(Boolean))];
       const svgTeams = [...new Set(appData.matches.flatMap(m => [m.home, m.away]).filter(t => t && /SVG[\w\d]*/i.test(t)))].sort();
-      const dates = [...new Set(appData.matches.map(m => formatDate(m.date)).filter(d => d && d !== '-'))];
+      
+      // Datumswerte sammeln, sauber parsen und chronologisch sortieren (aufsteigend)
+      const rawDates = [...new Set(appData.matches.map(m => m.date).filter(Boolean))];
+      rawDates.sort((a, b) => {
+        const dateA = parseMatchDate(a);
+        const dateB = parseMatchDate(b);
+        if (!dateA && !dateB) return 0;
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        return dateA - dateB; // Chronologisch: Ältestes Datum zuerst
+      });
+      const dates = rawDates.map(d => formatDate(d)).filter(d => d && d !== '-');
 
       const matchdayOptions = '<option value="">Spieltag</option>' + matchdays.map(md => `<option value="${md}">${md}</option>`).join('');
       const teamOptions = '<option value="">Teams</option>' + svgTeams.map(t => `<option value="${t}">${t}</option>`).join('');
