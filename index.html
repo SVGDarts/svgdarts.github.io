@@ -176,8 +176,8 @@
       flex-direction: column;
       justify-content: space-between;
       text-align: left;
-      padding: 0.65rem 0.75rem;
-      min-height: 90px;
+      padding: 0.75rem 0.85rem;
+      min-height: 105px; /* Etwas gestreckt für schöne Bildfüllung */
     }
     
     .profile-card-title {
@@ -197,7 +197,7 @@
     }
 
     .profile-card-value {
-      font-size: 1.3rem;
+      font-size: 1.4rem;
       font-weight: 900;
       color: #ffffff;
       text-align: left;
@@ -799,7 +799,7 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <!-- Download Button (Wird dank data-html2canvas-ignore automatisch beim Bildexport ausgeblendet) -->
+          <!-- Download Button (Ausgeblendet beim Bildexport durch data-html2canvas-ignore) -->
           <button onclick="downloadPlayerProfileImage()" data-html2canvas-ignore class="px-3.5 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-xl text-xs font-semibold transition flex items-center gap-2 border border-neutral-700 shadow-sm">
             <i class="fa-solid fa-download text-neutral-300"></i> Profil als Bild (1080x1350)
           </button>
@@ -1592,7 +1592,7 @@
       if (rankShortgamesM) rankShortgamesM.innerText = shortgamesRank;
     }
 
-    // Funktion zum Herunterladen des Spielerprofils im Format 1080x1350px
+    // Funktion zum Herunterladen des Spielerprofils im Format 1080x1350px mit umlaufendem Rand und füllenden Kacheln
     function downloadPlayerProfileImage() {
       const container = document.getElementById('content-playerProfile');
       if (!container) return;
@@ -1600,11 +1600,12 @@
       const select = document.getElementById('profilePlayerSelect');
       const playerName = select ? select.value || 'Spielerprofil' : 'Spielerprofil';
 
-      // html2canvas Optionen für exakte Skalierung auf 1080x1350
       const targetWidth = 1080;
       const targetHeight = 1350;
+      const padding = 60; // Kleiner umlaufender Rahmen in Pixeln auf dem Export-Bild
+
       const currentWidth = container.offsetWidth || 800;
-      const scaleFactor = targetWidth / currentWidth;
+      const scaleFactor = (targetWidth - (padding * 2)) / currentWidth;
 
       html2canvas(container, {
         scale: scaleFactor > 0 ? scaleFactor : 2,
@@ -1612,11 +1613,9 @@
         backgroundColor: '#000000',
         logging: false,
         ignoreElements: (element) => {
-          // Ignoriere den Download-Button und Elemente mit data-html2canvas-ignore
           return element.hasAttribute('data-html2canvas-ignore');
         }
       }).then(canvas => {
-        // Falls gewünscht, exakt auf 1080x1350 zuschneiden/skalieren falls der Inhalt abweicht
         const finalCanvas = document.createElement('canvas');
         finalCanvas.width = targetWidth;
         finalCanvas.height = targetHeight;
@@ -1625,17 +1624,25 @@
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, targetWidth, targetHeight);
 
-        // Zentriertes oder oberengerechtes Zeichnen
         const srcWidth = canvas.width;
         const srcHeight = canvas.height;
-        const hRatio = targetWidth / srcWidth;
-        const vRatio = targetHeight / srcHeight;
-        const ratio = Math.min(hRatio, vRatio);
         
-        const centerShiftX = (targetWidth - srcWidth * ratio) / 2;
-        const centerShiftY = (targetHeight - srcHeight * ratio) / 2;
+        // Berechne Skalierung so, dass die Rechtecke das Bild fast ganz ausfüllen, aber der Rahmen eingehalten wird
+        const availableWidth = targetWidth - (padding * 2);
+        const availableHeight = targetHeight - (padding * 2);
+        
+        const hRatio = availableWidth / srcWidth;
+        const vRatio = availableHeight / srcHeight;
+        
+        // Wir nutzen vRatio (oder einen leichten Zoom), damit die Reihen das Bild schön ausfüllen
+        const ratio = Math.max(hRatio, vRatio);
 
-        ctx.drawImage(canvas, 0, 0, srcWidth, srcHeight, centerShiftX, centerShiftY, srcWidth * ratio, srcHeight * ratio);
+        const drawWidth = srcWidth * ratio;
+        const drawHeight = srcHeight * ratio;
+        const centerShiftX = (targetWidth - drawWidth) / 2;
+        const centerShiftY = (targetHeight - drawHeight) / 2;
+
+        ctx.drawImage(canvas, 0, 0, srcWidth, srcHeight, centerShiftX, centerShiftY, drawWidth, drawHeight);
 
         const imageURL = finalCanvas.toDataURL('image/png');
         const link = document.createElement('a');
