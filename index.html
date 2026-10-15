@@ -1552,7 +1552,7 @@
       exportContainer.style.color = '#F3F4F6';
       exportContainer.style.fontFamily = "'Inter', sans-serif";
       exportContainer.style.boxSizing = 'border-box';
-      exportContainer.style.padding = '40px 80px'; // Reduzierter Rahmen oben und unten (von 60px auf 40px)
+      exportContainer.style.padding = '40px 80px';
       exportContainer.style.display = 'flex';
       exportContainer.style.flexDirection = 'column';
       exportContainer.style.justifyContent = 'space-between';
@@ -1603,11 +1603,11 @@
         gamesLegsBox.style.flexDirection = "column";
         gamesLegsBox.style.justifyContent = "center";
         gamesLegsBox.style.alignItems = "flex-start";
-        gamesLegsBox.style.marginTop = "12px"; // Leicht nach unten versetzt
+        gamesLegsBox.style.marginTop = "12px";
         
         const innerTexts = gamesLegsBox.querySelectorAll('div');
         innerTexts.forEach(el => {
-          el.style.fontSize = "0.95rem"; // Schriftgröße von Spiele & Legs um 1 verkleinert
+          el.style.fontSize = "0.95rem";
           el.style.lineHeight = "1.3";
           el.style.textAlign = "left";
         });
@@ -1620,24 +1620,25 @@
         h.style.fontWeight = "700";
         if (idx === 0) {
           h.style.marginTop = "6px"; 
-          h.style.marginBottom = "10px"; // Abstand zwischen Überschrift "Spielstatistiken" und den Boxen darunter
+          h.style.marginBottom = "10px";
         } else if (idx === 1) {
-          h.style.marginTop = "8px"; // Weiter verringerter Abstand zwischen Spielstatistiken-Boxen und Bestleistungen-Überschrift
-          h.style.marginBottom = "10px"; // Abstand zwischen Überschrift "Bestleistungen" und den Boxen darunter
+          h.style.marginTop = "8px";
+          h.style.marginBottom = "10px";
         }
       });
 
-      // 3. In den Rechtecken: Überschriften, um 2 verkleinerte Zahlenwerte und Abstände
+      // 3. In den Rechtecken: Überschriften mit verringertem Abstand zur oberen Kante
       const profileCards = clone.querySelectorAll('.profile-card');
       profileCards.forEach(card => {
-        card.style.padding = "0.9rem 1.2rem";
-        card.style.minHeight = "120px";
+        card.style.padding = "0.5rem 1.2rem 0.8rem 1.2rem"; // Oberes Padding verringert, damit der Titel weiter oben sitzt
+        card.style.minHeight = "115px";
 
         const titleEl = card.querySelector('.profile-card-title');
         if (titleEl) {
           titleEl.style.fontSize = "1.1rem";
           titleEl.style.lineHeight = "1.2";
           titleEl.style.whiteSpace = "nowrap";
+          titleEl.style.marginTop = "0"; // Keinen oberen Zusatzabstand erzwingen
           titleEl.style.marginBottom = "auto"; 
         }
 
