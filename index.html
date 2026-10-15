@@ -181,19 +181,12 @@
     }
     
     .profile-card-title {
-      font-size: 9px;
+      font-size: 0.75rem;
       font-weight: 600;
       color: #d4d4d4;
-      white-space: normal;
+      white-space: nowrap;
       line-height: 1.1;
       text-align: left;
-    }
-
-    @media (min-width: 768px) {
-      .profile-card-title {
-        font-size: 0.75rem;
-        white-space: nowrap;
-      }
     }
 
     .profile-card-value {
@@ -823,8 +816,8 @@
       <div class="space-y-4">
         <h3 class="text-xs font-semibold text-neutral-400 text-left">Spielstatistiken</h3>
         
-        <!-- Grid: 6 Spalten auf PC (2 Reihen), 3 Spalten auf Handy (4 Reihen) -->
-        <div class="grid grid-cols-3 lg:grid-cols-6 gap-3">
+        <!-- Grid: 6 Spalten -->
+        <div class="grid grid-cols-6 gap-3">
           <!-- 1. Saison-Einzel -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Saison-Einzel</span>
@@ -904,8 +897,8 @@
       <div class="space-y-4 pt-4">
         <h3 class="text-xs font-semibold text-neutral-400 text-left">Bestleistungen</h3>
         
-        <!-- PC-Ansicht (lg:block hidden) -->
-        <div class="hidden lg:block space-y-3">
+        <!-- PC-Ansicht (immer aktiv für den Export & Desktop) -->
+        <div class="space-y-3">
           <div class="grid grid-cols-5 gap-3">
             <div class="glass-card rounded-2xl profile-card">
               <span class="profile-card-title">Specials</span>
@@ -944,48 +937,6 @@
               <span id="rec-shortgames-pc" class="profile-card-value">-</span>
               <span id="rank-shortgames-pc" class="profile-card-rank">-</span>
             </div>
-          </div>
-        </div>
-
-        <!-- Handy-Ansicht (block lg:hidden) -->
-        <div class="grid grid-cols-6 gap-3 lg:hidden">
-          <div class="glass-card rounded-2xl profile-card col-span-2">
-            <span class="profile-card-title">Specials</span>
-            <span id="rec-specials-m" class="profile-card-value">-</span>
-            <span id="rank-specials-m" class="profile-card-rank">-</span>
-          </div>
-          <div class="glass-card rounded-2xl profile-card col-span-2">
-            <span class="profile-card-title">Chance auf Shortgame</span>
-            <span id="rec-shortgameChance-m" class="profile-card-value">-</span>
-            <span id="rank-shortgameChance-m" class="profile-card-rank">-</span>
-          </div>
-          <div class="glass-card rounded-2xl profile-card col-span-2">
-            <span class="profile-card-title">Specials pro Spiel</span>
-            <span id="rec-specialsPerGame-m" class="profile-card-value">-</span>
-            <span id="rank-specialsPerGame-m" class="profile-card-rank">-</span>
-          </div>
-
-          <div class="glass-card rounded-2xl profile-card col-span-3">
-            <span class="profile-card-title">180er</span>
-            <span id="rec-r180-m" class="profile-card-value">-</span>
-            <span id="rank-r180-m" class="profile-card-rank">-</span>
-          </div>
-          <div class="glass-card rounded-2xl profile-card col-span-3">
-            <span class="profile-card-title">140+</span>
-            <span id="rec-r140-m" class="profile-card-value">-</span>
-            <span id="rank-r140-m" class="profile-card-rank">-</span>
-          </div>
-
-          <div class="glass-card rounded-2xl profile-card col-span-6">
-            <span class="profile-card-title">Highfinish</span>
-            <span id="rec-highfinish-m" class="profile-card-value">-</span>
-            <span id="rank-highfinish-m" class="profile-card-rank">-</span>
-          </div>
-
-          <div class="glass-card rounded-2xl profile-card col-span-6">
-            <span class="profile-card-title">Shortgames</span>
-            <span id="rec-shortgames-m" class="profile-card-value">-</span>
-            <span id="rank-shortgames-m" class="profile-card-rank">-</span>
           </div>
         </div>
       </div>
@@ -1520,10 +1471,6 @@
       if (elRecSpecials) elRecSpecials.innerText = specialsVal;
       const elRankSpecials = document.getElementById('rank-specials');
       if (elRankSpecials) elRankSpecials.innerText = specialsRank;
-      const elRecSpecialsM = document.getElementById('rec-specials-m');
-      if (elRecSpecialsM) elRecSpecialsM.innerText = specialsVal;
-      const elRankSpecialsM = document.getElementById('rank-specials-m');
-      if (elRankSpecialsM) elRankSpecialsM.innerText = specialsRank;
 
       const shortgameChanceVal = formatPercent(p.shortgameChance ?? p.shortgame_chance);
       const shortgameChanceRank = getRankText('shortgameChance', playerName);
@@ -1531,10 +1478,6 @@
       if (elRecSC) elRecSC.innerText = shortgameChanceVal;
       const elRankSC = document.getElementById('rank-shortgameChance');
       if (elRankSC) elRankSC.innerText = shortgameChanceRank;
-      const elRecSCM = document.getElementById('rec-shortgameChance-m');
-      if (elRecSCM) elRecSCM.innerText = shortgameChanceVal;
-      const elRankSCM = document.getElementById('rank-shortgameChance-m');
-      if (elRankSCM) elRankSCM.innerText = shortgameChanceRank;
 
       const specialsPerGameVal = formatNumber(p.specialsPerGame ?? p.specials_per_game);
       const specialsPerGameRank = getRankText('specialsPerGame', playerName);
@@ -1542,10 +1485,6 @@
       if (elRecSPG) elRecSPG.innerText = specialsPerGameVal;
       const elRankSPG = document.getElementById('rank-specialsPerGame');
       if (elRankSPG) elRankSPG.innerText = specialsPerGameRank;
-      const elRecSPGM = document.getElementById('rec-specialsPerGame-m');
-      if (elRecSPGM) elRecSPGM.innerText = specialsPerGameVal;
-      const elRankSPGM = document.getElementById('rank-specialsPerGame-m');
-      if (elRankSPGM) elRankSPGM.innerText = specialsPerGameRank;
 
       const r180Val = p.r180 ?? p['180'] ?? 0;
       const r180Rank = getRankText('r180', playerName);
@@ -1553,10 +1492,6 @@
       if (r180PC) r180PC.innerText = r180Val;
       const rankR180PC = document.getElementById('rank-r180-pc');
       if (rankR180PC) rankR180PC.innerText = r180Rank;
-      const r180M = document.getElementById('rec-r180-m');
-      if (r180M) r180M.innerText = r180Val;
-      const rankR180M = document.getElementById('rank-r180-m');
-      if (rankR180M) rankR180M.innerText = r180Rank;
 
       const r140Val = p.r140 ?? p['140'] ?? 0;
       const r140Rank = getRankText('r140', playerName);
@@ -1564,10 +1499,6 @@
       if (r140PC) r140PC.innerText = r140Val;
       const rankR140PC = document.getElementById('rank-r140-pc');
       if (rankR140PC) rankR140PC.innerText = r140Rank;
-      const r140M = document.getElementById('rec-r140-m');
-      if (r140M) r140M.innerText = r140Val;
-      const rankR140M = document.getElementById('rank-r140-m');
-      if (rankR140M) rankR140M.innerText = r140Rank;
 
       const highfinishVal = p.highfinish ?? '-';
       const highfinishRank = getRankText('highfinish', playerName);
@@ -1575,10 +1506,6 @@
       if (elRecHF) elRecHF.innerText = highfinishVal;
       const elRankHF = document.getElementById('rank-highfinish');
       if (elRankHF) elRankHF.innerText = highfinishRank;
-      const elRecHFM = document.getElementById('rec-highfinish-m');
-      if (elRecHFM) elRecHFM.innerText = highfinishVal;
-      const elRankHFM = document.getElementById('rank-highfinish-m');
-      if (elRankHFM) elRankHFM.innerText = highfinishRank;
 
       const shortgamesVal = p.shortgame ?? p.shortgames ?? '-';
       const shortgamesRank = getRankText('shortgames', playerName);
@@ -1586,13 +1513,9 @@
       if (shortgamesPC) shortgamesPC.innerText = shortgamesVal;
       const rankShortgamesPC = document.getElementById('rank-shortgames-pc');
       if (rankShortgamesPC) rankShortgamesPC.innerText = shortgamesRank;
-      const shortgamesM = document.getElementById('rec-shortgames-m');
-      if (shortgamesM) shortgamesM.innerText = shortgamesVal;
-      const rankShortgamesM = document.getElementById('rank-shortgames-m');
-      if (rankShortgamesM) rankShortgamesM.innerText = shortgamesRank;
     }
 
-    // Funktion zum Herunterladen des Spielerprofils im exakten Format 1080x1350px mit umlaufendem Rahmen
+    // Funktion zum Herunterladen des Spielerprofils im exakten Format 1080x1350px mit PC-Layout und Rahmen
     function downloadPlayerProfileImage() {
       const container = document.getElementById('content-playerProfile');
       if (!container) return;
@@ -1603,18 +1526,19 @@
       const targetWidth = 1080;
       const targetHeight = 1350;
       
-      // Kleinere Rahmen-Abstände (Padding) definieren, damit das Profil-Layout flexibel bleibt und links/rechts/oben/unten ein schöner Rahmen ist
-      const paddingX = 60; // 60px links und rechts Rahmen
-      const paddingY = 80; // 80px oben und unten Rahmen
+      // Umlaufender Rahmen (Padding) in Pixeln
+      const paddingX = 60;
+      const paddingY = 80;
       
       const availableWidth = targetWidth - (paddingX * 2);   // 960px
       const availableHeight = targetHeight - (paddingY * 2); // 1190px
 
-      const currentWidth = container.offsetWidth || 800;
-      const scaleFactor = availableWidth / currentWidth;
+      // Temporär eine feste PC-Breite erzwingen, damit das Layout garantiert der Desktop-Ansicht entspricht
+      const originalWidth = container.style.width;
+      container.style.width = '1000px';
 
       html2canvas(container, {
-        scale: scaleFactor > 0 ? scaleFactor : 2,
+        scale: 2,
         useCORS: true,
         backgroundColor: '#000000',
         logging: false,
@@ -1622,19 +1546,22 @@
           return element.hasAttribute('data-html2canvas-ignore');
         }
       }).then(canvas => {
+        // Zustand zurücksetzen
+        container.style.width = originalWidth;
+
         const finalCanvas = document.createElement('canvas');
         finalCanvas.width = targetWidth;
         finalCanvas.height = targetHeight;
         const ctx = finalCanvas.getContext('2d');
         
-        // Hintergrund komplett Schwarz füllen
+        // Hintergrund schwarz füllen
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, targetWidth, targetHeight);
 
         const srcWidth = canvas.width;
         const srcHeight = canvas.height;
         
-        // Skalierung proportional anpassen, sodass es in den verfügbaren Bereich innerhalb des Rahmens passt
+        // Proportionale Einpassung in den Bereich innerhalb des Rahmens
         const hRatio = availableWidth / srcWidth;
         const vRatio = availableHeight / srcHeight;
         const ratio = Math.min(hRatio, vRatio);
@@ -1642,7 +1569,6 @@
         const renderWidth = srcWidth * ratio;
         const renderHeight = srcHeight * ratio;
 
-        // Zentrierung im Ziel-Canvas (unter Berücksichtigung des Rahmens)
         const destX = paddingX + (availableWidth - renderWidth) / 2;
         const destY = paddingY + (availableHeight - renderHeight) / 2;
 
@@ -1656,6 +1582,7 @@
         link.click();
         document.body.removeChild(link);
       }).catch(err => {
+        container.style.width = originalWidth;
         console.error("Fehler beim Erstellen des Bildes:", err);
       });
     }
