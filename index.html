@@ -169,33 +169,39 @@
       transform-origin: top left;
       border: 0;
     }
-/* Zahlenwerte in den Statistik-Rechtecken weiter oben positionieren */
-    .card-value-upper {
-      margin-top: 0px !important;
-      margin-bottom: 2px !important;
+
+    /* Flexibles Box-Design für gleichmäßige Abstände in den Profil-Rechtecken */
+    .profile-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: left;
+      padding: 1rem;
+      min-height: 100px;
     }
-    /* Responsive Kartentitel: Auf PC größer, auf Handy kleiner */
-    .card-title-small {
-      font-size: 7px !important;
-      line-height: 1.1 !important;
-      font-weight: 700 !important;
-      text-transform: uppercase !important;
-      letter-spacing: 0.05em !important;
-      color: #A3A3A3 !important;
+    
+    .profile-card-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #d4d4d4; /* dezenteres Hellgrau */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    @media (min-width: 768px) {
-      .card-title-small {
-        font-size: 10px !important;
-      }
+
+    .profile-card-value {
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: #ffffff; /* weißlicher Wert */
+      text-align: center;
+      margin: auto 0;
     }
-    .card-rank-small {
-      font-size: 6px !important;
-      color: #737373 !important;
-    }
-    @media (min-width: 768px) {
-      .card-rank-small {
-        font-size: 8px !important;
-      }
+
+    .profile-card-rank {
+      font-size: 0.65rem;
+      font-weight: 500;
+      color: #737373; /* dunkleres Grau */
+      text-align: right;
     }
   </style>
 
@@ -775,200 +781,162 @@
     </section>
 
     <!-- Reiter 7: Spielerprofil -->
-    <section id="content-playerProfile" class="space-y-8 hidden">
-      <!-- Kopfbereich: Links Name & kleineres Team, Rechts Spiele & Legs (mittig ausgerichtet) -->
-      <div id="profileHeaderControls" class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-neutral-800 pb-6">
-        <div class="flex flex-col items-start gap-0.5">
-          <select id="profilePlayerSelect" onchange="renderPlayerProfile()" class="bg-transparent text-white font-black font-display text-xl md:text-3xl rounded-xl px-2 py-1 border border-transparent hover:border-neutral-700 focus:outline-none cursor-pointer">
+    <section id="content-playerProfile" class="space-y-6 hidden">
+      <!-- Kopfbereich -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="flex flex-col gap-1">
+          <select id="profilePlayerSelect" onchange="renderPlayerProfile()" class="bg-transparent text-white font-bold font-display text-2xl md:text-3xl rounded-xl px-2 py-1 border border-transparent hover:border-neutral-700 focus:outline-none cursor-pointer">
             <option value="">Bitte wählen...</option>
           </select>
-          <span id="profPlayerTeam" class="text-[9px] md:text-[11px] uppercase tracking-widest text-neutral-400 font-semibold px-2">Team -</span>
+          <span id="profPlayerTeam" class="text-xs font-semibold text-neutral-400 px-2">-</span>
         </div>
 
-        <!-- Rechte Seite: Button & Box für Spiele/Legs vertikal zentriert -->
-        <div class="flex items-center gap-3 w-full md:w-auto justify-end">
-          <button id="imageDownloadBtn" onclick="sharePlayerProfileImage()" title="Als Bild herunterladen" class="px-3 py-2 bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
-            <i class="fa-brands fa-instagram text-pink-500 text-sm"></i> Bild
-          </button>
-
-          <div class="glass-card px-3 md:px-4 py-2 rounded-xl md:rounded-2xl flex flex-col justify-center text-right" style="height: 44px !important;">
-            <div style="font-size: 10px !important; line-height: 1.2 !important;" class="text-neutral-300 font-medium">
-              Spiele: <span id="profGamesVal" style="font-size: 10px !important;" class="font-bold text-white">-</span>
-            </div>
-            <div style="font-size: 10px !important; line-height: 1.2 !important;" class="text-neutral-300 font-medium">
-              Legs: <span id="profLegsVal" style="font-size: 10px !important;" class="font-bold text-white">-</span>
-            </div>
+        <!-- Rechte Seite: Spiele & Legs Rechteck (mittig ausgerichtet) -->
+        <div class="glass-card px-4 py-2.5 rounded-2xl flex flex-col justify-center items-center text-center" style="min-width: 130px; height: 60px;">
+          <div class="text-xs text-neutral-300 font-medium leading-tight">
+            Spiele: <span id="profGamesVal" class="font-bold text-white">-</span>
+          </div>
+          <div class="text-xs text-neutral-300 font-medium leading-tight mt-1">
+            Legs: <span id="profLegsVal" class="font-bold text-white">-</span>
           </div>
         </div>
       </div>
 
-      <!-- Sektion 1: Spielstatistiken (Mobil 3 Spalten, ab md 6 Spalten) -->
-      <div class="space-y-4">
-        <h3 class="text-xs uppercase font-bold tracking-widest text-neutral-400">Spielstatistiken</h3>
-        
-        <!-- Reihe 1: Einzel -->
-        <div class="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
-          <!-- Saison-Einzel -->
-          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Saison-Einzel</span>
-            <div class="card-value-upper">
-              <span id="stat-avgSingle" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-avgSingle" class="card-rank-small block mt-0.5">-</span>
-            </div>
-          </div>
-          <!-- First 9 Einzel -->
-          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">First 9 Einzel</span>
-            <div class="card-value-upper">
-              <span id="stat-first9Single" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-first9Single" class="card-rank-small block mt-0.5">-</span>
-            </div>
-          </div>
-          <!-- Bestes Einzel -->
-          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Bestes Einzel</span>
-            <div class="card-value-upper">
-              <span id="stat-maxAvgSingle" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-maxAvgSingle" class="card-rank-small block mt-0.5">-</span>
-            </div>
-          </div>
-          <!-- Bester Einzel-First 9 -->
-          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Bester Einzel-First 9</span>
-            <div class="card-value-upper">
-              <span id="stat-maxFirst9Single" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-maxFirst9Single" class="card-rank-small block mt-0.5">-</span>
-            </div>
-          </div>
-          <!-- Gegner-Einzelavg -->
-          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Gegner-Einzelavg</span>
-            <div class="card-value-upper">
-              <span id="stat-avgOpponentSingle" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-avgOpponentSingle" class="card-rank-small block mt-0.5">-</span>
-            </div>
-          </div>
-          <!-- Dauer Leg Einzel -->
-          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Dauer Leg Einzel</span>
-            <div class="card-value-upper">
-              <span id="stat-durationSingleLeg" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-durationSingleLeg" class="card-rank-small block mt-0.5">-</span>
-            </div>
-          </div>
-        </div>
+      <!-- Trennlinie -->
+      <hr class="border-neutral-800">
 
-        <!-- Reihe 2: Doppel -->
-        <div class="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
-          <!-- Doppel-Average -->
-          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Doppel-Average</span>
-            <div class="card-value-upper">
-              <span id="stat-avgDouble" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-avgDouble" class="card-rank-small block mt-0.5">-</span>
-            </div>
+      <!-- Sektion 1: Spielstatistiken -->
+      <div class="space-y-4">
+        <h3 class="text-xs font-semibold text-neutral-400 text-left">Spielstatistiken</h3>
+        
+        <!-- Grid: 6 Spalten auf PC (2 Reihen), 3 Spalten auf Handy (4 Reihen) -->
+        <div class="grid grid-cols-3 lg:grid-cols-6 gap-3">
+          <!-- 1. Saison-Einzel -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Saison-Einzel</span>
+            <span id="stat-avgSingle" class="profile-card-value">-</span>
+            <span id="rank-avgSingle" class="profile-card-rank">-</span>
           </div>
-          <!-- First 9 Doppel -->
-          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">First 9 Doppel</span>
-            <div class="card-value-upper">
-              <span id="stat-first9Double" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-first9Double" class="card-rank-small block mt-0.5">-</span>
-            </div>
+          <!-- 2. First 9 Einzel -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">First 9 Einzel</span>
+            <span id="stat-first9Single" class="profile-card-value">-</span>
+            <span id="rank-first9Single" class="profile-card-rank">-</span>
           </div>
-          <!-- Bestes Doppel -->
-          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Bestes Doppel</span>
-            <div class="card-value-upper">
-              <span id="stat-maxAvgDouble" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-maxAvgDouble" class="card-rank-small block mt-0.5">-</span>
-            </div>
+          <!-- 3. Bestes Einzel -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Bestes Einzel</span>
+            <span id="stat-maxAvgSingle" class="profile-card-value">-</span>
+            <span id="rank-maxAvgSingle" class="profile-card-rank">-</span>
           </div>
-          <!-- Bester Doppel-First 9 -->
-          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Bester Doppel-First 9</span>
-            <div class="card-value-upper">
-              <span id="stat-maxFirst9Double" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-maxFirst9Double" class="card-rank-small block mt-0.5">-</span>
-            </div>
+          <!-- 4. Bester Einzel-First 9 -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Bester Einzel-First 9</span>
+            <span id="stat-maxFirst9Single" class="profile-card-value">-</span>
+            <span id="rank-maxFirst9Single" class="profile-card-rank">-</span>
           </div>
-          <!-- Gegner-Doppelavg -->
-          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Gegner-Doppelavg</span>
-            <div class="card-value-upper">
-              <span id="stat-avgOpponentDouble" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-avgOpponentDouble" class="card-rank-small block mt-0.5">-</span>
-            </div>
+          <!-- 5. Gegner-Einzelavg -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Gegner-Einzelavg</span>
+            <span id="stat-avgOpponentSingle" class="profile-card-value">-</span>
+            <span id="rank-avgOpponentSingle" class="profile-card-rank">-</span>
           </div>
-          <!-- Dauer Leg Doppel -->
-          <div class="glass-card p-2 md:p-4 rounded-xl md:rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Dauer Leg Doppel</span>
-            <div class="card-value-upper">
-              <span id="stat-durationDoubleLeg" class="text-base sm:text-xl md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-durationDoubleLeg" class="card-rank-small block mt-0.5">-</span>
-            </div>
+          <!-- 6. Dauer Leg Einzel -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Dauer Leg Einzel</span>
+            <span id="stat-durationSingleLeg" class="profile-card-value">-</span>
+            <span id="rank-durationSingleLeg" class="profile-card-rank">-</span>
+          </div>
+          <!-- 7. Doppel-Average -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Doppel-Average</span>
+            <span id="stat-avgDouble" class="profile-card-value">-</span>
+            <span id="rank-avgDouble" class="profile-card-rank">-</span>
+          </div>
+          <!-- 8. First 9 Doppel -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">First 9 Doppel</span>
+            <span id="stat-first9Double" class="profile-card-value">-</span>
+            <span id="rank-first9Double" class="profile-card-rank">-</span>
+          </div>
+          <!-- 9. Bestes Doppel -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Bestes Doppel</span>
+            <span id="stat-maxAvgDouble" class="profile-card-value">-</span>
+            <span id="rank-maxAvgDouble" class="profile-card-rank">-</span>
+          </div>
+          <!-- 10. Bester Doppel-First 9 -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Bester Doppel-First 9</span>
+            <span id="stat-maxFirst9Double" class="profile-card-value">-</span>
+            <span id="rank-maxFirst9Double" class="profile-card-rank">-</span>
+          </div>
+          <!-- 11. Gegner-Doppelavg -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Gegner-Doppelavg</span>
+            <span id="stat-avgOpponentDouble" class="profile-card-value">-</span>
+            <span id="rank-avgOpponentDouble" class="profile-card-rank">-</span>
+          </div>
+          <!-- 12. Dauer Leg Doppel -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Dauer Leg Doppel</span>
+            <span id="stat-durationDoubleLeg" class="profile-card-value">-</span>
+            <span id="rank-durationDoubleLeg" class="profile-card-rank">-</span>
           </div>
         </div>
       </div>
 
       <!-- Sektion 2: Bestleistungen -->
-      <div class="space-y-4">
-        <h3 class="text-xs uppercase font-bold tracking-widest text-neutral-400">Bestleistungen</h3>
+      <div class="space-y-4 pt-4">
+        <h3 class="text-xs font-semibold text-neutral-400 text-left">Bestleistungen</h3>
         
-        <!-- Obere Reihe: Specials, 180er, 140+, Highfinish -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
-          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Specials</span>
-            <div class="card-value-upper">
-              <span id="rec-specials" class="text-lg md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-specials" class="card-rank-small block mt-1">-</span>
-            </div>
+        <!-- 1. und 2. Reihe: Je 3 Rechtecke -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <!-- 1. Specials -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Specials</span>
+            <span id="rec-specials" class="profile-card-value">-</span>
+            <span id="rank-specials" class="profile-card-rank">-</span>
           </div>
-          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">180er</span>
-            <div class="card-value-upper">
-              <span id="rec-r180" class="text-lg md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-r180" class="card-rank-small block mt-1">-</span>
-            </div>
+          <!-- 2. Chance auf Shortgame -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Chance auf Shortgame</span>
+            <span id="rec-shortgameChance" class="profile-card-value">-</span>
+            <span id="rank-shortgameChance" class="profile-card-rank">-</span>
           </div>
-          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">140+</span>
-            <div class="card-value-upper">
-              <span id="rec-r140" class="text-lg md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-r140" class="card-rank-small block mt-1">-</span>
-            </div>
+          <!-- 3. Specials pro Spiel -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Specials pro Spiel</span>
+            <span id="rec-specialsPerGame" class="profile-card-value">-</span>
+            <span id="rank-specialsPerGame" class="profile-card-rank">-</span>
           </div>
-          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Highfinish</span>
-            <div class="card-value-upper">
-              <span id="rec-highfinish" class="text-base md:text-lg font-black font-display text-white block break-words">-</span>
-              <span id="rank-highfinish" class="card-rank-small block mt-1">-</span>
-            </div>
+          <!-- 4. 180er -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">180er</span>
+            <span id="rec-r180" class="profile-card-value">-</span>
+            <span id="rank-r180" class="profile-card-rank">-</span>
+          </div>
+          <!-- 5. 140+ -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">140+</span>
+            <span id="rec-r140" class="profile-card-value">-</span>
+            <span id="rank-r140" class="profile-card-rank">-</span>
+          </div>
+          <!-- 6. Highfinish -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Highfinish</span>
+            <span id="rec-highfinish" class="profile-card-value">-</span>
+            <span id="rank-highfinish" class="profile-card-rank">-</span>
           </div>
         </div>
 
-        <!-- Untere Reihe: Chance Shortgame, Specials pro Spiel, Shortgames -->
-        <div class="grid grid-cols-3 gap-2 md:gap-3">
-          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Chance auf Shortgame</span>
-            <div class="card-value-upper">
-              <span id="rec-shortgameChance" class="text-sm md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-shortgameChance" class="card-rank-small block mt-1">-</span>
-            </div>
-          </div>
-          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Specials pro Spiel</span>
-            <div class="card-value-upper">
-              <span id="rec-specialsPerGame" class="text-sm md:text-2xl font-black font-display text-white block">-</span>
-              <span id="rank-specialsPerGame" class="card-rank-small block mt-1">-</span>
-            </div>
-          </div>
-          <div class="glass-card p-3 md:p-4 rounded-2xl flex flex-col justify-between">
-            <span class="card-title-small">Shortgames</span>
-            <div class="card-value-upper">
-              <span id="rec-shortgame" class="text-sm md:text-lg font-black font-display text-white block break-words">-</span>
-              <span id="rank-shortgame" class="card-rank-small block mt-1">-</span>
-            </div>
+        <!-- 3. Reihe: 1 Rechteck über die volle Breite -->
+        <div class="grid grid-cols-1 gap-3">
+          <!-- 7. Shortgames -->
+          <div class="glass-card rounded-2xl profile-card">
+            <span class="profile-card-title">Shortgames</span>
+            <span id="rec-shortgames" class="profile-card-value">-</span>
+            <span id="rank-shortgames" class="profile-card-rank">-</span>
           </div>
         </div>
       </div>
@@ -1124,22 +1092,6 @@
       return matchedUrl ? `<a href="${matchedUrl}" target="_blank" rel="noopener noreferrer" class="hover:underline hover:text-yellow-400 transition">${cleanName}</a>` : cleanName;
     }
 
-    function formatTeamDisplay(rawTeam) {
-      if (!rawTeam || rawTeam === '-') return 'Kein Team';
-      const parts = String(rawTeam).split('/').map(p => p.trim());
-      let letter = null;
-      let numbers = [];
-      for (const p of parts) {
-        if (!letter && /^[A-Ga-g]$/.test(p)) letter = p.toUpperCase();
-        else if (/^\d+$/.test(p)) numbers.push(p);
-      }
-      let resultParts = [];
-      if (letter) resultParts.push(`SVG ${letter}`);
-      if (numbers.length > 0) resultParts.push(`Pokalteam ${numbers[0]}`);
-      if (numbers.length > 1) resultParts.push(`Pokalteam ${numbers[1]}er`);
-      return resultParts.length > 0 ? resultParts.join(', ') : rawTeam;
-    }
-
     function formatNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const num = parseFloat(String(val).replace(',', '.'));
@@ -1160,14 +1112,6 @@
       return `${num.toFixed(1)}%`;
     }
 
-    function formatShortgameChance(val) {
-      if (val === undefined || val === null || val === '-' || val === '') return '-';
-      const str = String(val).replace(',', '.').trim();
-      const num = parseFloat(str);
-      if (isNaN(num)) return val;
-      return `${(num * 100).toFixed(1)}%`.replace(',', '.');
-    }
-
     function parseNumeric(val) {
       if (val === undefined || val === null || val === '-' || val === '') return 0;
       const cleanStr = String(val).replace('%', '').replace(',', '.').trim();
@@ -1178,10 +1122,31 @@
     function parseBracketsNumber(val) {
       if (val === undefined || val === null || val === '-' || val === '') return 0;
       const str = String(val);
-      const match = str.match(/\d+/);
-      if (!match) return 0;
-      const num = parseFloat(match[0]);
+      const match = str.match(/\((.*?)\)/);
+      if (match) {
+        const numInBrackets = parseFloat(match[1].replace(',', '.'));
+        if (!isNaN(numInBrackets)) return numInBrackets;
+      }
+      const num = parseFloat(str.replace(',', '.'));
       return isNaN(num) ? 0 : num;
+    }
+
+    function parseR140Sum(val) {
+      if (val === undefined || val === null || val === '-' || val === '') return 0;
+      const str = String(val).trim();
+      let total = 0;
+      const parts = str.split('+');
+      for (const part of parts) {
+        const subParts = part.split('x');
+        if (subParts.length >= 2) {
+          const count = parseFloat(subParts[0].trim());
+          if (!isNaN(count)) total += count;
+        } else {
+          const num = parseFloat(part.replace(',', '.'));
+          if (!isNaN(num)) total += num;
+        }
+      }
+      return total;
     }
 
     function parseMatchDate(dateVal) {
@@ -1399,46 +1364,36 @@
       const totalPlayers = appData.squad.length || 1;
       let dataset = [];
 
-      if (metricKey === 'avgSingle') {
-        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.avgSingle ?? p.avg_single) }));
-      } else if (metricKey === 'first9Single') {
-        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.first9Single ?? p.first9_single) }));
-      } else if (metricKey === 'maxAvgSingle') {
-        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.maxAvgSingle ?? p.max_avg_single ?? p.bestAvgSingle) }));
-      } else if (metricKey === 'maxFirst9Single') {
-        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.maxFirst9Single ?? p.max_first_9_single ?? p.bestFirst9Single) }));
-      } else if (metricKey === 'avgOpponentSingle') {
-        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.avgOpponentSingle ?? p.avg_opponent_single) }));
-      } else if (metricKey === 'durationSingleLeg') {
-        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseDurationToSeconds(p.durationSingleLeg ?? p.duration_single_leg) }));
-      } else if (metricKey === 'avgDouble') {
-        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.avgDouble ?? p.avg_double) }));
-      } else if (metricKey === 'first9Double') {
-        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.first9Double ?? p.first9_double) }));
-      } else if (metricKey === 'maxAvgDouble') {
-        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.maxAvgDouble ?? p.max_avg_double ?? p.bestAvgDouble) }));
-      } else if (metricKey === 'maxFirst9Double') {
-        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.maxFirst9Double ?? p.max_first_9_double ?? p.bestFirst9Double) }));
-      } else if (metricKey === 'avgOpponentDouble') {
-        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseNumeric(p.avgOpponentDouble ?? p.avg_opponent_double) }));
-      } else if (metricKey === 'durationDoubleLeg') {
-        dataset = appData.playerProfile.map(p => ({ name: p.player || p.name, val: parseDurationToSeconds(p.durationDoubleLeg ?? p.duration_double_leg) }));
-      } else if (metricKey === 'specials') {
-        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseNumeric(r.specials) }));
-      } else if (metricKey === 'r180') {
-        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseNumeric(r.r180 ?? r['180']) }));
-      } else if (metricKey === 'r140') {
-        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseNumeric(r.r140 ?? r['140']) }));
-      } else if (metricKey === 'highfinish') {
-        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseBracketsNumber(r.highfinish) }));
-      } else if (metricKey === 'shortgameChance') {
-        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseNumeric(r.shortgameChance ?? r.shortgame_chance) }));
-      } else if (metricKey === 'specialsPerGame') {
-        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseNumeric(r.specialsPerGame ?? r.specials_per_game) }));
-      } else if (metricKey === 'shortgame') {
-        dataset = appData.records.map(r => ({ name: r.player || r.name, val: parseBracketsNumber(r.shortgame) }));
-      }
+      // Dataset für jeweilige Metrik zusammenstellen
+      appData.playerProfile.forEach(p => {
+        const name = p.player || p.name;
+        if (!name) return;
+        let val = 0;
 
+        if (metricKey === 'avgSingle') val = parseNumeric(p.avgSingle ?? p.avg_single);
+        else if (metricKey === 'first9Single') val = parseNumeric(p.first9Single ?? p.first9_single);
+        else if (metricKey === 'maxAvgSingle') val = parseNumeric(p.maxAvgSingle ?? p.max_avg_single ?? p.bestAvgSingle);
+        else if (metricKey === 'maxFirst9Single') val = parseNumeric(p.maxFirst9Single ?? p.max_first_9_single ?? p.bestFirst9Single);
+        else if (metricKey === 'avgOpponentSingle') val = parseNumeric(p.avgOpponentSingle ?? p.avg_opponent_single);
+        else if (metricKey === 'durationSingleLeg') val = parseDurationToSeconds(p.durationSingleLeg ?? p.duration_single_leg);
+        else if (metricKey === 'avgDouble') val = parseNumeric(p.avgDouble ?? p.avg_double);
+        else if (metricKey === 'first9Double') val = parseNumeric(p.first9Double ?? p.first9_double);
+        else if (metricKey === 'maxAvgDouble') val = parseNumeric(p.maxAvgDouble ?? p.max_avg_double ?? p.bestAvgDouble);
+        else if (metricKey === 'maxFirst9Double') val = parseNumeric(p.maxFirst9Double ?? p.max_first_9_double ?? p.bestFirst9Double);
+        else if (metricKey === 'avgOpponentDouble') val = parseNumeric(p.avgOpponentDouble ?? p.avg_opponent_double);
+        else if (metricKey === 'durationDoubleLeg') val = parseDurationToSeconds(p.durationDoubleLeg ?? p.duration_double_leg);
+        else if (metricKey === 'specials') val = parseNumeric(p.specials);
+        else if (metricKey === 'shortgameChance') val = parseNumeric(p.shortgameChance ?? p.shortgame_chance);
+        else if (metricKey === 'specialsPerGame') val = parseNumeric(p.specialsPerGame ?? p.specials_per_game);
+        else if (metricKey === 'r180') val = parseNumeric(p.r180 ?? p['180']);
+        else if (metricKey === 'r140') val = parseR140Sum(p.r140 ?? p['140']);
+        else if (metricKey === 'highfinish') val = parseBracketsNumber(p.highfinish);
+        else if (metricKey === 'shortgames') val = parseBracketsNumber(p.shortgame ?? p.shortgames);
+
+        dataset.push({ name, val });
+      });
+
+      // Sortierung: Aufsteigend bei Dauer (kleinster Wert = bester Rang), ansonsten absteigend
       if (metricKey.includes('duration')) {
         dataset = dataset.filter(d => d.val > 0);
         dataset.sort((a, b) => a.val - b.val);
@@ -1447,8 +1402,7 @@
       }
 
       const index = dataset.findIndex(d => String(d.name).trim().toLowerCase() === String(playerName).trim().toLowerCase());
-      
-      if (index === -1) return `- von ${totalPlayers}`;
+      if (index === -1) return `# - von ${totalPlayers}`;
       return `# ${index + 1} von ${totalPlayers}`;
     }
 
@@ -1459,99 +1413,88 @@
       if (!playerName) return;
 
       const playerInfo = appData.squad.find(p => String(p.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || {};
-      const playerProfData = appData.playerProfile.find(p => String(p.player || p.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || playerInfo;
-      const gameStat = appData.gameStats.find(g => String(g.player || g.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || {};
-      const record = appData.records.find(r => String(r.player || r.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || {};
+      const p = appData.playerProfile.find(item => String(item.player || item.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || {};
 
-      // Team unter dem Namen
-      document.getElementById('profPlayerTeam').innerText = formatTeamDisplay(playerInfo.team);
+      // Team & Kopfbereich
+      document.getElementById('profPlayerTeam').innerText = playerInfo.team ? `Team: ${playerInfo.team}` : 'Team: -';
+      document.getElementById('profGamesVal').innerText = p.wonGames ?? p.spiele ?? '-';
+      document.getElementById('profLegsVal').innerText = p.wonLegs ?? p.legs ?? '-';
 
-      // Spiele & Legs oben rechts
-      const winsSingle = parseNumeric(gameStat.winsSingle ?? gameStat.wins_single ?? gameStat.siegeEinzel ?? 0);
-      const winsDouble = parseNumeric(gameStat.winsDouble ?? gameStat.wins_double ?? gameStat.siegeDoppel ?? 0);
-      const totalWins = winsSingle + winsDouble;
-      const totalGames = parseNumeric(gameStat.games ?? gameStat.spiele ?? 0);
-      const totalWinRate = totalGames > 0 ? ((totalWins / totalGames) * 100).toFixed(1) + '%' : '0.0%';
-      document.getElementById('profGamesVal').innerText = `${totalWins}/${totalGames} (${totalWinRate})`;
-
-      // Legs aus playerProfile (mit Fallback auf gameStat)
-      const rawWonLegs = playerProfData.wonLegs ?? playerProfData.won_legs ?? gameStat.wonLegs ?? gameStat.won_legs ?? '-';
-      document.getElementById('profLegsVal').innerText = String(rawWonLegs);
-
-      // Werte für Statistik-Boxen (Reihe 1: Einzel) aus playerProfile
-      const avgSingle = formatNumber(playerProfData.avgSingle ?? playerProfData.avg_single);
-      const first9Single = formatNumber(playerProfData.first9Single ?? playerProfData.first9_single);
-      const maxAvgSingle = formatNumber(playerProfData.maxAvgSingle ?? playerProfData.max_avg_single ?? playerProfData.bestAvgSingle);
-      const maxFirst9Single = formatNumber(playerProfData.maxFirst9Single ?? playerProfData.max_first_9_single ?? playerProfData.bestFirst9Single);
-      const avgOpponentSingle = formatNumber(playerProfData.avgOpponentSingle ?? playerProfData.avg_opponent_single);
-      const durationSingleLeg = formatShortDuration(playerProfData.durationSingleLeg ?? playerProfData.duration_single_leg ?? '-');
-
-      document.getElementById('stat-avgSingle').innerText = avgSingle;
+      // 1. Saison-Einzel
+      document.getElementById('stat-avgSingle').innerText = formatNumber(p.avgSingle ?? p.avg_single);
       document.getElementById('rank-avgSingle').innerText = getRankText('avgSingle', playerName);
 
-      document.getElementById('stat-first9Single').innerText = first9Single;
+      // 2. First 9 Einzel
+      document.getElementById('stat-first9Single').innerText = formatNumber(p.first9Single ?? p.first9_single);
       document.getElementById('rank-first9Single').innerText = getRankText('first9Single', playerName);
 
-      document.getElementById('stat-maxAvgSingle').innerText = maxAvgSingle; 
+      // 3. Bestes Einzel
+      document.getElementById('stat-maxAvgSingle').innerText = formatNumber(p.maxAvgSingle ?? p.max_avg_single ?? p.bestAvgSingle);
       document.getElementById('rank-maxAvgSingle').innerText = getRankText('maxAvgSingle', playerName);
 
-      document.getElementById('stat-maxFirst9Single').innerText = maxFirst9Single; 
+      // 4. Bester Einzel-First 9
+      document.getElementById('stat-maxFirst9Single').innerText = formatNumber(p.maxFirst9Single ?? p.max_first_9_single ?? p.bestFirst9Single);
       document.getElementById('rank-maxFirst9Single').innerText = getRankText('maxFirst9Single', playerName);
 
-      document.getElementById('stat-avgOpponentSingle').innerText = avgOpponentSingle;
+      // 5. Gegner-Einzelavg
+      document.getElementById('stat-avgOpponentSingle').innerText = formatNumber(p.avgOpponentSingle ?? p.avg_opponent_single);
       document.getElementById('rank-avgOpponentSingle').innerText = getRankText('avgOpponentSingle', playerName);
 
-      document.getElementById('stat-durationSingleLeg').innerText = durationSingleLeg;
+      // 6. Dauer Leg Einzel
+      document.getElementById('stat-durationSingleLeg').innerText = formatShortDuration(p.durationSingleLeg ?? p.duration_single_leg ?? '-');
       document.getElementById('rank-durationSingleLeg').innerText = getRankText('durationSingleLeg', playerName);
 
-      // Werte für Statistik-Boxen (Reihe 2: Doppel) aus playerProfile
-      const avgDouble = formatNumber(playerProfData.avgDouble ?? playerProfData.avg_double);
-      const first9Double = formatNumber(playerProfData.first9Double ?? playerProfData.first9_double);
-      const maxAvgDouble = formatNumber(playerProfData.maxAvgDouble ?? playerProfData.max_avg_double ?? playerProfData.bestAvgDouble);
-      const maxFirst9Double = formatNumber(playerProfData.maxFirst9Double ?? playerProfData.max_first_9_double ?? playerProfData.bestFirst9Double);
-      const avgOpponentDouble = formatNumber(playerProfData.avgOpponentDouble ?? playerProfData.avg_opponent_double);
-      const durationDoubleLeg = formatShortDuration(playerProfData.durationDoubleLeg ?? playerProfData.duration_double_leg ?? '-');
-
-      document.getElementById('stat-avgDouble').innerText = avgDouble;
+      // 7. Doppel-Average
+      document.getElementById('stat-avgDouble').innerText = formatNumber(p.avgDouble ?? p.avg_double);
       document.getElementById('rank-avgDouble').innerText = getRankText('avgDouble', playerName);
 
-      document.getElementById('stat-first9Double').innerText = first9Double;
+      // 8. First 9 Doppel
+      document.getElementById('stat-first9Double').innerText = formatNumber(p.first9Double ?? p.first9_double);
       document.getElementById('rank-first9Double').innerText = getRankText('first9Double', playerName);
 
-      document.getElementById('stat-maxAvgDouble').innerText = maxAvgDouble;
+      // 9. Bestes Doppel
+      document.getElementById('stat-maxAvgDouble').innerText = formatNumber(p.maxAvgDouble ?? p.max_avg_double ?? p.bestAvgDouble);
       document.getElementById('rank-maxAvgDouble').innerText = getRankText('maxAvgDouble', playerName);
 
-      document.getElementById('stat-maxFirst9Double').innerText = maxFirst9Double;
+      // 10. Bester Doppel-First 9
+      document.getElementById('stat-maxFirst9Double').innerText = formatNumber(p.maxFirst9Double ?? p.max_first_9_double ?? p.bestFirst9Double);
       document.getElementById('rank-maxFirst9Double').innerText = getRankText('maxFirst9Double', playerName);
 
-      document.getElementById('stat-avgOpponentDouble').innerText = avgOpponentDouble;
+      // 11. Gegner-Doppelavg
+      document.getElementById('stat-avgOpponentDouble').innerText = formatNumber(p.avgOpponentDouble ?? p.avg_opponent_double);
       document.getElementById('rank-avgOpponentDouble').innerText = getRankText('avgOpponentDouble', playerName);
 
-      document.getElementById('stat-durationDoubleLeg').innerText = durationDoubleLeg;
+      // 12. Dauer Leg Doppel
+      document.getElementById('stat-durationDoubleLeg').innerText = formatShortDuration(p.durationDoubleLeg ?? p.duration_double_leg ?? '-');
       document.getElementById('rank-durationDoubleLeg').innerText = getRankText('durationDoubleLeg', playerName);
 
-      // Bestleistungen Boxen
-      document.getElementById('rec-specials').innerText = record.specials ?? '-';
+      // Bestleistungen 1: Specials
+      document.getElementById('rec-specials').innerText = p.specials ?? '-';
       document.getElementById('rank-specials').innerText = getRankText('specials', playerName);
 
-      document.getElementById('rec-r180').innerText = record.r180 ?? record['180'] ?? 0;
-      document.getElementById('rank-r180').innerText = getRankText('r180', playerName);
-
-      const r140val = record.r140 ?? record['140'];
-      document.getElementById('rec-r140').innerText = (r140val !== undefined && r140val !== null && r140val !== '') ? r140val : 0;
-      document.getElementById('rank-r140').innerText = getRankText('r140', playerName);
-
-      document.getElementById('rec-highfinish').innerText = record.highfinish || 'Keine';
-      document.getElementById('rank-highfinish').innerText = getRankText('highfinish', playerName);
-
-      document.getElementById('rec-shortgameChance').innerText = formatShortgameChance(record.shortgameChance ?? record.shortgame_chance);
+      // Bestleistungen 2: Chance auf Shortgame
+      document.getElementById('rec-shortgameChance').innerText = formatPercent(p.shortgameChance ?? p.shortgame_chance);
       document.getElementById('rank-shortgameChance').innerText = getRankText('shortgameChance', playerName);
 
-      document.getElementById('rec-specialsPerGame').innerText = formatNumber(record.specialsPerGame ?? record.specials_per_game ?? record.specialsPerMatchday ?? record.specials_per_matchday);
+      // Bestleistungen 3: Specials pro Spiel
+      document.getElementById('rec-specialsPerGame').innerText = formatNumber(p.specialsPerGame ?? p.specials_per_game);
       document.getElementById('rank-specialsPerGame').innerText = getRankText('specialsPerGame', playerName);
 
-      document.getElementById('rec-shortgame').innerText = record.shortgame || 'Keine';
-      document.getElementById('rank-shortgame').innerText = getRankText('shortgame', playerName);
+      // Bestleistungen 4: 180er
+      document.getElementById('rec-r180').innerText = p.r180 ?? p['180'] ?? 0;
+      document.getElementById('rank-r180').innerText = getRankText('r180', playerName);
+
+      // Bestleistungen 5: 140+
+      document.getElementById('rec-r140').innerText = p.r140 ?? p['140'] ?? 0;
+      document.getElementById('rank-r140').innerText = getRankText('r140', playerName);
+
+      // Bestleistungen 6: Highfinish
+      document.getElementById('rec-highfinish').innerText = p.highfinish ?? '-';
+      document.getElementById('rank-highfinish').innerText = getRankText('highfinish', playerName);
+
+      // Bestleistungen 7: Shortgames
+      document.getElementById('rec-shortgames').innerText = p.shortgame ?? p.shortgames ?? '-';
+      document.getElementById('rank-shortgames').innerText = getRankText('shortgames', playerName);
     }
 
     function resetMatchFilters() {
@@ -2083,7 +2026,7 @@
             <td class="px-4 py-4 text-neutral-200 font-semibold">${display140}</td>
             <td class="px-4 py-4 text-neutral-300 font-semibold">${r.highfinish ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-300 font-semibold">${r.shortgame ?? '-'}</td>
-            <td class="px-4 py-4 text-neutral-400">${formatShortgameChance(r.shortgameChance ?? r.shortgame_chance)}</td>
+            <td class="px-4 py-4 text-neutral-400">${formatPercent(r.shortgameChance ?? r.shortgame_chance)}</td>
             <td class="px-4 py-4 text-neutral-400">${formatNumber(r.specialsPerGame ?? r.specials_per_game ?? r.specialsPerMatchday ?? r.specials_per_matchday)}</td>
           </tr>
         `;
@@ -2194,59 +2137,6 @@
       renderPlayerProfile();
     }
 
-    // Bild Export Funktion (ohne Steuerungen, mit Rand um das Profil)
-    function sharePlayerProfileImage() {
-      const element = document.getElementById('content-playerProfile');
-      const downloadBtn = document.getElementById('imageDownloadBtn');
-      const select = document.getElementById('profilePlayerSelect');
-      const playerName = (select && select.value) ? select.value : 'Spielerprofil';
-
-      // 1. Nur den Download-Button kurz unsichtbar schalten
-      if (downloadBtn) downloadBtn.style.display = 'none';
-
-      // 2. Ursprüngliche Styles zwischenspeichern
-      const originalPadding = element.style.padding;
-      const originalBg = element.style.backgroundColor;
-      const originalWidth = element.style.width;
-
-      // 3. Dem Element temporär eine feste Breite im Hochformat-Verhältnis geben (z.B. 1080px Basis)
-      element.style.width = '1080px';
-      element.style.padding = '80px 60px'; // Schöner großzügiger Rand rundherum im 1080x1350 Format
-      element.style.backgroundColor = '#000000';
-
-      // 4. Konfiguration für exakt 1080x1350 px Ausgangsauflösung
-      const options = {
-        backgroundColor: '#000000',
-        width: 1080,
-        height: 1350,
-        scale: 1, // Da wir direkt mit 1080px arbeiten, sorgt scale: 1 für gestochen scharfe 1080x1350 Pixel
-        windowWidth: 1080,
-        useCORS: true
-      };
-
-      // 5. Bild generieren und als PNG herunterladen
-      html2canvas(element, options).then(canvas => {
-        const link = document.createElement('a');
-        link.download = `${playerName.replace(/\s+/g, '_')}_Instagram_1080x1350.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-
-        // 6. Ursprünglichen Zustand der Seite & Styles wiederherstellen
-        if (downloadBtn) downloadBtn.style.display = '';
-        element.style.padding = originalPadding;
-        element.style.backgroundColor = originalBg;
-        element.style.width = originalWidth;
-      }).catch(err => {
-        console.error("Fehler beim Erstellen des Bildes:", err);
-        if (downloadBtn) downloadBtn.style.display = '';
-        element.style.padding = originalPadding;
-        element.style.backgroundColor = originalBg;
-        element.style.width = originalWidth;
-      });
-    }
-
-    window.sharePlayerProfileImage = sharePlayerProfileImage;
-
     window.addEventListener('DOMContentLoaded', () => {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -2292,7 +2182,6 @@
     window.renderStats = renderStats;
     window.renderRecords = renderRecords;
     window.renderTeamStats = renderTeamStats;
-    window.sharePlayerProfileImage = sharePlayerProfileImage;
   </script>
 </body>
 </html>
