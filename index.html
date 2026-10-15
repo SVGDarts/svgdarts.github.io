@@ -176,8 +176,8 @@
       flex-direction: column;
       justify-content: space-between;
       text-align: left;
-      padding: 0.75rem 0.85rem;
-      min-height: 105px; /* Etwas gestreckt für schöne Bildfüllung */
+      padding: 0.65rem 0.75rem;
+      min-height: 95px;
     }
     
     .profile-card-title {
@@ -197,7 +197,7 @@
     }
 
     .profile-card-value {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       font-weight: 900;
       color: #ffffff;
       text-align: left;
@@ -1592,7 +1592,7 @@
       if (rankShortgamesM) rankShortgamesM.innerText = shortgamesRank;
     }
 
-    // Funktion zum Herunterladen des Spielerprofils im Format 1080x1350px mit umlaufendem Rand und füllenden Kacheln
+    // Funktion zum Herunterladen des Spielerprofils im Format 1080x1350px (angepasst nach Breite, vollständiger Inhalt)
     function downloadPlayerProfileImage() {
       const container = document.getElementById('content-playerProfile');
       if (!container) return;
@@ -1602,10 +1602,11 @@
 
       const targetWidth = 1080;
       const targetHeight = 1350;
-      const padding = 60; // Kleiner umlaufender Rahmen in Pixeln auf dem Export-Bild
+      const padding = 50; // Umlaufender kleiner Rahmen
 
       const currentWidth = container.offsetWidth || 800;
-      const scaleFactor = (targetWidth - (padding * 2)) / currentWidth;
+      const availableWidth = targetWidth - (padding * 2);
+      const scaleFactor = availableWidth / currentWidth;
 
       html2canvas(container, {
         scale: scaleFactor > 0 ? scaleFactor : 2,
@@ -1627,19 +1628,12 @@
         const srcWidth = canvas.width;
         const srcHeight = canvas.height;
         
-        // Berechne Skalierung so, dass die Rechtecke das Bild fast ganz ausfüllen, aber der Rahmen eingehalten wird
-        const availableWidth = targetWidth - (padding * 2);
-        const availableHeight = targetHeight - (padding * 2);
+        // Anpassung rein an der Breite, damit der gesamte Inhalt (Kopfzeile bis Bestleistungen) vollständig sichtbar bleibt
+        const drawWidth = availableWidth;
+        const drawHeight = srcHeight * (availableWidth / srcWidth);
         
-        const hRatio = availableWidth / srcWidth;
-        const vRatio = availableHeight / srcHeight;
-        
-        // Wir nutzen vRatio (oder einen leichten Zoom), damit die Reihen das Bild schön ausfüllen
-        const ratio = Math.max(hRatio, vRatio);
-
-        const drawWidth = srcWidth * ratio;
-        const drawHeight = srcHeight * ratio;
-        const centerShiftX = (targetWidth - drawWidth) / 2;
+        const centerShiftX = padding;
+        // Vertikal zentrieren, damit ein gleichmäßiger Rahmen oben und unten entsteht
         const centerShiftY = (targetHeight - drawHeight) / 2;
 
         ctx.drawImage(canvas, 0, 0, srcWidth, srcHeight, centerShiftX, centerShiftY, drawWidth, drawHeight);
