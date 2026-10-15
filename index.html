@@ -1340,17 +1340,27 @@
       const matchdays = [...new Set(appData.matches.map(m => m.matchday).filter(Boolean))];
       const svgTeams = [...new Set(appData.matches.flatMap(m => [m.home, m.away]).filter(t => t && /SVG[\w\d]*/i.test(t)))].sort();
       
-      // Datumswerte sammeln, sauber parsen und chronologisch sortieren (aufsteigend)
-      const rawDates = [...new Set(appData.matches.map(m => m.date).filter(Boolean))];
-      rawDates.sort((a, b) => {
-        const dateA = parseMatchDate(a);
-        const dateB = parseMatchDate(b);
-        if (!dateA && !dateB) return 0;
-        if (!dateA) return 1;
-        if (!dateB) return -1;
-        return dateA - dateB; // Chronologisch: Ältestes Datum zuerst
+      // 1. Rohdaten in echte Datumsobjekte umwandeln und Duplikate/ungültige Daten filtern
+      const parsedDatesMap = new Map();
+      appData.matches.forEach(m => {
+        if (!m.date) return;
+        const dateObj = parseMatchDate(m.date);
+        if (dateObj && !isNaN(dateObj.getTime())) {
+          // Auf Mitternacht setzen, damit Uhrzeiten die Duplikatserkennung nicht stören
+          dateObj.setHours(0, 0, 0, 0);
+          const formatted = formatDate(dateObj);
+          if (formatted && formatted !== '-') {
+            // Key als Zeitstempel für Eindeutigkeit, Value als formatiertes Datum
+            parsedDatesMap.set(dateObj.getTime(), { dateObj, formatted });
+          }
+        }
       });
-      const dates = rawDates.map(d => formatDate(d)).filter(d => d && d !== '-');
+
+      // 2. In Array umwandeln und chronologisch sortieren (aufsteigend)
+      const uniqueDates = Array.from(parsedDatesMap.values());
+      uniqueDates.sort((a, b) => a.dateObj - b.dateObj);
+
+      const dates = uniqueDates.map(item => item.formatted);
 
       const matchdayOptions = '<option value="">Spieltag</option>' + matchdays.map(md => `<option value="${md}">${md}</option>`).join('');
       const teamOptions = '<option value="">Teams</option>' + svgTeams.map(t => `<option value="${t}">${t}</option>`).join('');
