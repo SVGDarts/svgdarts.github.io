@@ -177,7 +177,7 @@
       justify-content: space-between;
       text-align: left;
       padding: 0.65rem 0.75rem;
-      min-height: 95px;
+      min-height: 90px;
     }
     
     .profile-card-title {
@@ -799,7 +799,7 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <!-- Download Button (Ausgeblendet beim Bildexport durch data-html2canvas-ignore) -->
+          <!-- Download Button (Wird dank data-html2canvas-ignore automatisch beim Bildexport ausgeblendet) -->
           <button onclick="downloadPlayerProfileImage()" data-html2canvas-ignore class="px-3.5 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-xl text-xs font-semibold transition flex items-center gap-2 border border-neutral-700 shadow-sm">
             <i class="fa-solid fa-download text-neutral-300"></i> Profil als Bild (1080x1350)
           </button>
@@ -1592,7 +1592,7 @@
       if (rankShortgamesM) rankShortgamesM.innerText = shortgamesRank;
     }
 
-    // Funktion zum Herunterladen des Spielerprofils im Format 1080x1350px (angepasst nach Breite, vollständiger Inhalt)
+    // Funktion zum Herunterladen des Spielerprofils im exakten Format 1080x1350px mit umlaufendem Rahmen
     function downloadPlayerProfileImage() {
       const container = document.getElementById('content-playerProfile');
       if (!container) return;
@@ -1602,10 +1602,15 @@
 
       const targetWidth = 1080;
       const targetHeight = 1350;
-      const padding = 50; // Umlaufender kleiner Rahmen
+      
+      // Kleinere Rahmen-Abstände (Padding) definieren, damit das Profil-Layout flexibel bleibt und links/rechts/oben/unten ein schöner Rahmen ist
+      const paddingX = 60; // 60px links und rechts Rahmen
+      const paddingY = 80; // 80px oben und unten Rahmen
+      
+      const availableWidth = targetWidth - (paddingX * 2);   // 960px
+      const availableHeight = targetHeight - (paddingY * 2); // 1190px
 
       const currentWidth = container.offsetWidth || 800;
-      const availableWidth = targetWidth - (padding * 2);
       const scaleFactor = availableWidth / currentWidth;
 
       html2canvas(container, {
@@ -1622,21 +1627,26 @@
         finalCanvas.height = targetHeight;
         const ctx = finalCanvas.getContext('2d');
         
+        // Hintergrund komplett Schwarz füllen
         ctx.fillStyle = '#000000';
         ctx.fillRect(0, 0, targetWidth, targetHeight);
 
         const srcWidth = canvas.width;
         const srcHeight = canvas.height;
         
-        // Anpassung rein an der Breite, damit der gesamte Inhalt (Kopfzeile bis Bestleistungen) vollständig sichtbar bleibt
-        const drawWidth = availableWidth;
-        const drawHeight = srcHeight * (availableWidth / srcWidth);
+        // Skalierung proportional anpassen, sodass es in den verfügbaren Bereich innerhalb des Rahmens passt
+        const hRatio = availableWidth / srcWidth;
+        const vRatio = availableHeight / srcHeight;
+        const ratio = Math.min(hRatio, vRatio);
         
-        const centerShiftX = padding;
-        // Vertikal zentrieren, damit ein gleichmäßiger Rahmen oben und unten entsteht
-        const centerShiftY = (targetHeight - drawHeight) / 2;
+        const renderWidth = srcWidth * ratio;
+        const renderHeight = srcHeight * ratio;
 
-        ctx.drawImage(canvas, 0, 0, srcWidth, srcHeight, centerShiftX, centerShiftY, drawWidth, drawHeight);
+        // Zentrierung im Ziel-Canvas (unter Berücksichtigung des Rahmens)
+        const destX = paddingX + (availableWidth - renderWidth) / 2;
+        const destY = paddingY + (availableHeight - renderHeight) / 2;
+
+        ctx.drawImage(canvas, 0, 0, srcWidth, srcHeight, destX, destY, renderWidth, renderHeight);
 
         const imageURL = finalCanvas.toDataURL('image/png');
         const link = document.createElement('a');
