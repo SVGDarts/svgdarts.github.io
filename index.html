@@ -808,33 +808,26 @@
           </table>
       </div>
 
-      <!-- Neu: Teamstatistiken Diagramm-Sektion -->
-      <div class="glass-card rounded-2xl p-6 shadow-2xl space-y-4 mt-6">
-        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-          <div>
-            <h3 class="text-lg font-bold font-display text-white">Grafische Team- & Spielerübersicht</h3>
-            <p class="text-xs text-neutral-400 mt-0.5">Vergleich der Team- und Spielerwerte als horizontale Linien</p>
-          </div>
-
+      <!-- Diagramm unterhalb der Teamstatistik-Tabelle -->
+      <div class="glass-card rounded-2xl p-6 space-y-4 shadow-2xl">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <h3 class="text-lg font-bold font-display text-white flex items-center gap-2">
+            <i class="fa-solid fa-chart-line text-neutral-400 text-sm"></i> Team- & Spieler-Vergleichsdiagramm
+          </h3>
           <div class="flex flex-wrap items-center gap-2">
-            <!-- Filter: Metrik -->
-            <select id="teamChartMetricFilter" onchange="renderTeamStatsChart()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
-              <option value="avgSingle">Average (Einzel)</option>
-              <option value="avgDouble">Average (Doppel)</option>
-              <option value="durationSingle">Dauer Einzel</option>
-              <option value="durationDouble">Dauer Doppel</option>
+            <select id="chartMetricSelect" onchange="renderTeamStatsChart()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
+              <option value="averageSingle">Average (Einzel)</option>
+              <option value="averageDouble">Average (Doppel)</option>
+              <option value="durationPerSingle">Dauer Einzel</option>
+              <option value="durationPerDouble">Dauer Doppel</option>
             </select>
-
-            <!-- Filter: Team -->
-            <select id="teamChartTeamFilter" onchange="renderTeamStatsChart()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
-              <!-- Dynamisch gefüllt -->
+            <select id="chartTeamSelect" onchange="renderTeamStatsChart()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
+              <!-- Dynamisch befüllt -->
             </select>
           </div>
         </div>
-
-        <!-- SVG Container -->
-        <div class="w-full overflow-x-auto bg-black/40 rounded-xl p-4 border border-neutral-800" style="min-height: 420px;">
-          <svg id="teamStatsSvgChart" class="w-full h-96" viewBox="0 0 900 400" preserveAspectRatio="none"></svg>
+        <div id="teamStatsChartContainer" class="w-full overflow-x-auto relative" style="height: 420px;">
+          <!-- SVG Diagramm wird hier gerendert -->
         </div>
       </div>
     </section>
@@ -1095,13 +1088,6 @@
       return 0;
     }
 
-    function formatSecondsToMMSS(totalSeconds) {
-      if (isNaN(totalSeconds) || totalSeconds <= 0) return "00:00";
-      const mins = Math.floor(totalSeconds / 60);
-      const secs = Math.round(totalSeconds % 60);
-      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-    }
-
     function firebaseListToArray(val) {
       if (!val) return [];
       if (Array.isArray(val)) {
@@ -1273,7 +1259,8 @@
       } else if (tabId === 'orga') {
         renderOrga();
       } else if (tabId === 'teamStats') {
-        initTeamStatsChart();
+        populateChartTeamFilter();
+        renderTeamStatsChart();
       }
     }
 
@@ -1417,7 +1404,8 @@
           } else if (activeTab === 'orga') {
             renderOrga();
           } else if (activeTab === 'teamStats') {
-            initTeamStatsChart();
+            populateChartTeamFilter();
+            renderTeamStatsChart();
           }
         }
       });
@@ -1463,197 +1451,6 @@
       if (homeTeamSelect) homeTeamSelect.innerHTML = teamOptions;
       if (homeDateSelect) homeDateSelect.innerHTML = dateOptions;
       if (homeLocationSelect) homeLocationSelect.innerHTML = locationOptions;
-
-      // Team-Filter für das Diagramm befüllen
-      initTeamStatsChartDropdowns();
-    }
-
-    function initTeamStatsChartDropdowns() {
-      const chartTeamSelect = document.getElementById('teamChartTeamFilter');
-      if (!chartTeamSelect) return;
-      const currentTeamVal = chartTeamSelect.value;
-
-      // Ermittle Teams aus teamStats oder Spielern
-      const teams = [...new Set(appData.teamStats.map(t => t.team || t.name).filter(Boolean))].sort();
-      if (!teams.length) {
-        // Fallback Teams
-        teams.push("SVG A", "SVG B", "SVG C", "SVG D", "SVG E", "SVG F", "SVG G");
-      }
-
-      chartTeamSelect.innerHTML = teams.map(t => `<option value="${t}">${t}</option>`).join('');
-      if (currentTeamVal && teams.includes(currentTeamVal)) {
-        chartTeamSelect.value = currentTeamVal;
-      } else if (teams.length > 0) {
-        chartTeamSelect.value = teams[0];
-      }
-      renderTeamStatsChart();
-    }
-
-    function initTeamStatsChart() {
-      initTeamStatsChartDropdowns();
-    }
-
-    function renderTeamStatsChart() {
-      const svg = document.getElementById('teamStatsSvgChart');
-      if (!svg) return;
-
-      const metricFilter = document.getElementById('teamChartMetricFilter')?.value || 'avgSingle';
-      const teamFilter = document.getElementById('teamChartTeamFilter')?.value || '';
-
-      svg.innerHTML = '';
-
-      // 1. Team-Daten ermitteln
-      const teamObj = appData.teamStats.find(t => String(t.team || t.name || '').trim().toLowerCase() === String(teamFilter).trim().toLowerCase()) || {};
-      
-      let teamValueRaw = 0;
-      if (metricFilter === 'avgSingle') teamValueRaw = parseNumeric(teamObj.avgSingle ?? teamObj.avg_single);
-      else if (metricFilter === 'avgDouble') teamValueRaw = parseNumeric(teamObj.avgDouble ?? teamObj.avg_double);
-      else if (metricFilter === 'durationSingle') teamValueRaw = parseDurationToSeconds(teamObj.durationPerSingle ?? teamObj.duration_per_single);
-      else if (metricFilter === 'durationDouble') teamValueRaw = parseDurationToSeconds(teamObj.durationPerDouble ?? teamObj.duration_per_double);
-
-      // 2. Spieler des Teams ermitteln
-      // Extrahiere den Buchstaben des Teams (z.B. "SVG A" -> "A")
-      const teamLetterMatch = teamFilter.match(/([A-G])/i);
-      const targetLetter = teamLetterMatch ? teamLetterMatch[1].toUpperCase() : '';
-
-      const teamPlayers = appData.squad.filter(p => {
-        if (!p.team) return false;
-        const { letter } = parsePlayerTeamTokens(p.team);
-        return letter === targetLetter;
-      });
-
-      // Sammle Werte der Spieler aus averages (stats) oder gameStats
-      let playersData = [];
-      const distinctColors = [
-        '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', 
-        '#06b6d4', '#f97316', '#6366f1', '#14b8a6', '#eab308'
-      ];
-
-      teamPlayers.forEach((sp, idx) => {
-        const playerName = sp.name || '';
-        let val = 0;
-
-        if (metricFilter === 'avgSingle' || metricFilter === 'avgDouble') {
-          const statObj = appData.stats.find(s => String(s.player || s.name || '').trim().toLowerCase() === playerName.trim().toLowerCase()) || {};
-          if (metricFilter === 'avgSingle') val = parseNumeric(statObj.avgSingle ?? statObj.avg_single ?? statObj.avg);
-          if (metricFilter === 'avgDouble') val = parseNumeric(statObj.avgDouble ?? statObj.avg_double);
-        } else {
-          const gsObj = appData.gameStats.find(g => String(g.player || g.name || '').trim().toLowerCase() === playerName.trim().toLowerCase()) || {};
-          if (metricFilter === 'durationSingle') val = parseDurationToSeconds(gsObj.durationSingle ?? gsObj.duration_single ?? gsObj.duration);
-          else if (metricFilter === 'durationDouble') val = parseDurationToSeconds(gsObj.durationDouble ?? gsObj.duration_double);
-        }
-
-        playersData.push({
-          name: playerName,
-          value: val,
-          color: distinctColors[idx % distinctColors.length]
-        });
-      });
-
-      // SVG Dimensionen
-      const width = 900;
-      const height = 400;
-      const margin = { top: 30, right: 140, bottom: 40, left: 60 };
-      const chartWidth = width - margin.left - margin.right;
-      const chartHeight = height - margin.top - margin.bottom;
-
-      // Achsen-Limits bestimmen
-      let maxVal = 80.00;
-      let isDuration = metricFilter.includes('duration');
-      if (isDuration) {
-        maxVal = 45 * 60; // 45:00 in Sekunden
-      }
-
-      // Hilfsfunktion Y-Koordinate
-      const getY = (val) => {
-        const clamped = Math.min(Math.max(val, 0), maxVal);
-        return margin.top + chartHeight - (clamped / maxVal) * chartHeight;
-      };
-
-      // Y-Achsen-Rasterlinien & Beschriftungen zeichnen
-      const ticksCount = 5;
-      for (let i = 0; i <= ticksCount; i++) {
-        const tickVal = (maxVal / ticksCount) * i;
-        const yCoord = getY(tickVal);
-
-        let labelText = isDuration ? formatSecondsToMMSS(tickVal) : tickVal.toFixed(2);
-
-        // Rasterlinie
-        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        line.setAttribute('x1', margin.left);
-        line.setAttribute('y1', yCoord);
-        line.setAttribute('x2', margin.left + chartWidth);
-        line.setAttribute('y2', yCoord);
-        line.setAttribute('stroke', '#262626');
-        line.setAttribute('stroke-dasharray', '4 4');
-        svg.appendChild(line);
-
-        // Label Y-Achse
-        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', margin.left - 10);
-        text.setAttribute('y', yCoord + 4);
-        text.setAttribute('fill', '#737373');
-        text.setAttribute('font-size', '10');
-        text.setAttribute('text-anchor', 'end');
-        text.textContent = labelText;
-        svg.appendChild(text);
-      }
-
-      // X-Achsen-Linie (Zeitpunkte existieren nicht -> horizontale Linie ohne Beschriftung auf der x-Achse)
-      const xAxis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      xAxis.setAttribute('x1', margin.left);
-      xAxis.setAttribute('y1', margin.top + chartHeight);
-      xAxis.setAttribute('x2', margin.left + chartWidth);
-      xAxis.setAttribute('y2', margin.top + chartHeight);
-      xAxis.setAttribute('stroke', '#404040');
-      svg.appendChild(xAxis);
-
-      // 1. Team-Horizontale zeichnen
-      const teamY = getY(teamValueRaw);
-      const teamLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-      teamLine.setAttribute('x1', margin.left);
-      teamLine.setAttribute('y1', teamY);
-      teamLine.setAttribute('x2', margin.left + chartWidth);
-      teamLine.setAttribute('y2', teamY);
-      teamLine.setAttribute('stroke', '#FFFFFF');
-      teamLine.setAttribute('stroke-width', '2.5');
-      teamLine.setAttribute('stroke-dasharray', '6 3');
-      svg.appendChild(teamLine);
-
-      // Beschriftung rechts neben der Team-Horizontalen
-      const teamLabelText = isDuration ? formatSecondsToMMSS(teamValueRaw) : teamValueRaw.toFixed(2);
-      const teamText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-      teamText.setAttribute('x', margin.left + chartWidth + 10);
-      teamText.setAttribute('y', teamY + 4);
-      teamText.setAttribute('fill', '#FFFFFF');
-      teamText.setAttribute('font-size', '11');
-      teamText.setAttribute('font-weight', 'bold');
-      teamText.textContent = `${teamFilter} (${teamLabelText})`;
-      svg.appendChild(teamText);
-
-      // 2. Spieler-Horizontalen zeichnen
-      playersData.forEach(p => {
-        const pY = getY(p.value);
-        
-        const pLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-        pLine.setAttribute('x1', margin.left);
-        pLine.setAttribute('y1', pY);
-        pLine.setAttribute('x2', margin.left + chartWidth);
-        pLine.setAttribute('y2', pY);
-        pLine.setAttribute('stroke', p.color);
-        pLine.setAttribute('stroke-width', '1.5');
-        svg.appendChild(pLine);
-
-        const pLabelVal = isDuration ? formatSecondsToMMSS(p.value) : p.value.toFixed(2);
-        const pText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        pText.setAttribute('x', margin.left + chartWidth + 10);
-        pText.setAttribute('y', pY + 4);
-        pText.setAttribute('fill', p.color);
-        pText.setAttribute('font-size', '10');
-        pText.setAttribute('font-weight', '600');
-        pText.textContent = `${p.name} (${pLabelVal})`;
-        svg.appendChild(pText);
-      });
     }
 
     function populateProfileDropdown() {
@@ -1995,7 +1792,6 @@
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
-      // Titel & Untertitel im PDF
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
       doc.setTextColor(33, 33, 33);
@@ -2006,7 +1802,6 @@
       doc.setTextColor(100, 100, 100);
       doc.text(`Stand: ${new Date().toLocaleDateString('de-DE')}`, 14, 22);
 
-      // Aktuelle Filter auslesen, damit nur das exportiert wird, was gerade angezeigt wird
       const selMatchday = document.getElementById('filterMatchday')?.value;
       const selTeam = document.getElementById('filterTeam')?.value;
       const selDate = document.getElementById('filterDate')?.value;
@@ -2024,7 +1819,6 @@
         return matchdayMatches && teamMatches && dateMatches && locationMatches;
       });
 
-      // Nach Datum sortieren
       filtered.sort((a, b) => {
         const dateA = parseMatchDate(a.date);
         const dateB = parseMatchDate(b.date);
@@ -2034,7 +1828,6 @@
         return dateA - dateB;
       });
 
-      // Tabellendaten aufbereiten
       const tableRows = filtered.map(m => {
         const dateStr = formatDate(m.date);
         const timeStr = formatTime(m.time || m.uhrzeit);
@@ -2051,7 +1844,6 @@
         ];
       });
 
-      // AutoTable generieren (skaliert alle Spalten auf eine Seite im Querformat)
       doc.autoTable({
         startY: 28,
         head: [['Datum / Uhrzeit', 'Heim', 'Auswärts', 'Ergebnis', 'Spielort', 'Spieltag']],
@@ -2060,13 +1852,12 @@
         headStyles: { fillColor: [24, 24, 27], textColor: [255, 255, 255], fontStyle: 'bold' },
         styles: { fontSize: 9, cellPadding: 3, halign: 'left' },
         columnStyles: {
-          3: { halign: 'center', fontStyle: 'bold' } // Ergebnis zentrieren
+          3: { halign: 'center', fontStyle: 'bold' }
         },
         tableWidth: 'auto',
         pageBreak: 'auto'
       });
 
-      // PDF direkt als Download speichern
       doc.save('SVG_Darts_Spielplan.pdf');
     }
 
@@ -2117,6 +1908,7 @@
       } else if (activeTab === 'orga') {
         renderOrga();
       } else if (activeTab === 'teamStats') {
+        populateChartTeamFilter();
         renderTeamStatsChart();
       }
     }
@@ -2697,7 +2489,199 @@
         `;
       }).join('');
 
+      populateChartTeamFilter();
       renderTeamStatsChart();
+    }
+
+    // --- Diagramm Logik für Teamstatistiken ---
+    function populateChartTeamFilter() {
+      const select = document.getElementById('chartTeamSelect');
+      if (!select) return;
+      const currentVal = select.value;
+      const teams = [...new Set(appData.teamStats.map(t => t.team || t.name).filter(Boolean))];
+      if (!teams.length) {
+        select.innerHTML = '<option value="">Keine Teams</option>';
+        return;
+      }
+      select.innerHTML = teams.map(t => `<option value="${t}">${t}</option>`).join('');
+      if (currentVal && teams.includes(currentVal)) {
+        select.value = currentVal;
+      } else {
+        select.value = teams[0];
+      }
+    }
+
+    function renderTeamStatsChart() {
+      const container = document.getElementById('teamStatsChartContainer');
+      const metricSelect = document.getElementById('chartMetricSelect');
+      const teamSelect = document.getElementById('chartTeamSelect');
+      if (!container || !metricSelect || !teamSelect) return;
+
+      const metric = metricSelect.value;
+      const selectedTeamName = teamSelect.value;
+
+      if (!selectedTeamName) {
+        container.innerHTML = '<div class="flex items-center justify-center h-full text-neutral-500 text-xs">Bitte wähle ein Team aus.</div>';
+        return;
+      }
+
+      // Team-Objekt und Wert ermitteln
+      const teamObj = appData.teamStats.find(t => String(t.team || t.name || '').trim().toLowerCase() === selectedTeamName.trim().toLowerCase()) || {};
+      
+      let teamVal = 0;
+      if (metric === 'averageSingle') teamVal = parseNumeric(teamObj.averageSingle ?? teamObj.avgSingle ?? teamObj.avg_single ?? teamObj.avg);
+      else if (metric === 'averageDouble') teamVal = parseNumeric(teamObj.averageDouble ?? teamObj.avgDouble ?? teamObj.avg_double);
+      else if (metric === 'durationPerSingle') teamVal = parseDurationToSeconds(teamObj.durationPerSingle ?? teamObj.duration_per_single);
+      else if (metric === 'durationPerDouble') teamVal = parseDurationToSeconds(teamObj.durationPerDouble ?? teamObj.duration_per_double);
+
+      // Zugehörige Spieler ermitteln
+      const teamLetterMatch = selectedTeamName.match(/[A-G]/i);
+      const teamLetter = teamLetterMatch ? teamLetterMatch[0].toUpperCase() : null;
+
+      const teamPlayers = appData.squad.filter(p => {
+        if (!teamLetter) return true;
+        const { letter } = parsePlayerTeamTokens(p.team);
+        return letter === teamLetter;
+      });
+
+      let items = [];
+      // Team hinzufügen (Farbe weiß für das gefilterte Team)
+      items.push({
+        name: selectedTeamName,
+        value: teamVal,
+        isTeam: true,
+        color: '#ffffff'
+      });
+
+      // Dezente, unterschiedliche Farben für Spieler
+      const playerColors = [
+        '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', 
+        '#06b6d4', '#f97316', '#14b8a6', '#6366f1', '#d946ef', '#84cc16'
+      ];
+
+      teamPlayers.forEach((p, idx) => {
+        const playerName = p.name || '';
+        if (!playerName) return;
+
+        let pVal = 0;
+        if (metric === 'averageSingle' || metric === 'averageDouble') {
+          const statObj = appData.stats.find(s => String(s.player || s.name || '').trim().toLowerCase() === playerName.trim().toLowerCase()) || {};
+          if (metric === 'averageSingle') pVal = parseNumeric(statObj.averageSingle ?? statObj.avgSingle ?? statObj.avg_single ?? statObj.avg);
+          else pVal = parseNumeric(statObj.averageDouble ?? statObj.avgDouble ?? statObj.avg_double);
+        } else {
+          const gsObj = appData.gameStats.find(g => String(g.player || g.name || '').trim().toLowerCase() === playerName.trim().toLowerCase()) || {};
+          if (metric === 'durationPerSingle') pVal = parseDurationToSeconds(gsObj.durationPerSingle ?? gsObj.duration_per_single ?? gsObj.duration);
+          else pVal = parseDurationToSeconds(gsObj.durationPerDouble ?? gsObj.duration_per_double);
+        }
+
+        if (pVal > 0) {
+          items.push({
+            name: playerName,
+            value: pVal,
+            isTeam: false,
+            color: playerColors[idx % playerColors.length]
+          });
+        }
+      });
+
+      if (items.length === 0 || (items.length === 1 && items[0].value === 0)) {
+        container.innerHTML = '<div class="flex items-center justify-center h-full text-neutral-500 text-xs">Keine Daten für diesen Filter vorhanden.</div>';
+        return;
+      }
+
+      // Min & Max ermitteln und 10% Extra-Spanne nach oben und unten anwenden
+      const values = items.map(i => i.value);
+      let minVal = Math.min(...values);
+      let maxVal = Math.max(...values);
+
+      if (minVal === maxVal) {
+        minVal = minVal * 0.9;
+        maxVal = maxVal * 1.1;
+        if (minVal === 0) { minVal = 0; maxVal = 10; }
+      }
+
+      const range = maxVal - minVal;
+      const extraSpan = range * 0.1;
+      const yMin = minVal - extraSpan;
+      const yMax = maxVal + extraSpan;
+
+      // SVG Abmessungen
+      const width = 850;
+      const height = 380;
+      const paddingTop = 30;
+      const paddingBottom = 30;
+      const paddingLeft = 50;
+      const paddingRight = 180;
+
+      const plotWidth = width - paddingLeft - paddingRight;
+      const plotHeight = height - paddingTop - paddingBottom;
+
+      const getY = (val) => {
+        if (yMax === yMin) return paddingTop + plotHeight / 2;
+        return paddingTop + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
+      };
+
+      // Sortieren nach Wert absteigend für Kollisionsprüfung
+      items.sort((a, b) => b.value - a.value);
+
+      // Kollisionsprüfung: Wenn Namen auf gleicher Höhe liegen, untereinander anordnen
+      const labelPositions = [];
+      items.forEach(item => {
+        let y = getY(item.value);
+        let adjustedY = y;
+        while (labelPositions.some(pos => Math.abs(pos - adjustedY) < 16)) {
+          adjustedY += 16;
+        }
+        labelPositions.push(adjustedY);
+        item.renderY = y;
+        item.labelY = adjustedY;
+      });
+
+      let svgHTML = `<svg viewBox="0 0 ${width} ${height}" class="w-full h-full font-sans text-xs">`;
+
+      // Horizontale Hilfslinien
+      const gridSteps = 5;
+      for (let i = 0; i <= gridSteps; i++) {
+        const val = yMin + (yMax - yMin) * (i / gridSteps);
+        const y = getY(val);
+        const displayVal = metric.includes('duration') ? formatShortDuration(Math.round(val)) : val.toFixed(1);
+        svgHTML += `
+          <line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4" />
+          <text x="${paddingLeft - 8}" y="${y + 4}" fill="rgba(255,255,255,0.4)" text-anchor="end" font-size="10">${displayVal}</text>
+        `;
+      }
+
+      // Linien und Namen zeichnen (gleiche Farbe für Linie und Text)
+      items.forEach(item => {
+        const y = item.renderY;
+        const labelY = item.labelY;
+        const strokeWidth = item.isTeam ? 3 : 2;
+
+        // Horizontale Linie
+        svgHTML += `
+          <line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" stroke="${item.color}" stroke-width="${strokeWidth}" />
+          <circle cx="${paddingLeft}" cy="${y}" r="4" fill="${item.color}" />
+        `;
+
+        // Verbindungslinie bei Versatz durch Namensüberschneidung
+        if (Math.abs(labelY - y) > 2) {
+          svgHTML += `
+            <line x1="${width - paddingRight}" y1="${y}" x2="${width - paddingRight + 10}" y2="${labelY}" stroke="${item.color}" stroke-width="1" stroke-dasharray="2 2" />
+          `;
+        }
+
+        // Beschriftung rechts mit gleicher Farbe wie die Linie
+        const fontWeight = item.isTeam ? 'bold' : 'normal';
+        const displayValStr = metric.includes('duration') ? formatShortDuration(Math.round(item.value)) : item.value.toFixed(2);
+        svgHTML += `
+          <text x="${width - paddingRight + 14}" y="${labelY + 4}" fill="${item.color}" font-weight="${fontWeight}" font-size="11">
+            ${item.name} (${displayValStr})
+          </text>
+        `;
+      });
+
+      svgHTML += `</svg>`;
+      container.innerHTML = svgHTML;
     }
 
     function navigateToPlayerProfile(playerName) {
@@ -2762,8 +2746,8 @@
     window.renderStats = renderStats;
     window.renderRecords = renderRecords;
     window.renderTeamStats = renderTeamStats;
-    window.renderTeamStatsChart = renderTeamStatsChart;
     window.renderOrga = renderOrga;
+    window.renderTeamStatsChart = renderTeamStatsChart;
     window.downloadPlayerProfileImage = downloadPlayerProfileImage;
     window.downloadMatchesPDF = downloadMatchesPDF;
   </script>
