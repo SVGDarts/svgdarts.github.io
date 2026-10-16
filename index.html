@@ -1088,6 +1088,18 @@
       return 0;
     }
 
+    function formatSecondsToDuration(totalSeconds) {
+      if (isNaN(totalSeconds) || totalSeconds <= 0) return '-';
+      const hrs = Math.floor(totalSeconds / 3600);
+      const mins = Math.floor((totalSeconds % 3600) / 60);
+      const secs = Math.round(totalSeconds % 60);
+      const pad = n => String(n).padStart(2, '0');
+      if (hrs > 0) {
+        return `${pad(hrs)}:${pad(mins)}:${pad(secs)}`;
+      }
+      return `${pad(mins)}:${pad(secs)}`;
+    }
+
     function firebaseListToArray(val) {
       if (!val) return [];
       if (Array.isArray(val)) {
@@ -2525,7 +2537,6 @@
         return;
       }
 
-      // Team-Objekt und Wert ermitteln
       const teamObj = appData.teamStats.find(t => String(t.team || t.name || '').trim().toLowerCase() === selectedTeamName.trim().toLowerCase()) || {};
       
       let teamVal = 0;
@@ -2534,7 +2545,6 @@
       else if (metric === 'durationPerSingle') teamVal = parseDurationToSeconds(teamObj.durationPerSingle ?? teamObj.duration_per_single);
       else if (metric === 'durationPerDouble') teamVal = parseDurationToSeconds(teamObj.durationPerDouble ?? teamObj.duration_per_double);
 
-      // Zugehörige Spieler ermitteln
       const teamLetterMatch = selectedTeamName.match(/[A-G]/i);
       const teamLetter = teamLetterMatch ? teamLetterMatch[0].toUpperCase() : null;
 
@@ -2545,7 +2555,6 @@
       });
 
       let items = [];
-      // Team hinzufügen (Farbe weiß für das gefilterte Team)
       items.push({
         name: selectedTeamName,
         value: teamVal,
@@ -2553,7 +2562,6 @@
         color: '#ffffff'
       });
 
-      // Dezente, unterschiedliche Farben für Spieler
       const playerColors = [
         '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', 
         '#06b6d4', '#f97316', '#14b8a6', '#6366f1', '#d946ef', '#84cc16'
@@ -2589,7 +2597,6 @@
         return;
       }
 
-      // Min & Max ermitteln und 10% Extra-Spanne nach oben und unten anwenden
       const values = items.map(i => i.value);
       let minVal = Math.min(...values);
       let maxVal = Math.max(...values);
@@ -2605,12 +2612,11 @@
       const yMin = minVal - extraSpan;
       const yMax = maxVal + extraSpan;
 
-      // SVG Abmessungen
       const width = 850;
       const height = 380;
       const paddingTop = 30;
       const paddingBottom = 30;
-      const paddingLeft = 50;
+      const paddingLeft = 55;
       const paddingRight = 180;
 
       const plotWidth = width - paddingLeft - paddingRight;
@@ -2621,10 +2627,8 @@
         return paddingTop + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
       };
 
-      // Sortieren nach Wert absteigend für Kollisionsprüfung
       items.sort((a, b) => b.value - a.value);
 
-      // Kollisionsprüfung: Wenn Namen auf gleicher Höhe liegen, untereinander anordnen
       const labelPositions = [];
       items.forEach(item => {
         let y = getY(item.value);
@@ -2639,40 +2643,35 @@
 
       let svgHTML = `<svg viewBox="0 0 ${width} ${height}" class="w-full h-full font-sans text-xs">`;
 
-      // Horizontale Hilfslinien
       const gridSteps = 5;
       for (let i = 0; i <= gridSteps; i++) {
         const val = yMin + (yMax - yMin) * (i / gridSteps);
         const y = getY(val);
-        const displayVal = metric.includes('duration') ? formatShortDuration(Math.round(val)) : val.toFixed(1);
+        const displayVal = metric.includes('duration') ? formatSecondsToDuration(val) : val.toFixed(1);
         svgHTML += `
           <line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4" />
           <text x="${paddingLeft - 8}" y="${y + 4}" fill="rgba(255,255,255,0.4)" text-anchor="end" font-size="10">${displayVal}</text>
         `;
       }
 
-      // Linien und Namen zeichnen (gleiche Farbe für Linie und Text)
       items.forEach(item => {
         const y = item.renderY;
         const labelY = item.labelY;
         const strokeWidth = item.isTeam ? 3 : 2;
 
-        // Horizontale Linie
         svgHTML += `
           <line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" stroke="${item.color}" stroke-width="${strokeWidth}" />
           <circle cx="${paddingLeft}" cy="${y}" r="4" fill="${item.color}" />
         `;
 
-        // Verbindungslinie bei Versatz durch Namensüberschneidung
         if (Math.abs(labelY - y) > 2) {
           svgHTML += `
             <line x1="${width - paddingRight}" y1="${y}" x2="${width - paddingRight + 10}" y2="${labelY}" stroke="${item.color}" stroke-width="1" stroke-dasharray="2 2" />
           `;
         }
 
-        // Beschriftung rechts mit gleicher Farbe wie die Linie
         const fontWeight = item.isTeam ? 'bold' : 'normal';
-        const displayValStr = metric.includes('duration') ? formatShortDuration(Math.round(item.value)) : item.value.toFixed(2);
+        const displayValStr = metric.includes('duration') ? formatSecondsToDuration(item.value) : item.value.toFixed(2);
         svgHTML += `
           <text x="${width - paddingRight + 14}" y="${labelY + 4}" fill="${item.color}" font-weight="${fontWeight}" font-size="11">
             ${item.name} (${displayValStr})
