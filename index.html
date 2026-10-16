@@ -1553,7 +1553,6 @@
       const sourceSection = document.getElementById('content-playerProfile');
       if (!sourceSection) return;
 
-      // Fester Export-Container (erzwingt exakt dieselbe hochauflösende Ansicht für PC und Handy)
       const exportContainer = document.createElement('div');
       exportContainer.style.position = 'fixed';
       exportContainer.style.left = '-9999px';
@@ -1571,21 +1570,17 @@
       exportContainer.style.justifyContent = 'space-between';
       exportContainer.className = 'dark';
 
-      // Klonen des Profils für die Bildgenerierung (Live-Ansicht bleibt unberührt)
       const clone = sourceSection.cloneNode(true);
       clone.classList.remove('hidden');
 
-      // Download-Button im Bild entfernen
       const btnInClone = clone.querySelector('button');
       if (btnInClone) btnInClone.remove();
 
-      // Layout-Erzwungung für den Header im Export
       const headerDiv = clone.querySelector('.flex.flex-col.md\\:flex-row');
       if (headerDiv) {
         headerDiv.className = "flex flex-row justify-between items-center w-full";
       }
 
-      // Dropdown durch festen Namen ersetzen
       const selectInClone = clone.querySelector('#profilePlayerSelect');
       if (selectInClone) {
         const nameHeading = document.createElement('div');
@@ -1606,7 +1601,6 @@
         teamSpan.style.display = "block";
       }
 
-      // Spiele & Legs Box anpassen
       const gamesLegsBox = clone.querySelector('.glass-card.px-4.py-2\\.5');
       if (gamesLegsBox) {
         gamesLegsBox.style.padding = "0 24px";
@@ -1628,7 +1622,6 @@
         });
       }
 
-      // Sektionsüberschriften anpassen
       const sectionHeadings = clone.querySelectorAll('h3');
       sectionHeadings.forEach((h, idx) => {
         h.style.fontSize = "1.125rem";
@@ -1642,7 +1635,12 @@
         }
       });
 
-      // Profilkarten-Größen und Abstände für den Export erzwingen
+      // HIER NEU: Zwingt das Grid der ersten Sektion im Download-Bild unabhängig vom PC-Gerät exakt auf 3 Spalten (Handy-Layout)
+      const firstGrid = clone.querySelector('.grid.grid-cols-3.lg\\:grid-cols-6');
+      if (firstGrid) {
+        firstGrid.className = "grid grid-cols-3 gap-3";
+      }
+
       const profileCards = clone.querySelectorAll('.profile-card');
       profileCards.forEach(card => {
         card.style.padding = "0.5rem 1.2rem 0.8rem 1.2rem";
@@ -1677,7 +1675,7 @@
         const canvas = await html2canvas(exportContainer, {
           width: 1080,
           height: 1350,
-          scale: 1,
+          scale: 1, // Auf 1 gesetzt wie gewünscht
           useCORS: true,
           backgroundColor: '#000000'
         });
