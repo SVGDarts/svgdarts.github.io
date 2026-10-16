@@ -2544,9 +2544,10 @@
 
       const teamObj = appData.teamStats.find(t => String(t.team || t.name || '').trim().toLowerCase() === selectedTeamName.trim().toLowerCase()) || {};
       
+      // Werte für das Team kommen nun strikt aus teamStats gemäß der jeweiligen Metrik:
       let teamVal = 0;
-      if (metric === 'averageSingle') teamVal = parseNumeric(teamObj.averageSingle ?? teamObj.avgSingle ?? teamObj.avg_single ?? teamObj.avg);
-      else if (metric === 'averageDouble') teamVal = parseNumeric(teamObj.averageDouble ?? teamObj.avgDouble ?? teamObj.avg_double);
+      if (metric === 'averageSingle') teamVal = parseNumeric(teamObj.avgSingle ?? teamObj.avg_single);
+      else if (metric === 'averageDouble') teamVal = parseNumeric(teamObj.avgDouble ?? teamObj.avg_double);
       else if (metric === 'durationPerSingle') teamVal = parseDurationToSeconds(teamObj.durationPerSingle ?? teamObj.duration_per_single);
       else if (metric === 'durationPerDouble') teamVal = parseDurationToSeconds(teamObj.durationPerDouble ?? teamObj.duration_per_double);
 
@@ -2627,7 +2628,7 @@
         yMax = Math.ceil(yMax / step) * step;
         if (yMin === yMax) yMax += step;
       } else {
-        // Bei Dauer: Volle Minuten (Schritt in Sekunden, mindestens 60 Sek = 1 Min)
+        // Bei Dauer: Volle Minuten
         const rawStep = (yMax - yMin) / 5;
         const minutesStep = Math.max(1, Math.round(rawStep / 60));
         step = minutesStep * 60;
@@ -2640,7 +2641,6 @@
       const height = 460;
       const paddingTop = 35;
       const paddingBottom = 40;
-      // Platz links für die linksseitige Team-Beschriftung schaffen
       const paddingLeft = 140; 
       const paddingRight = 160;
 
@@ -2668,7 +2668,6 @@
 
       let svgHTML = `<svg viewBox="0 0 ${width} ${height}" class="w-full h-full font-sans text-xs">`;
 
-      // Rasterlinien berechnen
       let currentStepVal = yMin;
       while (currentStepVal <= yMax) {
         const y = getY(currentStepVal);
@@ -2689,7 +2688,6 @@
         const displayValStr = isDuration ? formatSecondsToDuration(item.value) : item.value.toFixed(2);
 
         if (item.isTeam) {
-          // Linksseitige Beschriftung für das Team ganz links (vor der Y-Achse) in knalligem Rot
           svgHTML += `
             <line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" stroke="${item.color}" stroke-width="${strokeWidth}" />
             <circle cx="${paddingLeft}" cy="${y}" r="5" fill="${item.color}" />
@@ -2698,7 +2696,6 @@
             </text>
           `;
         } else {
-          // Spieler-Linien und Beschriftung rechts
           svgHTML += `
             <line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" stroke="${item.color}" stroke-width="${strokeWidth}" />
             <circle cx="${paddingLeft}" cy="${y}" r="4" fill="${item.color}" />
