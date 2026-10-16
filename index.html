@@ -1601,23 +1601,24 @@
         teamSpan.style.display = "block";
       }
 
+      // HIER ANGEPASST: Höhe verringert (von 76px auf 58px) und oberer Abstand reduziert (marginTop von 12px auf 0px, damit es nicht zu weit nach oben ragt)
       const gamesLegsBox = clone.querySelector('.glass-card.px-4.py-2\\.5');
       if (gamesLegsBox) {
-        gamesLegsBox.style.padding = "0 24px";
+        gamesLegsBox.style.padding = "0 18px";
         gamesLegsBox.style.minWidth = "180px";
-        gamesLegsBox.style.height = "76px";
+        gamesLegsBox.style.height = "58px"; 
         gamesLegsBox.style.display = "flex";
         gamesLegsBox.style.flexDirection = "column";
         gamesLegsBox.style.justifyContent = "center";
         gamesLegsBox.style.alignItems = "flex-start";
-        gamesLegsBox.style.marginTop = "12px";
+        gamesLegsBox.style.marginTop = "0px"; 
         
         const innerTexts = gamesLegsBox.querySelectorAll('div');
         innerTexts.forEach((el, index) => {
-          el.style.fontSize = "0.95rem";
-          el.style.lineHeight = "1.2";
+          el.style.fontSize = "0.9rem";
+          el.style.lineHeight = "1.1";
           el.style.textAlign = "left";
-          if (index === 0) el.style.marginBottom = "4px";
+          if (index === 0) el.style.marginBottom = "2px";
           else el.style.marginBottom = "0";
         });
       }
@@ -1626,24 +1627,22 @@
       sectionHeadings.forEach((h, idx) => {
         h.style.fontSize = "1.125rem";
         h.style.fontWeight = "700";
-        h.style.display = "block"; // Erzwingt Block-Verhalten
+        h.style.display = "block";
         
         if (idx === 0) {
           h.style.marginTop = "6px"; 
-          h.style.marginBottom = "15px"; // Garantieter unterer Abstand
+          h.style.marginBottom = "15px";
         } else if (idx === 1) {
           h.style.marginTop = "8px";
-          h.style.marginBottom = "15px"; // Garantieter unterer Abstand
+          h.style.marginBottom = "15px";
         }
 
-        // Sichert zusätzlich das direkt folgende Grid (die Rechtecke) ab, damit der Abstand nicht blockiert wird
         const nextElement = h.nextElementSibling;
         if (nextElement) {
           nextElement.style.marginTop = "8px";
         }
       });
 
-      // Zwingt das Grid der ersten Sektion im Download-Bild unabhängig vom PC-Gerät exakt auf 3 Spalten (Handy-Layout)
       const firstGrid = clone.querySelector('.grid.grid-cols-3.lg\\:grid-cols-6');
       if (firstGrid) {
         firstGrid.className = "grid grid-cols-3 gap-3";
