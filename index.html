@@ -1078,10 +1078,23 @@
     }
 
     function parseDurationToSeconds(val) {
-      if (!val || val === '-' || val === '') return 0;
-      const str = String(val).trim();
-      const parts = str.split(':').map(Number);
+      if (val === undefined || val === null || val === '-' || val === '') return 0;
       
+      // Wenn es eine direkte Zahl ist (z.B. Excel-Dezimalbruch < 1)
+      if (typeof val === 'number') {
+        return val * 86400;
+      }
+
+      const str = String(val).trim();
+      if (!str || str === '-') return 0;
+      
+      // Falls es eine reine Zahl als String ist (Excel-Dezimalbruch)
+      if (!str.includes(':') && !isNaN(Number(str))) {
+        return Number(str) * 86400;
+      }
+
+      // Format mit Doppelpunkten (z.B. "mm:ss" oder "hh:mm:ss")
+      const parts = str.split(':').map(Number);
       if (parts.some(isNaN)) return 0;
       
       if (parts.length === 3) {
