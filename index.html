@@ -15,6 +15,9 @@
 
   <!-- html2canvas für den Bild-Download -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- jsPDF & autoTable für den PDF-Export des Spielplans -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
   <style>
     html { overflow-x: auto; }
@@ -439,6 +442,10 @@
         </div>
         
         <div class="flex flex-wrap items-center gap-1.5 md:gap-2 glass-card p-1.5 md:p-2 rounded-2xl w-full lg:w-auto">
+          <button onclick="downloadMatchesPDF()" class="text-xs bg-black hover:bg-neutral-900 text-neutral-300 px-3 py-2 rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-file-pdf text-red-500"></i> PDF Export
+          </button>
+          
           <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
             <i class="fa-solid fa-filter text-white"></i> Filter:
           </div>
@@ -1751,6 +1758,86 @@
       }
     }
 
+    // PDF Export für den Spielplan
+    function downloadMatchesPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+      // Titel & Untertitel im PDF
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(16);
+      doc.setTextColor(33, 33, 33);
+      doc.text("SVG-Darts - Spielplan", 14, 15);
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Stand: ${new Date().toLocaleDateString('de-DE')}`, 14, 22);
+
+      // Aktuelle Filter auslesen, damit nur das exportiert wird, was gerade angezeigt wird
+      const selMatchday = document.getElementById('filterMatchday')?.value;
+      const selTeam = document.getElementById('filterTeam')?.value;
+      const selDate = document.getElementById('filterDate')?.value;
+      const selLocation = document.getElementById('filterLocation')?.value;
+
+      let filtered = appData.matches.filter(m => {
+        const matchdayMatches = !selMatchday || String(m.matchday) === selMatchday;
+        const teamMatches = !selTeam || m.home === selTeam || m.away === selTeam;
+        const dateMatches = !selDate || formatDate(m.date) === selDate;
+        let locationMatches = true;
+        if (selLocation) {
+          const loc = String(m.location || '').toLowerCase();
+          locationMatches = selLocation === 'Göttingen' ? loc.includes('göttingen') : !loc.includes('göttingen');
+        }
+        return matchdayMatches && teamMatches && dateMatches && locationMatches;
+      });
+
+      // Nach Datum sortieren
+      filtered.sort((a, b) => {
+        const dateA = parseMatchDate(a.date);
+        const dateB = parseMatchDate(b.date);
+        if (!dateA && !dateB) return 0;
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        return dateA - dateB;
+      });
+
+      // Tabellendaten aufbereiten
+      const tableRows = filtered.map(m => {
+        const dateStr = formatDate(m.date);
+        const timeStr = formatTime(m.time || m.uhrzeit);
+        const dateTime = dateStr !== '-' && timeStr !== '-' ? `${dateStr} - ${timeStr}` : (dateStr !== '-' ? dateStr : timeStr);
+        const score = String(m.score || '-').trim();
+
+        return [
+          dateTime,
+          m.home || '-',
+          m.away || '-',
+          score,
+          m.location || '-',
+          m.matchday || '-'
+        ];
+      });
+
+      // AutoTable generieren (skaliert alle Spalten auf eine Seite im Querformat)
+      doc.autoTable({
+        startY: 28,
+        head: [['Datum / Uhrzeit', 'Heim', 'Auswärts', 'Ergebnis', 'Spielort', 'Spieltag']],
+        body: tableRows,
+        theme: 'grid',
+        headStyles: { fillColor: [24, 24, 27], textColor: [255, 255, 255], fontStyle: 'bold' },
+        styles: { fontSize: 9, cellPadding: 3, halign: 'left' },
+        columnStyles: {
+          3: { halign: 'center', fontStyle: 'bold' } // Ergebnis zentrieren
+        },
+        tableWidth: 'auto',
+        pageBreak: 'auto'
+      });
+
+      // PDF direkt als Download speichern
+      doc.save('SVG_Darts_Spielplan.pdf');
+    }
+
     function resetMatchFilters() {
       document.getElementById('filterMatchday').value = "";
       document.getElementById('filterTeam').value = "";
@@ -2441,6 +2528,7 @@
     window.renderTeamStats = renderTeamStats;
     window.renderOrga = renderOrga;
     window.downloadPlayerProfileImage = downloadPlayerProfileImage;
+    window.downloadMatchesPDF = downloadMatchesPDF;
   </script>
 </body>
 </html>
