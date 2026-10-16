@@ -1601,12 +1601,16 @@
         teamSpan.style.display = "block";
       }
 
-      // HIER ANGEPASST: Höhe verringert (von 76px auf 58px) und oberer Abstand reduziert (marginTop von 12px auf 0px, damit es nicht zu weit nach oben ragt)
+      // RECHTECK ENTFERNT: Die Box ist nun transparent und randlos, es bleibt nur der reine Text
       const gamesLegsBox = clone.querySelector('.glass-card.px-4.py-2\\.5');
       if (gamesLegsBox) {
-        gamesLegsBox.style.padding = "0 18px";
-        gamesLegsBox.style.minWidth = "180px";
-        gamesLegsBox.style.height = "58px"; 
+        gamesLegsBox.style.background = "transparent";
+        gamesLegsBox.style.border = "none";
+        gamesLegsBox.style.boxShadow = "none";
+        gamesLegsBox.style.backdropFilter = "none";
+        gamesLegsBox.style.padding = "0";
+        gamesLegsBox.style.minWidth = "auto";
+        gamesLegsBox.style.height = "auto";
         gamesLegsBox.style.display = "flex";
         gamesLegsBox.style.flexDirection = "column";
         gamesLegsBox.style.justifyContent = "center";
@@ -1615,10 +1619,10 @@
         
         const innerTexts = gamesLegsBox.querySelectorAll('div');
         innerTexts.forEach((el, index) => {
-          el.style.fontSize = "0.9rem";
-          el.style.lineHeight = "1.1";
+          el.style.fontSize = "1rem"; // Etwas vergrößert, da kein Rahmen mehr da ist
+          el.style.lineHeight = "1.3";
           el.style.textAlign = "left";
-          if (index === 0) el.style.marginBottom = "2px";
+          if (index === 0) el.style.marginBottom = "4px";
           else el.style.marginBottom = "0";
         });
       }
