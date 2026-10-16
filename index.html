@@ -827,9 +827,9 @@
           </div>
         </div>
         <style>
-          #teamStatsChartContainer { height: 500px; }
+          #teamStatsChartContainer { height: 520px; }
           @media (max-width: 768px) {
-            #teamStatsChartContainer { height: 680px; }
+            #teamStatsChartContainer { height: 700px; }
           }
         </style>
         <div id="teamStatsChartContainer" class="w-full overflow-x-auto relative">
@@ -2544,7 +2544,6 @@
 
       const teamObj = appData.teamStats.find(t => String(t.team || t.name || '').trim().toLowerCase() === selectedTeamName.trim().toLowerCase()) || {};
       
-      // Werte für das Team kommen nun strikt aus teamStats gemäß der jeweiligen Metrik:
       let teamVal = 0;
       if (metric === 'averageSingle') teamVal = parseNumeric(teamObj.avgSingle ?? teamObj.avg_single);
       else if (metric === 'averageDouble') teamVal = parseNumeric(teamObj.avgDouble ?? teamObj.avg_double);
@@ -2565,7 +2564,7 @@
         name: selectedTeamName,
         value: teamVal,
         isTeam: true,
-        color: '#ff1a1a' // Knalliges Rot für das Team
+        color: '#ff1a1a'
       });
 
       const playerColors = [
@@ -2620,15 +2619,13 @@
 
       const isDuration = metric.includes('duration');
 
-      // Y-Achse Raster & Schritte anpassen
       let step = 1;
       if (!isDuration) {
-        step = 2.0; // Exakt in 2.0er Schritten bei Averages
+        step = 2.0;
         yMin = Math.floor(yMin / step) * step;
         yMax = Math.ceil(yMax / step) * step;
         if (yMin === yMax) yMax += step;
       } else {
-        // Bei Dauer: Volle Minuten
         const rawStep = (yMax - yMin) / 5;
         const minutesStep = Math.max(1, Math.round(rawStep / 60));
         step = minutesStep * 60;
@@ -2637,14 +2634,15 @@
         if (yMin === yMax) yMax += step;
       }
 
-      const width = 850;
+      // Dynamische Breite anhand der Anzahl an Einträgen, um extrem kompakte Abstände und volle Sichtbarkeit aller Namen zu garantieren
+      const dynamicWidth = Math.max(850, 100 + items.length * 65);
       const height = 460;
       const paddingTop = 35;
       const paddingBottom = 40;
-      const paddingLeft = 140; 
-      const paddingRight = 160;
+      const paddingLeft = 60;   // Minimaler linker Abstand zum Rahmen
+      const paddingRight = 90;  // Minimaler rechter Abstand zum Rahmen
 
-      const plotWidth = width - paddingLeft - paddingRight;
+      const plotWidth = dynamicWidth - paddingLeft - paddingRight;
       const plotHeight = height - paddingTop - paddingBottom;
 
       const getY = (val) => {
@@ -2652,71 +2650,47 @@
         return paddingTop + plotHeight - ((val - yMin) / (yMax - yMin)) * plotHeight;
       };
 
-      items.sort((a, b) => b.value - a.value);
+      // Aufsteigend sortieren für die x-Achsen-Platzierung von links nach rechts
+      items.sort((a, b) => a.value - b.value);
 
-      const labelPositions = [];
-      items.forEach(item => {
-        let y = getY(item.value);
-        let adjustedY = y;
-        while (labelPositions.some(pos => Math.abs(pos - adjustedY) < 18)) {
-          adjustedY += 18;
-        }
-        labelPositions.push(adjustedY);
-        item.renderY = y;
-        item.labelY = adjustedY;
-      });
-
-      let svgHTML = `<svg viewBox="0 0 ${width} ${height}" class="w-full h-full font-sans text-xs">`;
+      const svgHTML = `<svg viewBox="0 0 ${dynamicWidth} ${height}" preserveAspectRatio="none" class="w-full h-full font-sans text-xs" style="min-width: ${Math.max(600, items.length * 55)}px;">`;
 
       let currentStepVal = yMin;
       while (currentStepVal <= yMax) {
         const y = getY(currentStepVal);
         const displayVal = isDuration ? formatSecondsToDuration(currentStepVal) : currentStepVal.toFixed(1);
         
+        // Horizontale Gitterlinien über die volle optimierte Breite
         svgHTML += `
-          <line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4" />
-          <text x="${paddingLeft - 10}" y="${y + 4}" fill="rgba(255,255,255,0.5)" text-anchor="end" font-size="11">${displayVal}</text>
+          <line x1="${paddingLeft}" y1="${y}" x2="${dynamicWidth - paddingRight}" y2="${y}" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4" />
+          <text x="${paddingLeft - 8}" y="${y + 4}" fill="rgba(255,255,255,0.5)" text-anchor="end" font-size="10">${displayVal}</text>
         `;
         currentStepVal += step;
         if (step <= 0) break;
       }
 
-      items.forEach(item => {
-        const y = item.renderY;
-        const labelY = item.labelY;
+      // X-Koordination der Punkte gleichmäßig verteilen
+      const colWidth = items.length > 1 ? plotWidth / (items.length - 1) : 0;
+
+      items.forEach((item, idx) => {
+        const x = items.length === 1 ? paddingLeft + plotWidth / 2 : paddingLeft + idx * colWidth;
+        const y = getY(item.value);
         const strokeWidth = item.isTeam ? 3 : 2;
         const displayValStr = isDuration ? formatSecondsToDuration(item.value) : item.value.toFixed(2);
 
-        if (item.isTeam) {
-          svgHTML += `
-            <line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" stroke="${item.color}" stroke-width="${strokeWidth}" />
-            <circle cx="${paddingLeft}" cy="${y}" r="5" fill="${item.color}" />
-            <text x="${paddingLeft - 15}" y="${labelY + 4}" fill="${item.color}" font-weight="bold" font-size="11" text-anchor="end">
-              ${item.name} (${displayValStr})
-            </text>
-          `;
-        } else {
-          svgHTML += `
-            <line x1="${paddingLeft}" y1="${y}" x2="${width - paddingRight}" y2="${y}" stroke="${item.color}" stroke-width="${strokeWidth}" />
-            <circle cx="${paddingLeft}" cy="${y}" r="4" fill="${item.color}" />
-          `;
-
-          if (Math.abs(labelY - y) > 2) {
-            svgHTML += `
-              <line x1="${width - paddingRight}" y1="${y}" x2="${width - paddingRight + 10}" y2="${labelY}" stroke="${item.color}" stroke-width="1" stroke-dasharray="2 2" />
-            `;
-          }
-
-          svgHTML += `
-            <text x="${width - paddingRight + 14}" y="${labelY + 4}" fill="${item.color}" font-size="11">
-              ${item.name} (${displayValStr})
-            </text>
-          `;
-        }
+        svgHTML += `
+          <line x1="${x}" y1="${paddingTop}" x2="${x}" y2="${height - paddingBottom}" stroke="rgba(255,255,255,0.04)" stroke-dasharray="2 2" />
+          <circle cx="${x}" cy="${y}" r="${item.isTeam ? 5 : 4}" fill="${item.color}" stroke="#000" stroke-width="1.5" />
+          <text x="${x}" y="${y - 9}" fill="${item.color}" font-weight="${item.isTeam ? 'bold' : 'normal'}" font-size="10" text-anchor="middle">
+            ${displayValStr}
+          </text>
+          <text x="${x}" y="${height - paddingBottom + 16}" fill="${item.isTeam ? '#ffffff' : 'rgba(255,255,255,0.8)'}" font-weight="${item.isTeam ? 'bold' : 'normal'}" font-size="10" text-anchor="middle" transform="rotate(0, ${x}, ${height - paddingBottom + 16})">
+            ${item.name}
+          </text>
+        `;
       });
 
-      svgHTML += `</svg>`;
-      container.innerHTML = svgHTML;
+      container.innerHTML = svgHTML + `</svg>`;
     }
 
     function navigateToPlayerProfile(playerName) {
