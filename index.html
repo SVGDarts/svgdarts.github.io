@@ -305,6 +305,9 @@
         <button onclick="switchTab('playerProfile')" id="tab-playerProfile" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-id-card text-xs"></i> Spielerprofil
         </button>
+        <button onclick="switchTab('orga')" id="tab-orga" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-folder-open text-xs"></i> Orga
+        </button>
       </nav>
 
     </div>
@@ -959,6 +962,20 @@
       </div>
     </section>
 
+    <!-- Reiter 8: Orga -->
+    <section id="content-orga" class="space-y-6 hidden">
+      <div>
+        <h2 class="text-2xl font-bold font-display text-white">Orga & Links</h2>
+        <p class="text-xs text-neutral-400 mt-1">Nützliche Webseiten und Dokumentenlinks für den Verein.</p>
+      </div>
+
+      <div id="orgaLinksGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="glass-card rounded-2xl p-6 text-center text-neutral-500 col-span-full">
+          Lade Orga-Links...
+        </div>
+      </div>
+    </section>
+
   </main>
 
    <footer class="mt-auto py-6 border-t border-neutral-800/60 text-center text-xs text-neutral-500">
@@ -987,7 +1004,7 @@
     const db = getDatabase(app);
 
     // 2. Globale Konstanten & App-Daten
-    const CACHE_KEY = "svg_dart_app_data_v10";
+    const CACHE_KEY = "svg_dart_app_data_v11";
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
       "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
@@ -1002,7 +1019,7 @@
       "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree"
     };
 
-    let appData = { matches: [], squad: [], playerProfile: [], stats: [], records: [], gameStats: [], teamStats: [] };
+    let appData = { matches: [], squad: [], playerProfile: [], stats: [], records: [], gameStats: [], teamStats: [], orga: [] };
     let activeTab = 'home';
     let globalSearchQuery = '';
 
@@ -1209,6 +1226,8 @@
         renderLiveGames();
       } else if (tabId === 'playerProfile') {
         populateProfileDropdown();
+      } else if (tabId === 'orga') {
+        renderOrga();
       }
     }
 
@@ -1275,6 +1294,33 @@
       }).join('');
     }
 
+    function renderOrga() {
+      const gridContainer = document.getElementById('orgaLinksGrid');
+      if (!gridContainer) return;
+
+      const orgaList = appData.orga || [];
+      if (!orgaList.length) {
+        gridContainer.innerHTML = `
+          <div class="col-span-full glass-card rounded-2xl p-12 text-center text-neutral-400 space-y-2">
+            <i class="fa-solid fa-folder-open text-2xl text-neutral-500 mb-2"></i>
+            <p class="text-base font-bold text-white">Keine Orga-Links gefunden.</p>
+          </div>
+        `;
+        return;
+      }
+
+      gridContainer.innerHTML = orgaList.map(item => {
+        const name = item.name || 'Link';
+        const link = item.link || '#';
+        return `
+          <a href="${link}" target="_blank" rel="noopener noreferrer" class="glass-card rounded-2xl p-5 flex items-center justify-between hover:border-neutral-500 transition shadow-lg group">
+            <span class="text-sm font-semibold font-display text-white group-hover:text-yellow-400 transition">${name}</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-neutral-500 group-hover:text-white transition text-xs"></i>
+          </a>
+        `;
+      }).join('');
+    }
+
     function handleGlobalSearch() {
       const searchInput = document.getElementById('globalPlayerSearch');
       const clearBtn = document.getElementById('clearSearchBtn');
@@ -1311,7 +1357,8 @@
             stats: firebaseListToArray(data.Averages || data.stats),
             records: firebaseListToArray(data.Bestleistungen || data.records),
             gameStats: firebaseListToArray(data.Spielstatistiken || data.gameStats || data.game_stats),
-            teamStats: firebaseListToArray(data.Teamstatistiken || data.teamStats || data.team_stats)
+            teamStats: firebaseListToArray(data.Teamstatistiken || data.teamStats || data.team_stats),
+            orga: firebaseListToArray(data.Orga || data.orga || data.organisations || data.links)
           };
 
           localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
@@ -1321,6 +1368,8 @@
             renderLiveGames();
           } else if (activeTab === 'playerProfile') {
             populateProfileDropdown();
+          } else if (activeTab === 'orga') {
+            renderOrga();
           }
         }
       });
@@ -1340,7 +1389,6 @@
       const matchdays = [...new Set(appData.matches.map(m => m.matchday).filter(Boolean))];
       const svgTeams = [...new Set(appData.matches.flatMap(m => [m.home, m.away]).filter(t => t && /SVG[\w\d]*/i.test(t)))].sort();
       
-      // Eindeutige Roh-Daten parsen und chronologisch sortieren (aufsteigend)
       const rawDates = [...new Set(appData.matches.map(m => m.date).filter(Boolean))];
       rawDates.sort((a, b) => {
         const dateA = parseMatchDate(a);
@@ -1351,7 +1399,6 @@
         return dateA - dateB;
       });
 
-      // Nur formatierte, eindeutige Datumswerte (Duplikate über formatierten String mittels Set entfernen)
       const uniqueFormattedDates = [...new Set(rawDates.map(d => formatDate(d)).filter(d => d && d !== '-'))];
 
       const matchdayOptions = '<option value="">Spieltag</option>' + matchdays.map(md => `<option value="${md}">${md}</option>`).join('');
@@ -1601,7 +1648,6 @@
         teamSpan.style.display = "block";
       }
 
-      // RECHTECK ENTFERNT: Die Box ist nun transparent und randlos, es bleibt nur der reine Text
       const gamesLegsBox = clone.querySelector('.glass-card.px-4.py-2\\.5');
       if (gamesLegsBox) {
         gamesLegsBox.style.background = "transparent";
@@ -1619,7 +1665,7 @@
         
         const innerTexts = gamesLegsBox.querySelectorAll('div');
         innerTexts.forEach((el, index) => {
-          el.style.fontSize = "1rem"; // Etwas vergrößert, da kein Rahmen mehr da ist
+          el.style.fontSize = "1rem";
           el.style.lineHeight = "1.3";
           el.style.textAlign = "left";
           if (index === 0) el.style.marginBottom = "4px";
@@ -1749,6 +1795,8 @@
       renderTeamStats();
       if (activeTab === 'playerProfile') {
         populateProfileDropdown();
+      } else if (activeTab === 'orga') {
+        renderOrga();
       }
     }
 
@@ -2357,6 +2405,7 @@
           appData.records = firebaseListToArray(appData.records || appData.Bestleistungen);
           appData.gameStats = firebaseListToArray(appData.gameStats || appData.Spielstatistiken);
           appData.teamStats = firebaseListToArray(appData.teamStats || appData.Teamstatistiken);
+          appData.orga = firebaseListToArray(appData.orga || appData.Orga || appData.organisations || appData.links);
           
           populateMatchFilters();
           renderAllTables();
@@ -2390,6 +2439,7 @@
     window.renderStats = renderStats;
     window.renderRecords = renderRecords;
     window.renderTeamStats = renderTeamStats;
+    window.renderOrga = renderOrga;
     window.downloadPlayerProfileImage = downloadPlayerProfileImage;
   </script>
 </body>
