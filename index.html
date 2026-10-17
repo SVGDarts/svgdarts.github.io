@@ -1179,24 +1179,6 @@
       return isNaN(num) ? 0 : num;
     }
 
-    function parseR140Sum(val) {
-      if (val === undefined || val === null || val === '-' || val === '') return 0;
-      const str = String(val).trim();
-      let total = 0;
-      const parts = str.split('+');
-      for (const part of parts) {
-        const subParts = part.split('x');
-        if (subParts.length >= 2) {
-          const count = parseFloat(subParts[0].trim());
-          if (!isNaN(count)) total += count;
-        } else {
-          const num = parseFloat(part.replace(',', '.'));
-          if (!isNaN(num)) total += num;
-        }
-      }
-      return total;
-    }
-
     function parseMatchDate(dateVal) {
       if (!dateVal || dateVal === '-') return null;
       let str = String(dateVal).trim();
@@ -1476,7 +1458,7 @@
         else if (metricKey === 'shortgameChance') val = parseNumeric(p.shortgameChance ?? p.shortgame_chance);
         else if (metricKey === 'specialsPerGame') val = parseNumeric(p.specialsPerGame ?? p.specials_per_game);
         else if (metricKey === 'r180') val = parseNumeric(p.r180 ?? p['180']);
-        else if (metricKey === 'r140') val = parseR140Sum(p.r140 ?? p['140']);
+        else if (metricKey === 'r140') val = parseBracketsNumber(p.r140 ?? p['140']);
         else if (metricKey === 'highfinish') val = parseBracketsNumber(p.highfinish);
         else if (metricKey === 'shortgames') val = parseBracketsNumber(p.shortgame ?? p.shortgames);
 
@@ -2328,7 +2310,7 @@
         if (key === 'player') return item.player || item.name || '';
         if (key === 'specials') return parseNumeric(item.specials);
         if (key === 'r180') return parseNumeric(item.r180 ?? item['180']);
-        if (key === 'r140') return parseNumeric(item.r140 ?? item['140']);
+        if (key === 'r140') return parseBracketsNumber(item.r140 ?? item['140']);
         if (key === 'highfinish') return parseBracketsNumber(item.highfinish);
         if (key === 'shortgame') return parseBracketsNumber(item.shortgame);
         if (key === 'shortgameChance') return parseNumeric(item.shortgameChance ?? item.shortgame_chance);
