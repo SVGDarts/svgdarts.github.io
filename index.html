@@ -795,19 +795,25 @@
                   First 9 <span id="tsort-icon-first9" class="ml-1"></span>
                 </th>
                 <th onclick="setTeamStatsSort('avgSingle')" class="px-4 py-4 sortable-header">
-                  Average (Einzel) <span id="tsort-icon-avgSingle" class="ml-1"></span>
+                  Average<br>(Einzel) <span id="tsort-icon-avgSingle" class="ml-1"></span>
                 </th>
                 <th onclick="setTeamStatsSort('avgDouble')" class="px-4 py-4 sortable-header">
-                  Average (Doppel) <span id="tsort-icon-avgDouble" class="ml-1"></span>
+                  Average<br>(Doppel) <span id="tsort-icon-avgDouble" class="ml-1"></span>
+                </th>
+                <th onclick="setTeamStatsSort('avgOpponentSingleLeague')" class="px-4 py-4 sortable-header">
+                  Gegner-Average<br>(Einzel) <span id="tsort-icon-avgOpponentSingleLeague" class="ml-1"></span>
+                </th>
+                <th onclick="setTeamStatsSort('avgOpponentDoubleLeague')" class="px-4 py-4 sortable-header">
+                  Gegner-Average<br>(Doppel) <span id="tsort-icon-avgOpponentDoubleLeague" class="ml-1"></span>
                 </th>
                 <th onclick="setTeamStatsSort('durationMatchday')" class="px-4 py-4 sortable-header">
-                  Dauer Spieltag <span id="tsort-icon-durationMatchday" class="ml-1"></span>
+                  Dauer<br>Spieltag <span id="tsort-icon-durationMatchday" class="ml-1"></span>
                 </th>
                 <th onclick="setTeamStatsSort('durationPerSingle')" class="px-4 py-4 sortable-header">
-                  Dauer Einzel <span id="tsort-icon-durationPerSingle" class="ml-1"></span>
+                  Dauer<br>Einzel <span id="tsort-icon-durationPerSingle" class="ml-1"></span>
                 </th>
                 <th onclick="setTeamStatsSort('durationPerDouble')" class="px-4 py-4 sortable-header">
-                  Dauer Doppel <span id="tsort-icon-durationPerDouble" class="ml-1"></span>
+                  Dauer<br>Doppel <span id="tsort-icon-durationPerDouble" class="ml-1"></span>
                 </th>
               </tr>
             </thead>
@@ -2376,7 +2382,7 @@
     }
 
     function updateTeamStatsSortIcons() {
-      const keys = ['team', 'avg', 'first9', 'avgSingle', 'avgDouble', 'durationMatchday', 'durationPerSingle', 'durationPerDouble'];
+      const keys = ['team', 'avg', 'first9', 'avgSingle', 'avgDouble', 'avgOpponentSingleLeague', 'avgOpponentDoubleLeague', 'durationMatchday', 'durationPerSingle', 'durationPerDouble'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`tsort-icon-${k}`);
         if (!iconEl) return;
@@ -2403,6 +2409,8 @@
         if (key === 'first9') return parseNumeric(item.first9 ?? item.first_9);
         if (key === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avg_single);
         if (key === 'avgDouble') return parseNumeric(item.avgDouble ?? item.avg_double);
+        if (key === 'avgOpponentSingleLeague') return parseNumeric(item.avgOpponentSingleLeague ?? item.avg_opponent_single_league);
+        if (key === 'avgOpponentDoubleLeague') return parseNumeric(item.avgOpponentDoubleLeague ?? item.avg_opponent_double_league);
         if (key === 'durationMatchday') return item.durationMatchday || item.duration_matchday || '';
         if (key === 'durationPerSingle') return item.durationPerSingle || item.duration_per_single || '';
         if (key === 'durationPerDouble') return item.durationPerDouble || item.duration_per_double || '';
@@ -2417,7 +2425,7 @@
       });
 
       if (!sortedTeamData.length) {
-        tbody.innerHTML = `<tr><td colspan="9" class="px-6 py-8 text-center text-neutral-500">Keine Teamstatistiken gefunden.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" class="px-6 py-8 text-center text-neutral-500">Keine Teamstatistiken gefunden.</td></tr>`;
         return;
       }
 
@@ -2445,6 +2453,8 @@
             <td class="px-4 py-4 text-neutral-200">${formatNumber(t.first9 ?? t.first_9)}</td>
             <td class="px-4 py-4 text-neutral-200">${formatNumber(t.avgSingle ?? t.avg_single)}</td>
             <td class="px-4 py-4 text-neutral-300">${formatNumber(t.avgDouble ?? t.avg_double)}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatNumber(t.avgOpponentSingleLeague ?? t.avg_opponent_single_league)}</td>
+            <td class="px-4 py-4 text-neutral-300">${formatNumber(t.avgOpponentDoubleLeague ?? t.avg_opponent_double_league)}</td>
             <td class="px-4 py-4 text-neutral-300">${t.durationMatchday || t.duration_matchday || '-'}</td>
             <td class="px-4 py-4 text-neutral-300">${formatShortDuration(t.durationPerSingle || t.duration_per_single)}</td>
             <td class="px-4 py-4 text-neutral-400">${formatShortDuration(t.durationPerDouble || t.duration_per_double)}</td>
