@@ -820,6 +820,55 @@
             <tbody id="teamStatsTable" class="divide-y divide-neutral-800/60"></tbody>
           </table>
       </div>
+
+      <!-- Diagramm Bereich unter der Tabelle -->
+      <div class="glass-card rounded-2xl p-4 md:p-6 shadow-2xl space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800/80 pb-4">
+          <div>
+            <h3 class="text-lg font-bold font-display text-white flex items-center gap-2">
+              <i class="fa-solid fa-chart-column text-neutral-400 text-sm"></i> Statistiken Diagramm
+            </h3>
+            <p class="text-xs text-neutral-400 mt-0.5">Visueller Vergleich zwischen Team, Gegner und den Spielern</p>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-1 font-semibold uppercase tracking-wider">
+              <i class="fa-solid fa-filter text-white"></i> Filter:
+            </div>
+            
+            <select id="chartTeamFilter" onchange="renderTeamStatsChart()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
+              <!-- Optionen werden dynamisch befüllt -->
+            </select>
+
+            <select id="chartModeFilter" onchange="renderTeamStatsChart()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
+              <option value="avgSingle">Average (Einzel)</option>
+              <option value="avgDouble">Average (Doppel)</option>
+              <option value="durationSingle">Dauer (Einzel)</option>
+              <option value="durationDouble">Dauer (Doppel)</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="chartContainer" class="w-full relative min-h-[450px] overflow-hidden">
+          <svg id="teamStatsSvgChart" class="w-full h-full block" style="min-height: 450px;"></svg>
+        </div>
+
+        <!-- Legende -->
+        <div class="flex flex-wrap items-center justify-center gap-4 text-xs pt-2 border-t border-neutral-800/50">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-white shadow-sm"></span>
+            <span class="text-neutral-300 font-medium">Team</span>
+          </div>
+          <div id="legendOpponent" class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-red-500 shadow-sm"></span>
+            <span class="text-neutral-300 font-medium">Gegner</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-400 shadow-sm"></span>
+            <span class="text-neutral-300 font-medium">Spieler</span>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Reiter 7: Spielerprofil -->
@@ -1039,7 +1088,7 @@
       "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree"
     };
 
-    let appData = { matches: [], squad: [], playerProfile: [], stats: [], records: [], gameStats: [], teamStats: [], orga: [] };
+    let appData = { matches: [], squad: [], playerProfile: [], gameStats: [], stats: [], records: [], teamStats: [], orga: [] };
     let activeTab = 'home';
     let globalSearchQuery = '';
 
@@ -1059,6 +1108,13 @@
         str = str.substring(3);
       }
       return str;
+    }
+
+    function formatSecondsToMMSS(seconds) {
+      if (seconds === null || seconds === undefined || isNaN(seconds) || seconds <= 0) return '00:00';
+      const m = Math.floor(seconds / 60);
+      const s = Math.floor(seconds % 60);
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
     function parseDurationToSeconds(val) {
@@ -1230,6 +1286,9 @@
         populateProfileDropdown();
       } else if (tabId === 'orga') {
         renderOrga();
+      } else if (tabId === 'teamStats') {
+        populateTeamStatsChartFilters();
+        renderTeamStatsChart();
       }
     }
 
@@ -1356,9 +1415,9 @@
             matches: firebaseListToArray(data.Spielplan || data.Spiele || data.matches),
             squad: firebaseListToArray(data.Kader || data.Squad || data.squad || data.Spielerdatenbank || data.Spieler || data.players),
             playerProfile: firebaseListToArray(data.Spielerprofil || data.playerProfile),
+            gameStats: firebaseListToArray(data.Spielstatistiken || data.gameStats || data.game_stats),
             stats: firebaseListToArray(data.Averages || data.stats),
             records: firebaseListToArray(data.Bestleistungen || data.records),
-            gameStats: firebaseListToArray(data.Spielstatistiken || data.gameStats || data.game_stats),
             teamStats: firebaseListToArray(data.Teamstatistiken || data.teamStats || data.team_stats),
             orga: firebaseListToArray(data.Orga || data.orga || data.organisations || data.links)
           };
@@ -1372,6 +1431,9 @@
             populateProfileDropdown();
           } else if (activeTab === 'orga') {
             renderOrga();
+          } else if (activeTab === 'teamStats') {
+            populateTeamStatsChartFilters();
+            renderTeamStatsChart();
           }
         }
       });
@@ -1414,7 +1476,7 @@
       if (locationSelect) locationSelect.innerHTML = locationOptions;
 
       if (homeMatchdaySelect) homeMatchdaySelect.innerHTML = matchdayOptions;
-      if (homeTeamSelect) homeTeamSelect.innerHTML = teamOptions;
+      if (homeTeamSelect) homeTeamSelect.innerHTML = homeTeamSelect ? teamOptions : '';
       if (homeDateSelect) homeDateSelect.innerHTML = dateOptions;
       if (homeLocationSelect) homeLocationSelect.innerHTML = locationOptions;
     }
@@ -1879,6 +1941,9 @@
         populateProfileDropdown();
       } else if (activeTab === 'orga') {
         renderOrga();
+      } else if (activeTab === 'teamStats') {
+        populateTeamStatsChartFilters();
+        renderTeamStatsChart();
       }
     }
 
@@ -2463,6 +2528,256 @@
       }).join('');
     }
 
+    // --- DIAGRAMM LOGIK FÜR TEAMSTATISTIKEN ---
+
+    function populateTeamStatsChartFilters() {
+      const select = document.getElementById('chartTeamFilter');
+      if (!select) return;
+      const currentVal = select.value;
+
+      // Ermittle Teams (A bis G) aus Spielerprofilen
+      const teamLetters = new Set();
+      appData.playerProfile.forEach(p => {
+        if (p.team) {
+          const { letter } = parsePlayerTeamTokens(p.team);
+          if (letter) teamLetters.add(letter.toUpperCase());
+        }
+      });
+      // Fallback
+      if (!teamLetters.size) {
+        ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(l => teamLetters.add(l));
+      }
+
+      const sortedLetters = Array.from(teamLetters).sort();
+      select.innerHTML = sortedLetters.map(letter => `<option value="${letter}">Team ${letter}</option>`).join('');
+
+      if (currentVal && sortedLetters.includes(currentVal)) {
+        select.value = currentVal;
+      } else if (sortedLetters.length > 0) {
+        select.value = sortedLetters[0];
+      }
+    }
+
+    function renderTeamStatsChart() {
+      const svg = document.getElementById('teamStatsSvgChart');
+      if (!svg) return;
+
+      const teamFilter = document.getElementById('chartTeamFilter')?.value || 'A';
+      const modeFilter = document.getElementById('chartModeFilter')?.value || 'avgSingle';
+      const legendOpponent = document.getElementById('legendOpponent');
+
+      const isDuration = modeFilter.startsWith('duration');
+      if (legendOpponent) {
+        legendOpponent.style.display = isDuration ? 'none' : 'flex';
+      }
+
+      // 1. Daten ermitteln
+      let playerPoints = [];
+
+      // Gefiltertes Team finden
+      const selectedTeamObj = appData.teamStats.find(t => {
+        const name = (t.team || t.name || '').toUpperCase();
+        return name.endsWith(` ${teamFilter}`) || name === teamFilter || name.endsWith(`-${teamFilter}`);
+      }) || {};
+
+      let teamValue = 0;
+      let opponentValue = null;
+
+      if (modeFilter === 'avgSingle') {
+        teamValue = parseNumeric(selectedTeamObj.avgSingle ?? selectedTeamObj.avg_single);
+        opponentValue = parseNumeric(selectedTeamObj.avgOpponentSingleLeague ?? selectedTeamObj.avg_opponent_single_league);
+      } else if (modeFilter === 'avgDouble') {
+        teamValue = parseNumeric(selectedTeamObj.avgDouble ?? selectedTeamObj.avg_double);
+        opponentValue = parseNumeric(selectedTeamObj.avgOpponentDoubleLeague ?? selectedTeamObj.avg_opponent_double_league);
+      } else if (modeFilter === 'durationSingle') {
+        teamValue = parseDurationToSeconds(selectedTeamObj.durationPerSingle ?? selectedTeamObj.duration_per_single);
+      } else if (modeFilter === 'durationDouble') {
+        teamValue = parseDurationToSeconds(selectedTeamObj.durationPerDouble ?? selectedTeamObj.duration_per_double);
+      }
+
+      const teamNameStr = selectedTeamObj.team || selectedTeamObj.name || `Team ${teamFilter}`;
+
+      // Spieler filtern
+      appData.playerProfile.forEach(p => {
+        const pName = p.player || p.name;
+        if (!pName) return;
+
+        const { letter } = parsePlayerTeamTokens(p.team);
+        if (letter === teamFilter) {
+          let val = 0;
+          if (modeFilter === 'avgSingle') {
+            val = parseNumeric(p.avgSingle ?? p.avg_single);
+          } else if (modeFilter === 'avgDouble') {
+            val = parseNumeric(p.avgDouble ?? p.avg_double);
+          } else if (modeFilter === 'durationSingle') {
+            const gStatsObj = appData.gameStats.find(gs => String(gs.player || gs.name || '').trim().toLowerCase() === String(pName).trim().toLowerCase()) || {};
+            val = parseDurationToSeconds(gStatsObj.durationPerSingle ?? gStatsObj.duration_per_single ?? p.durationSingleLeg ?? p.duration_single_leg);
+          } else if (modeFilter === 'durationDouble') {
+            const gStatsObj = appData.gameStats.find(gs => String(gs.player || gs.name || '').trim().toLowerCase() === String(pName).trim().toLowerCase()) || {};
+            val = parseDurationToSeconds(gStatsObj.durationPerDouble ?? gStatsObj.duration_per_double ?? p.durationDoubleLeg ?? p.duration_double_leg);
+          }
+
+          if (val > 0) {
+            playerPoints.push({
+              name: pName,
+              value: val,
+              type: 'player'
+            });
+          }
+        }
+      });
+
+      if (!playerPoints.length && teamValue <= 0) {
+        svg.innerHTML = `<text x="50%" y="50%" text-anchor="middle" fill="#737373" font-size="14">Keine Daten für Team ${teamFilter} verfügbar</text>`;
+        return;
+      }
+
+      // Nach Wert absteigend sortieren
+      playerPoints.sort((a, b) => b.value - a.value);
+
+      // Grüntöne für Spieler
+      const greenShades = [
+        '#34d399', '#10b981', '#059669', '#047857', '#6ee7b7', 
+        '#a7f3d0', '#065f46', '#15803d', '#22c55e', '#4ade80'
+      ];
+      playerPoints.forEach((p, idx) => {
+        p.color = greenShades[idx % greenShades.length];
+      });
+
+      // SVG Dimensionen & Abstände (Platz unten für Labels eingeplant)
+      const isMobile = window.innerWidth < 640;
+      const margin = {
+        top: 30,
+        right: isMobile ? 12 : 25,
+        bottom: 75,
+        left: isMobile ? 12 : 25
+      };
+
+      const container = document.getElementById('chartContainer');
+      const width = container.clientWidth || 800;
+
+      const calculatedHeight = 480;
+      svg.setAttribute('height', calculatedHeight);
+      svg.setAttribute('viewBox', `0 0 ${width} ${calculatedHeight}`);
+
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = calculatedHeight - margin.top - margin.bottom;
+
+      // Min/Max für genaue Schritte ermitteln
+      let allVals = playerPoints.map(d => d.value);
+      if (teamValue > 0) allVals.push(teamValue);
+      if (!isDuration && opponentValue !== null && opponentValue > 0) allVals.push(opponentValue);
+
+      let rawMax = Math.max(...allVals);
+      let rawMin = Math.min(...allVals);
+
+      // Y-Achse Schrittweiten konfigurieren
+      const stepSize = isDuration ? 30 : 2.0; // 30s bei Dauer, 2.0 bei Averages
+      let yMin = Math.floor(Math.max(0, rawMin - stepSize) / stepSize) * stepSize;
+      let yMax = Math.ceil((rawMax + stepSize) / stepSize) * stepSize;
+
+      if (yMax <= yMin) yMax = yMin + stepSize * 2;
+
+      const yScale = val => innerHeight - ((val - yMin) / (yMax - yMin)) * innerHeight;
+
+      // Horizontale Gitterlinien mit festem Abstand (2.0 bzw. 0:30)
+      let gridLinesHtml = '';
+      for (let gridVal = yMin; gridVal <= yMax; gridVal += stepSize) {
+        const yPos = margin.top + yScale(gridVal);
+        const labelText = isDuration ? formatSecondsToMMSS(gridVal) : gridVal.toFixed(1);
+
+        gridLinesHtml += `
+          <line x1="${margin.left}" y1="${yPos}" x2="${margin.left + innerWidth}" y2="${yPos}" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4" />
+          <text x="${margin.left + 4}" y="${yPos - 4}" fill="#737373" font-size="10" font-family="Inter">${labelText}</text>
+        `;
+      }
+
+      // X-Achse Abstände für die Spielerpunkte
+      const xSpacing = innerWidth / (playerPoints.length + 1);
+
+      let linesAndPointsHtml = '';
+
+      // 1. Team-Linie von links nach rechts durchziehen (GESTRICHELT)
+      if (teamValue > 0) {
+        const teamY = margin.top + yScale(teamValue);
+        const teamValText = isDuration ? formatSecondsToMMSS(teamValue) : teamValue.toFixed(2);
+        linesAndPointsHtml += `
+          <line x1="${margin.left}" y1="${teamY}" x2="${margin.left + innerWidth}" y2="${teamY}" stroke="#FFFFFF" stroke-width="2.5" stroke-dasharray="6 4" />
+          <text x="${margin.left + innerWidth - 6}" y="${teamY - 6}" fill="#FFFFFF" font-size="11" font-weight="800" font-family="Inter" text-anchor="end">
+            ${teamNameStr}: ${teamValText}
+          </text>
+        `;
+      }
+
+      // 2. Gegner-Linie von links nach rechts durchziehen
+      if (!isDuration && opponentValue !== null && opponentValue > 0) {
+        const oppY = margin.top + yScale(opponentValue);
+        const oppValText = opponentValue.toFixed(2);
+        linesAndPointsHtml += `
+          <line x1="${margin.left}" y1="${oppY}" x2="${margin.left + innerWidth}" y2="${oppY}" stroke="#f43f5e" stroke-width="2" stroke-dasharray="6 4" />
+          <text x="${margin.left + 6}" y="${oppY - 6}" fill="#f43f5e" font-size="11" font-weight="800" font-family="Inter" text-anchor="start">
+            Gegner: ${oppValText}
+          </text>
+        `;
+      }
+
+      // 3. Spieler-Punkte und X-Achsen Beschriftung zeichnen
+      playerPoints.forEach((dp, i) => {
+        const xPos = margin.left + (i + 1) * xSpacing;
+        const yPos = margin.top + yScale(dp.value);
+        const color = dp.color || '#10b981';
+
+        const displayVal = isDuration ? formatSecondsToMMSS(dp.value) : dp.value.toFixed(2);
+
+        // Senkrechte Hilfslinie von der x-Achsen-Beschriftung nach oben zum Punkt
+        const labelBaselineY = margin.top + innerHeight + 16;
+        linesAndPointsHtml += `
+          <line x1="${xPos}" y1="${labelBaselineY}" x2="${xPos}" y2="${yPos}" stroke="${color}" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="2 2" />
+          <circle cx="${xPos}" cy="${yPos}" r="5" fill="${color}" stroke="#000000" stroke-width="2" />
+        `;
+
+        // Name beim letzten Leerzeichen in zwei Zeilen trennen
+        const nameStr = String(dp.name || '');
+        const lastSpaceIdx = nameStr.lastIndexOf(' ');
+        let nameLine1 = nameStr;
+        let nameLine2 = '';
+
+        if (lastSpaceIdx !== -1) {
+          nameLine1 = nameStr.substring(0, lastSpaceIdx);
+          nameLine2 = nameStr.substring(lastSpaceIdx + 1);
+        }
+
+        let nameSvgContent = '';
+        if (nameLine2) {
+          nameSvgContent = `
+            <tspan x="${xPos}" dy="0">${nameLine1}</tspan>
+            <tspan x="${xPos}" dy="11">${nameLine2}</tspan>
+          `;
+        } else {
+          nameSvgContent = `<tspan x="${xPos}" dy="0">${nameLine1}</tspan>`;
+        }
+
+        // Spieler-Beschriftung und Wert direkt unterhalb der x-Achse
+        linesAndPointsHtml += `
+          <g class="cursor-pointer hover:opacity-80 transition" onclick="navigateToPlayerProfile('${dp.name}')">
+            <text x="${xPos}" y="${labelBaselineY}" fill="${color}" font-size="${isMobile ? '10' : '11'}" font-weight="700" font-family="Inter" text-anchor="middle">
+              ${nameSvgContent}
+            </text>
+            <text x="${xPos}" y="${labelBaselineY + (nameLine2 ? 24 : 14)}" fill="#d4d4d4" font-size="${isMobile ? '9' : '10'}" font-weight="500" font-family="Inter" text-anchor="middle">
+              ${displayVal}
+            </text>
+          </g>
+        `;
+      });
+
+      svg.innerHTML = `
+        ${gridLinesHtml}
+        <!-- X-Achsen Linie -->
+        <line x1="${margin.left}" y1="${margin.top + innerHeight}" x2="${margin.left + innerWidth}" y2="${margin.top + innerHeight}" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+        ${linesAndPointsHtml}
+      `;
+    }
+
     function navigateToPlayerProfile(playerName) {
       if (!playerName) return;
       const select = document.getElementById('profilePlayerSelect');
@@ -2487,9 +2802,9 @@
           appData.matches = firebaseListToArray(appData.matches);
           appData.squad = firebaseListToArray(appData.squad || appData.Kader || appData.players);
           appData.playerProfile = firebaseListToArray(appData.playerProfile || appData.Spielerprofil);
+          appData.gameStats = firebaseListToArray(appData.gameStats || appData.Spielstatistiken);
           appData.stats = firebaseListToArray(appData.stats || appData.Averages);
           appData.records = firebaseListToArray(appData.records || appData.Bestleistungen);
-          appData.gameStats = firebaseListToArray(appData.gameStats || appData.Spielstatistiken);
           appData.teamStats = firebaseListToArray(appData.teamStats || appData.Teamstatistiken);
           appData.orga = firebaseListToArray(appData.orga || appData.Orga || appData.organisations || appData.links);
           
@@ -2501,6 +2816,12 @@
       }
       
       listenToDatabase();
+    });
+
+    window.addEventListener('resize', () => {
+      if (activeTab === 'teamStats') {
+        renderTeamStatsChart();
+      }
     });
 
     window.switchTab = switchTab;
@@ -2525,6 +2846,7 @@
     window.renderStats = renderStats;
     window.renderRecords = renderRecords;
     window.renderTeamStats = renderTeamStats;
+    window.renderTeamStatsChart = renderTeamStatsChart;
     window.renderOrga = renderOrga;
     window.downloadPlayerProfileImage = downloadPlayerProfileImage;
     window.downloadMatchesPDF = downloadMatchesPDF;
