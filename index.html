@@ -2649,14 +2649,14 @@
       const margin = {
         top: 30,
         right: isMobile ? 12 : 25,
-        bottom: isMobile ? 95 : 75,
+        bottom: isMobile ? 115 : 75,
         left: isMobile ? 12 : 25
       };
 
       const container = document.getElementById('chartContainer');
       const width = container.clientWidth || 800;
 
-      const calculatedHeight = 500;
+      const calculatedHeight = 520;
       svg.setAttribute('height', calculatedHeight);
       svg.setAttribute('viewBox', `0 0 ${width} ${calculatedHeight}`);
 
@@ -2709,19 +2709,19 @@
         `;
       }
 
-      // 2. Gegner-Linie von links nach rechts durchziehen
+      // 2. Gegner-Linie von links nach rechts durchziehen (jetzt ebenfalls rechtsbündig ausgerichtet)
       if (!isDuration && opponentValue !== null && opponentValue > 0) {
         const oppY = margin.top + yScale(opponentValue);
         const oppValText = opponentValue.toFixed(2);
         linesAndPointsHtml += `
           <line x1="${margin.left}" y1="${oppY}" x2="${margin.left + innerWidth}" y2="${oppY}" stroke="#f43f5e" stroke-width="2" stroke-dasharray="6 4" />
-          <text x="${margin.left + 6}" y="${oppY - 6}" fill="#f43f5e" font-size="11" font-weight="800" font-family="Inter" text-anchor="start">
+          <text x="${margin.left + innerWidth - 6}" y="${oppY - 6}" fill="#f43f5e" font-size="11" font-weight="800" font-family="Inter" text-anchor="end">
             Gegner: ${oppValText}
           </text>
         `;
       }
 
-      // 3. Spieler-Punkte und X-Achsen Beschriftung zeichnen (mit mobilem Versatz für jede 2. Beschriftung)
+      // 3. Spieler-Punkte und X-Achsen Beschriftung zeichnen (mit erhöhtem mobilem Versatz von +36px für jede 2. Beschriftung)
       const baseLabelBaselineY = margin.top + innerHeight + 16;
 
       playerPoints.forEach((dp, i) => {
@@ -2742,8 +2742,8 @@
           nameLine2 = nameStr.substring(lastSpaceIdx + 1);
         }
 
-        // Mobiler Versatz: Jeder zweite Eintrag (ungerader Index i) wird auf dem Handy um 18px nach unten versetzt
-        const mobileOffset = (isMobile && (i % 2 === 1)) ? 18 : 0;
+        // Mobiler Versatz: Jeder zweite Eintrag (ungerader Index i) wird auf dem Handy um 36px nach unten versetzt
+        const mobileOffset = (isMobile && (i % 2 === 1)) ? 36 : 0;
         const labelBaselineY = baseLabelBaselineY + mobileOffset;
 
         // Senkrechte Hilfslinie vom Punkt nach unten zur jeweiligen Baseline
