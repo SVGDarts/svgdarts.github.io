@@ -340,7 +340,7 @@
           <p>- Spieldauer und gegnerischer Average gegen einen als neue Statistik</p>
           <p>- Genaue Shortgames und Highscores werden angezeigt</p>
           <p>- Teamstatistiken, Spielerprofil und Orga als neue Tabs</p>
-          <p>- Spielplan als pdf und Spielerprofil als Bild (perfekt für Insta im Hochformat) downloadbar</p>
+          <p>- Spielplan as pdf und Spielerprofil als Bild (perfekt für Insta im Hochformat) downloadbar</p>
           <p>- Filterfunktion nach Teams in ausgewählten Tabs</p>
           <p>- Schnellere Aktualisierung der Daten nach Spieltagsende</p>
           <p>- Keine Liveergebnisse auf der Startseite mehr, dafür aber verbesserte Ansicht des Livetickers</p>
@@ -865,7 +865,7 @@
           </div>
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-emerald-400 shadow-sm"></span>
-            <span class="text-neutral-300 font-medium">Spieler</span>
+            <span class="text-neutral-300 font-medium">Spieler (Grün/Gelb)</span>
           </div>
         </div>
       </div>
@@ -2635,13 +2635,16 @@
       // Nach Wert absteigend sortieren
       playerPoints.sort((a, b) => b.value - a.value);
 
-      // Grüntöne für Spieler
-      const greenShades = [
-        '#34d399', '#10b981', '#059669', '#047857', '#6ee7b7', 
-        '#a7f3d0', '#065f46', '#15803d', '#22c55e', '#4ade80'
-      ];
+      // Farbzuweisung: Jeder zweite Spieler (ungerader Index) erhält einen lesbaren Gelbton, die anderen verschiedene Grüntöne
+      const greenShades = ['#34d399', '#10b981', '#059669', '#6ee7b7', '#22c55e', '#4ade80'];
+      const yellowShades = ['#facc15', '#fde047', '#fef08a'];
+
       playerPoints.forEach((p, idx) => {
-        p.color = greenShades[idx % greenShades.length];
+        if (idx % 2 === 1) {
+          p.color = yellowShades[Math.floor(idx / 2) % yellowShades.length];
+        } else {
+          p.color = greenShades[(idx / 2) % greenShades.length];
+        }
       });
 
       // SVG Dimensionen & Abstände (Mehr Platz unten auf dem Handy für den alternierenden Versatz)
@@ -2709,7 +2712,7 @@
         `;
       }
 
-      // 2. Gegner-Linie von links nach rechts durchziehen (jetzt ebenfalls rechtsbündig ausgerichtet)
+      // 2. Gegner-Linie von links nach rechts durchziehen (rechtsbündig ausgerichtet)
       if (!isDuration && opponentValue !== null && opponentValue > 0) {
         const oppY = margin.top + yScale(opponentValue);
         const oppValText = opponentValue.toFixed(2);
