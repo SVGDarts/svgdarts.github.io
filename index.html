@@ -849,8 +849,8 @@
           </div>
         </div>
 
-        <div id="chartContainer" class="w-full relative min-h-[450px] overflow-hidden">
-          <svg id="teamStatsSvgChart" class="w-full h-full block" style="min-height: 450px;"></svg>
+        <div id="chartContainer" class="w-full relative min-h-[480px] overflow-hidden">
+          <svg id="teamStatsSvgChart" class="w-full h-full block" style="min-height: 480px;"></svg>
         </div>
 
         <!-- Legende -->
@@ -2644,19 +2644,19 @@
         p.color = greenShades[idx % greenShades.length];
       });
 
-      // SVG Dimensionen & Abstände (Platz unten für Labels eingeplant)
+      // SVG Dimensionen & Abstände (Mehr Platz unten auf dem Handy für den alternierenden Versatz)
       const isMobile = window.innerWidth < 640;
       const margin = {
         top: 30,
         right: isMobile ? 12 : 25,
-        bottom: 75,
+        bottom: isMobile ? 95 : 75,
         left: isMobile ? 12 : 25
       };
 
       const container = document.getElementById('chartContainer');
       const width = container.clientWidth || 800;
 
-      const calculatedHeight = 480;
+      const calculatedHeight = 500;
       svg.setAttribute('height', calculatedHeight);
       svg.setAttribute('viewBox', `0 0 ${width} ${calculatedHeight}`);
 
@@ -2721,20 +2721,15 @@
         `;
       }
 
-      // 3. Spieler-Punkte und X-Achsen Beschriftung zeichnen
+      // 3. Spieler-Punkte und X-Achsen Beschriftung zeichnen (mit mobilem Versatz für jede 2. Beschriftung)
+      const baseLabelBaselineY = margin.top + innerHeight + 16;
+
       playerPoints.forEach((dp, i) => {
         const xPos = margin.left + (i + 1) * xSpacing;
         const yPos = margin.top + yScale(dp.value);
         const color = dp.color || '#10b981';
 
         const displayVal = isDuration ? formatSecondsToMMSS(dp.value) : dp.value.toFixed(2);
-
-        // Senkrechte Hilfslinie von der x-Achsen-Beschriftung nach oben zum Punkt
-        const labelBaselineY = margin.top + innerHeight + 16;
-        linesAndPointsHtml += `
-          <line x1="${xPos}" y1="${labelBaselineY}" x2="${xPos}" y2="${yPos}" stroke="${color}" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="2 2" />
-          <circle cx="${xPos}" cy="${yPos}" r="5" fill="${color}" stroke="#000000" stroke-width="2" />
-        `;
 
         // Name beim letzten Leerzeichen in zwei Zeilen trennen
         const nameStr = String(dp.name || '');
@@ -2747,6 +2742,16 @@
           nameLine2 = nameStr.substring(lastSpaceIdx + 1);
         }
 
+        // Mobiler Versatz: Jeder zweite Eintrag (ungerader Index i) wird auf dem Handy um 18px nach unten versetzt
+        const mobileOffset = (isMobile && (i % 2 === 1)) ? 18 : 0;
+        const labelBaselineY = baseLabelBaselineY + mobileOffset;
+
+        // Senkrechte Hilfslinie vom Punkt nach unten zur jeweiligen Baseline
+        linesAndPointsHtml += `
+          <line x1="${xPos}" y1="${labelBaselineY}" x2="${xPos}" y2="${yPos}" stroke="${color}" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="2 2" />
+          <circle cx="${xPos}" cy="${yPos}" r="5" fill="${color}" stroke="#000000" stroke-width="2" />
+        `;
+
         let nameSvgContent = '';
         if (nameLine2) {
           nameSvgContent = `
@@ -2757,7 +2762,7 @@
           nameSvgContent = `<tspan x="${xPos}" dy="0">${nameLine1}</tspan>`;
         }
 
-        // Spieler-Beschriftung und Wert direkt unterhalb der x-Achse
+        // Spieler-Beschriftung und Wert
         linesAndPointsHtml += `
           <g class="cursor-pointer hover:opacity-80 transition" onclick="navigateToPlayerProfile('${dp.name}')">
             <text x="${xPos}" y="${labelBaselineY}" fill="${color}" font-size="${isMobile ? '10' : '11'}" font-weight="700" font-family="Inter" text-anchor="middle">
