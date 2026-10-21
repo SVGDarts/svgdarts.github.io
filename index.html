@@ -1044,14 +1044,12 @@
       <!-- Auswahl-Header mit zwei Dropdowns -->
       <div class="grid grid-cols-2 gap-4 items-center">
         <div class="glass-card p-3 rounded-2xl flex flex-col gap-1">
-          <label for="comparePlayerLeft" class="text-xs text-neutral-400 font-semibold uppercase tracking-wider px-1">Spieler 1</label>
           <select id="comparePlayerLeft" onchange="renderPlayerCompare()" class="bg-black text-white font-bold font-display text-base md:text-lg rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer w-full">
             <option value="">Bitte wählen...</option>
           </select>
         </div>
 
         <div class="glass-card p-3 rounded-2xl flex flex-col gap-1">
-          <label for="comparePlayerRight" class="text-xs text-neutral-400 font-semibold uppercase tracking-wider px-1">Spieler 2</label>
           <select id="comparePlayerRight" onchange="renderPlayerCompare()" class="bg-black text-white font-bold font-display text-base md:text-lg rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer w-full">
             <option value="">Bitte wählen...</option>
           </select>
@@ -1590,38 +1588,37 @@
       const categories = [
       { label: 'Spiele', leftRaw: pLeft.wonGames ?? pLeft.won_games ?? pLeft.games ?? pLeft.spiele, rightRaw: pRight.wonGames ?? pRight.won_games ?? pRight.games ?? pRight.spiele, type: 'brackets' },
       { label: 'Legs', leftRaw: pLeft.wonLegs ?? pLeft.won_legs ?? pLeft.legs, rightRaw: pRight.wonLegs ?? pRight.won_legs ?? pRight.legs, type: 'brackets' },
-      { label: 'Average (Einzel)', leftRaw: pLeft.avgSingle ?? pLeft.avg_single, rightRaw: pRight.avgSingle ?? pRight.avg_single, type: 'float' },
-      { label: 'First 9 (Einzel)', leftRaw: pLeft.first9Single ?? pLeft.first9_single, rightRaw: pRight.first9Single ?? pRight.first9_single, type: 'float' },
-      { label: 'Average (Doppel)', leftRaw: pLeft.avgDouble ?? pLeft.avg_double, rightRaw: pRight.avgDouble ?? pRight.avg_double, type: 'float' },
-      { label: 'First 9 (Doppel)', leftRaw: pLeft.first9Double ?? pLeft.first9_double, rightRaw: pRight.first9Double ?? pRight.first9_double, type: 'float' },
+      { label: 'Average<br>(Einzel)', leftRaw: pLeft.avgSingle ?? pLeft.avg_single, rightRaw: pRight.avgSingle ?? pRight.avg_single, type: 'float' },
+      { label: 'First 9<br>(Einzel)', leftRaw: pLeft.first9Single ?? pLeft.first9_single, rightRaw: pRight.first9Single ?? pRight.first9_single, type: 'float' },
+      { label: 'Average<br>(Doppel)', leftRaw: pLeft.avgDouble ?? pLeft.avg_double, rightRaw: pRight.avgDouble ?? pRight.avg_double, type: 'float' },
+      { label: 'First 9<br>(Doppel)', leftRaw: pLeft.first9Double ?? pLeft.first9_double, rightRaw: pRight.first9Double ?? pRight.first9_double, type: 'float' },
       { label: '180er', leftRaw: pLeft.r180 ?? pLeft['180'], rightRaw: pRight.r180 ?? pRight['180'], type: 'num' },
       { label: '140+', leftRaw: pLeft.r140 ?? pLeft['140'], rightRaw: pRight.r140 ?? pRight['140'], type: 'brackets' },
       { label: 'Highfinish', leftRaw: pLeft.highfinish, rightRaw: pRight.highfinish, type: 'brackets' },
       { label: 'Shortgames', leftRaw: pLeft.shortgame ?? pLeft.shortgames, rightRaw: pRight.shortgame ?? pRight.shortgames, type: 'brackets' }
     ];
 
-      container.innerHTML = categories.map(cat => {
-        const valL = parseNumericVal(cat.leftRaw, cat.type);
-        const valR = parseNumericVal(cat.rightRaw, cat.type);
+    container.innerHTML = categories.map(cat => {
+      const valL = parseNumericVal(cat.leftRaw, cat.type);
+      const valR = parseNumericVal(cat.rightRaw, cat.type);
 
-        const isLeftHigher = valL > valR;
-        const isRightHigher = valR > valL;
+      const isLeftHigher = valL > valR;
+      const isRightHigher = valR > valL;
 
-        // Mit !important direkt im Inline-Style erzwungen
-        const leftStyle = isLeftHigher ? 'color: #34d399 !important; font-weight: 900 !important;' : 'color: #ffffff !important; font-weight: 500 !important;';
-        const rightStyle = isRightHigher ? 'color: #34d399 !important; font-weight: 900 !important;' : 'color: #ffffff !important; font-weight: 500 !important;';
+      const leftStyle = isLeftHigher ? 'color: #34d399 !important; font-weight: 900 !important;' : 'color: #ffffff !important; font-weight: 500 !important;';
+      const rightStyle = isRightHigher ? 'color: #34d399 !important; font-weight: 900 !important;' : 'color: #ffffff !important; font-weight: 500 !important;';
 
-        const displayL = formatDisplayVal(cat.leftRaw, cat.type);
-        const displayR = formatDisplayVal(cat.rightRaw, cat.type);
+      const displayL = formatDisplayVal(cat.leftRaw, cat.type);
+      const displayR = formatDisplayVal(cat.rightRaw, cat.type);
 
-        return `
-          <div class="grid grid-cols-3 py-3 px-2 text-center items-center hover:bg-neutral-900/40 transition">
-            <div class="text-base md:text-lg" style="${leftStyle}">${displayL}</div>
-            <div class="text-xs md:text-sm font-semibold text-neutral-400 uppercase tracking-wider">${cat.label}</div>
-            <div class="text-base md:text-lg" style="${rightStyle}">${displayR}</div>
-          </div>
-        `;
-      }).join('');
+      return `
+        <div class="grid grid-cols-3 py-3 px-2 text-center items-center hover:bg-neutral-900/40 transition">
+          <div class="text-base md:text-lg" style="${leftStyle}">${displayL}</div>
+          <div class="text-xs md:text-sm font-semibold text-neutral-400 uppercase tracking-wider whitespace-normal leading-tight">${cat.label}</div>
+          <div class="text-base md:text-lg" style="${rightStyle}">${displayR}</div>
+        </div>
+      `;
+    }).join('');
     }
 
     function parseNumericVal(raw, type) {
