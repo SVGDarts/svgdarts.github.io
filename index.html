@@ -219,6 +219,17 @@
         font-size: 0.75rem;
       }
     }
+
+    /* Kleinere Schriftgröße für Reiter-Namen nur für Handynutzer */
+    @media (max-width: 767px) {
+      nav button.tab-btn {
+        font-size: 0.65rem !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+      }
+    }
   </style>
 
 </head>
@@ -1043,12 +1054,8 @@
             </select>
           </div>
 
-          <!-- Oben rechts: Filter und reiner Wert des Saison-Schnitts -->
+          <!-- Oben rechts: Filter und reiner Wert des Saison-Schnitts (rechts neben dem Namen im Badge) -->
           <div class="flex flex-wrap items-center gap-2">
-            <div id="devRefValueBadge" class="hidden items-center gap-2 text-xs font-bold font-display px-3 py-2 bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 rounded-xl">
-              <span id="devRefValueVal">-</span>
-            </div>
-
             <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-1 font-semibold uppercase tracking-wider">
               <i class="fa-solid fa-filter text-white"></i> Filter:
             </div>
@@ -1059,6 +1066,10 @@
               <option value="avgDoubleGame">Average (Doppel)</option>
               <option value="first9DoubleGame">First 9 (Doppel)</option>
             </select>
+
+            <div id="devRefValueBadge" class="hidden items-center gap-2 text-xs font-bold font-display px-3 py-2 bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 rounded-xl">
+              <span id="devRefValueVal">-</span>
+            </div>
           </div>
         </div>
 
@@ -1329,7 +1340,7 @@
       if (!dateObj) return String(dateVal).trim();
       const weekdays = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
       const pad = n => String(n).padStart(2, '0');
-      return `${weekdays[dateObj.getDay()]}, ${pad(dateObj.getDate())}.${pad(dateObj.getMonth() + 1)}.${dateObj.getFullYear()}`;
+      return `${weekdays[dateObj.getDay()], pad(dateObj.getDate())}.${pad(dateObj.getMonth() + 1)}.${dateObj.getFullYear()}`;
     }
 
     function formatTime(timeVal) {
@@ -3003,7 +3014,7 @@
 
       let refValue = parseNumeric(pProfile[refMetricKey] ?? pProfile[refMetricKey.replace(/([A-Z])/g, '_$1').toLowerCase()]);
 
-      // Reinen Wert oben rechts neben dem Filter anzeigen
+      // Reinen Wert rechts neben dem Namen im Badge anzeigen
       const badgeEl = document.getElementById('devRefValueBadge');
       const valEl = document.getElementById('devRefValueVal');
       if (badgeEl && valEl) {
@@ -3021,7 +3032,7 @@
       const width = container.clientWidth || 800;
       const height = 480;
 
-      const margin = { top: 35, right: 20, bottom: 60, left: 20 };
+      const margin = { top: 35, right: 20, bottom: 85, left: 20 };
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = height - margin.top - margin.bottom;
 
@@ -3060,7 +3071,7 @@
         `;
       }
 
-      // X-Spacing mit Abstand zur y-Achse (analog zum Teamstatistiken-Diagramm)
+      // X-Spacing mit Abstand zur y-Achse
       const xSpacing = innerWidth / (matchData.length + 1);
 
       let pointsPath = [];
@@ -3074,16 +3085,18 @@
         pointsPath.push(`${xPos},${yPos}`);
 
         const dateStr = formatDate(d.date);
+        const labelY = margin.top + innerHeight + 15;
 
+        // Beschriftung des Datums parallel zur y-Achse (vertikal gedreht um -90 Grad)
         dotsAndLabelsHtml += `
-          <line x1="${xPos}" y1="${margin.top + innerHeight}" x2="${xPos}" y2="${yPos}" stroke="#10b981" stroke-opacity="0.2" stroke-width="1" stroke-dasharray="2 2" />
+          <line x1="${xPos}" y1="${labelY - 5}" x2="${xPos}" y2="${yPos}" stroke="#10b981" stroke-opacity="0.2" stroke-width="1" stroke-dasharray="2 2" />
           <circle cx="${xPos}" cy="${yPos}" r="5" fill="#10b981" stroke="#000000" stroke-width="2" />
           
           <text x="${xPos}" y="${yPos - 10}" fill="#FFFFFF" font-size="11" font-weight="800" font-family="Inter" text-anchor="middle">
             ${numVal.toFixed(2)}
           </text>
 
-          <text x="${xPos}" y="${margin.top + innerHeight + 20}" fill="#737373" font-size="10" font-family="Inter" text-anchor="middle">
+          <text x="${xPos}" y="${labelY}" fill="#737373" font-size="10" font-family="Inter" text-anchor="end" transform="rotate(-90, ${xPos}, ${labelY})">
             ${dateStr}
           </text>
         `;
