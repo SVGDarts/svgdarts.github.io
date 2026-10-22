@@ -2237,7 +2237,13 @@
       });
 
       pastMatches.sort((a, b) => b._dateObj - a._dateObj);
-      upcomingMatches.sort((a, b) => a._dateObj - b._dateObj);
+      upcomingMatches.sort((a, b) => {
+        const dateDiff = a._dateObj - b._dateObj;
+        if (dateDiff !== 0) return dateDiff;
+        const timeA = String(a.time || a.uhrzeit || '').trim();
+        const timeB = String(b.time || b.uhrzeit || '').trim();
+        return timeA.localeCompare(timeB); // Früheste Uhrzeit zuerst bei kommenden Spielen
+      });
 
       if (!pastMatches.length) {
         pastTbody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-neutral-500">Keine Spiele in den letzten 7 Tagen.</td></tr>`;
@@ -2279,7 +2285,14 @@
         if (!dateA && !dateB) return 0;
         if (!dateA) return 1;
         if (!dateB) return -1;
-        return dateA - dateB;
+        
+        const dateDiff = dateA - dateB;
+        if (dateDiff !== 0) return dateDiff;
+
+        // Wenn das Datum identisch ist, nach Uhrzeit sortieren
+        const timeA = String(a.time || a.uhrzeit || '').trim();
+        const timeB = String(b.time || b.uhrzeit || '').trim();
+        return timeA.localeCompare(timeB);
       });
 
       if (!filtered.length) {
