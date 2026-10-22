@@ -70,7 +70,6 @@
       color: #ffffff;
     }
 
-    /* ERGEBNIS-FARBEN (WIN = GRÜN, LOSS = ROT) */
     .score-win {
       background-color: #064e3b !important;
       border-color: #10b981 !important;
@@ -112,7 +111,6 @@
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
     }
 
-    /* Globaler kompakter Abstand & mobile Schriftgröße für alle Tabellen */
     table th, table td {
       padding-left: 0.5rem !important;
       padding-right: 0.5rem !important;
@@ -124,15 +122,14 @@
     .scrollbar-none::-webkit-scrollbar { display: none; }
     .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 
-    /* Interner Tabellen-Scrollcontainer mit unsichtbarer Scrollbar und klebriger Kopfzeile */
     .table-container {
       max-height: 480px;
       overflow-y: auto;
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE/Edge */
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
     .table-container::-webkit-scrollbar {
-      display: none; /* Chrome, Safari, Opera */
+      display: none;
     }
 
     table thead th {
@@ -142,7 +139,6 @@
       background-color: #121212 !important;
       box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1);
     }
-    /* Sticky Spalten für Teamstatistiken */
     #content-teamStats table th:nth-child(1),
     #content-teamStats table td:nth-child(1) {
       position: sticky !important;
@@ -159,7 +155,6 @@
       box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.1);
     }
 
-    /* Höhergezoomter Iframe Style */
     .zoomed-out-iframe-container {
       position: relative;
       overflow: hidden;
@@ -173,7 +168,6 @@
       border: 0;
     }
 
-    /* Flexibles Box-Design (Alles linksbündig) mit angepassten PC-Größen & Schriftgrößen */
     .profile-card {
       display: flex;
       flex-direction: column;
@@ -311,6 +305,9 @@
         <button onclick="switchTab('playerCompare')" id="tab-playerCompare" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-code-compare text-xs"></i> Spielervergleich
         </button>
+        <button onclick="switchTab('playerDev')" id="tab-playerDev" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-chart-area text-xs"></i> Spielerentwicklung
+        </button>
         <button onclick="switchTab('orga')" id="tab-orga" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-folder-open text-xs"></i> Orga
         </button>
@@ -339,14 +336,12 @@
           <i class="fa-solid fa-bullhorn text-neutral-400 text-sm"></i> Neues
         </h3>
         <div class="text-sm text-neutral-300 space-y-2">
+          <p>- Neuer Reiter "Spielerentwicklung" mit Averages-Diagrammen</p>
           <p>- Verbesserte Suchfunktion - Spieler werden farblich hervorgehoben</p>
           <p>- Spieldauer und gegnerischer Average gegen einen als neue Statistik</p>
           <p>- Genaue Shortgames und Highscores werden angezeigt</p>
           <p>- Teamstatistiken, Spielerprofil, Spielervergleich und Orga als neue Tabs</p>
-          <p>- Spielplan as pdf und Spielerprofil als Bild (perfekt für Insta im Hochformat) downloadbar</p>
-          <p>- Filterfunktion nach Teams in ausgewählten Tabs</p>
-          <p>- Schnellere Aktualisierung der Daten nach Spieltagsende</p>
-          <p>- Keine Liveergebnisse auf der Startseite mehr, dafür aber verbesserte Ansicht des Livetickers</p>
+          <p>- Spielplan as pdf und Spielerprofil als Bild downloadbar</p>
         </div>
       </div>
       <div class="space-y-4">
@@ -824,7 +819,6 @@
           </table>
       </div>
 
-      <!-- Diagramm Bereich unter der Tabelle -->
       <div class="glass-card rounded-2xl p-4 md:p-6 shadow-2xl space-y-4">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800/80 pb-4">
           <div>
@@ -839,9 +833,7 @@
               <i class="fa-solid fa-filter text-white"></i> Filter:
             </div>
             
-            <select id="chartTeamFilter" onchange="renderTeamStatsChart()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
-              <!-- Optionen werden dynamisch befüllt -->
-            </select>
+            <select id="chartTeamFilter" onchange="renderTeamStatsChart()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer"></select>
 
             <select id="chartModeFilter" onchange="renderTeamStatsChart()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
               <option value="avgSingle">Average (Einzel)</option>
@@ -856,7 +848,6 @@
           <svg id="teamStatsSvgChart" class="w-full h-full block" style="min-height: 480px;"></svg>
         </div>
 
-        <!-- Legende -->
         <div class="flex flex-wrap items-center justify-center gap-4 text-xs pt-2 border-t border-neutral-800/50">
           <div class="flex items-center gap-2">
             <span class="w-3 h-3 rounded-full bg-white shadow-sm"></span>
@@ -876,7 +867,6 @@
 
     <!-- Reiter 7: Spielerprofil -->
     <section id="content-playerProfile" class="space-y-6 hidden">
-      <!-- Kopfbereich -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div class="flex flex-col gap-1">
           <select id="profilePlayerSelect" onchange="renderPlayerProfile()" class="bg-transparent text-white font-bold font-display text-2xl md:text-3xl rounded-xl px-2 py-1 border border-transparent hover:border-neutral-700 focus:outline-none cursor-pointer">
@@ -886,12 +876,10 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <!-- Download Button -->
           <button onclick="downloadPlayerProfileImage()" title="Spielerprofil herunterladen" class="px-4 py-2.5 bg-neutral-900 hover:bg-neutral-800 text-white rounded-2xl border border-neutral-700 transition flex items-center gap-2 text-xs font-bold font-display shadow-sm">
             <i class="fa-solid fa-download"></i> Download
           </button>
 
-          <!-- Rechte Seite: Spiele & Legs Rechteck (linksbündig ausgerichtet) -->
           <div class="glass-card px-4 py-2.5 rounded-2xl flex flex-col justify-center items-start text-left" style="min-width: 130px; height: 60px;">
             <div class="text-xs text-neutral-300 font-medium leading-tight text-left">
               Spiele: <span id="profGamesVal" class="font-bold text-white">-</span>
@@ -903,82 +891,67 @@
         </div>
       </div>
 
-      <!-- Trennlinie -->
       <hr class="border-neutral-800">
 
-      <!-- Sektion 1: Spielstatistiken -->
       <div class="space-y-4">
         <h3 class="text-xs font-semibold text-neutral-400 text-left">Spielstatistiken</h3>
         
-        <!-- Grid: 6 Spalten auf PC (2 Reihen), 3 Spalten auf Handy (4 Reihen) -->
         <div class="grid grid-cols-3 lg:grid-cols-6 gap-3">
-          <!-- 1. Saison-Einzel -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Saison-Einzel</span>
             <span id="stat-avgSingle" class="profile-card-value">-</span>
             <span id="rank-avgSingle" class="profile-card-rank">-</span>
           </div>
-          <!-- 2. First 9 Einzel -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">First 9 Einzel</span>
             <span id="stat-first9Single" class="profile-card-value">-</span>
             <span id="rank-first9Single" class="profile-card-rank">-</span>
           </div>
-          <!-- 3. Bestes Einzel -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Bestes Einzel</span>
             <span id="stat-maxAvgSingle" class="profile-card-value">-</span>
             <span id="rank-maxAvgSingle" class="profile-card-rank">-</span>
           </div>
-          <!-- 4. Bester Einzel-First 9 -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Bester Einzel-First 9</span>
             <span id="stat-maxFirst9Single" class="profile-card-value">-</span>
             <span id="rank-maxFirst9Single" class="profile-card-rank">-</span>
           </div>
-          <!-- 5. Gegner-Einzelavg -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Gegner-Einzelaverage</span>
             <span id="stat-avgOpponentSingle" class="profile-card-value">-</span>
             <span id="rank-avgOpponentSingle" class="profile-card-rank">-</span>
           </div>
-          <!-- 6. Dauer Leg Einzel -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Dauer Leg Einzel</span>
             <span id="stat-durationSingleLeg" class="profile-card-value">-</span>
             <span id="rank-durationSingleLeg" class="profile-card-rank">-</span>
           </div>
-          <!-- 7. Doppel-Average -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Saison-Doppel</span>
             <span id="stat-avgDouble" class="profile-card-value">-</span>
             <span id="rank-avgDouble" class="profile-card-rank">-</span>
           </div>
-          <!-- 8. First 9 Doppel -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">First 9 Doppel</span>
             <span id="stat-first9Double" class="profile-card-value">-</span>
             <span id="rank-first9Double" class="profile-card-rank">-</span>
           </div>
-          <!-- 9. Bestes Doppel -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Bestes Doppel</span>
             <span id="stat-maxAvgDouble" class="profile-card-value">-</span>
             <span id="rank-maxAvgDouble" class="profile-card-rank">-</span>
           </div>
-          <!-- 10. Bester Doppel-First 9 -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Bester Doppel-First 9</span>
             <span id="stat-maxFirst9Double" class="profile-card-value">-</span>
             <span id="rank-maxFirst9Double" class="profile-card-rank">-</span>
           </div>
-          <!-- 11. Gegner-Doppelavg -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Gegner-Doppelaverage</span>
             <span id="stat-avgOpponentDouble" class="profile-card-value">-</span>
             <span id="rank-avgOpponentDouble" class="profile-card-rank">-</span>
           </div>
-          <!-- 12. Dauer Leg Doppel -->
           <div class="glass-card rounded-2xl profile-card">
             <span class="profile-card-title">Dauer Leg Doppel</span>
             <span id="stat-durationDoubleLeg" class="profile-card-value">-</span>
@@ -987,7 +960,6 @@
         </div>
       </div>
 
-      <!-- Sektion 2: Bestleistungen -->
       <div class="space-y-4 pt-4">
         <h3 class="text-xs font-semibold text-neutral-400 text-left">Bestleistungen</h3>
         
@@ -1041,7 +1013,6 @@
         <p class="text-xs text-neutral-400 mt-1">Wähle zwei Spieler aus, um deren Werte direkt miteinander zu vergleichen.</p>
       </div>
 
-      <!-- Auswahl-Header mit zwei Dropdowns -->
       <div class="grid grid-cols-2 gap-2 md:gap-4 items-center">
         <div class="glass-card p-2 md:p-3 rounded-2xl flex flex-col gap-1">
           <select id="comparePlayerLeft" onchange="renderPlayerCompare()" class="bg-black text-white font-bold font-display text-xs sm:text-sm md:text-lg rounded-xl px-2 sm:px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer w-full">
@@ -1056,10 +1027,40 @@
         </div>
       </div>
 
-      <!-- Vergleichs-Tabelle / Container -->
       <div class="glass-card rounded-2xl overflow-hidden shadow-2xl p-4 md:p-6">
-        <div id="compareContainer" class="divide-y divide-neutral-800/80">
-          <!-- Dynamischer Inhalt wird hier eingefügt -->
+        <div id="compareContainer" class="divide-y divide-neutral-800/80"></div>
+      </div>
+    </section>
+
+    <!-- Reiter: Spielerentwicklung -->
+    <section id="content-playerDev" class="space-y-6 hidden">
+      <div class="glass-card rounded-2xl p-4 md:p-6 shadow-2xl space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800/80 pb-4">
+          <div class="flex items-center gap-2">
+            <!-- Spieler Filter (Links) -->
+            <select id="devPlayerFilter" onchange="renderPlayerDevChart()" class="bg-black text-white text-base md:text-xl font-bold font-display rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
+              <option value="">Bitte wählen...</option>
+            </select>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2">
+            <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-1 font-semibold uppercase tracking-wider">
+              <i class="fa-solid fa-filter text-white"></i> Filter:
+            </div>
+            
+            <!-- Kategorie Filter (Rechts) -->
+            <select id="devMetricFilter" onchange="renderPlayerDevChart()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
+              <option value="avgSingleGame">Average (Einzel)</option>
+              <option value="first9SingleGame">First 9 (Einzel)</option>
+              <option value="avgDoubleGame">Average (Doppel)</option>
+              <option value="first9DoubleGame">First 9 (Doppel)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Diagramm-Container mit 0 Randabstand links & rechts -->
+        <div id="devChartContainer" class="w-full relative min-h-[480px] overflow-hidden px-0">
+          <svg id="playerDevSvgChart" class="w-full h-full block" style="min-height: 480px;"></svg>
         </div>
       </div>
     </section>
@@ -1080,7 +1081,7 @@
 
   </main>
 
-   <footer class="mt-auto py-6 border-t border-neutral-800/60 text-center text-xs text-neutral-500">
+  <footer class="mt-auto py-6 border-t border-neutral-800/60 text-center text-xs text-neutral-500">
     <div class="max-w-7xl mx-auto px-4 flex flex-row justify-center items-center gap-6">
       <a href="https://www.svg-goettingen.de/Own_pages/imprint" target="_blank" rel="noopener noreferrer" class="hover:text-neutral-300 transition">
         Impressum
@@ -1093,7 +1094,6 @@
   </footer>
 
   <script type="module">
-    // 1. Firebase SDK Imports & Initialisierung
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
     import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js';
 
@@ -1105,8 +1105,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // 2. Globale Konstanten & App-Daten
-    const CACHE_KEY = "svg_dart_app_data_v11";
+    const CACHE_KEY = "svg_dart_app_data_v12";
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
       "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
@@ -1121,7 +1120,7 @@
       "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree"
     };
 
-    let appData = { matches: [], squad: [], playerProfile: [], gameStats: [], stats: [], records: [], teamStats: [], orga: [] };
+    let appData = { matches: [], squad: [], playerProfile: [], gameStats: [], stats: [], records: [], teamStats: [], orga: [], playerDev: [] };
     let activeTab = 'home';
     let globalSearchQuery = '';
 
@@ -1180,6 +1179,28 @@
         }).filter(Boolean);
       }
       return [];
+    }
+
+    function processPlayerDevData(rawList) {
+      const result = [];
+      rawList.forEach(item => {
+        if (!item) return;
+        const rawPlayer = String(item.player || item.name || '').trim();
+        if (!rawPlayer) return;
+
+        if (rawPlayer.includes('&')) {
+          const names = rawPlayer.split('&').map(n => n.trim()).filter(Boolean);
+          names.forEach(name => {
+            result.push({
+              ...item,
+              player: name
+            });
+          });
+        } else {
+          result.push(item);
+        }
+      });
+      return result;
     }
 
     function extractNumericId(dbKey) {
@@ -1319,6 +1340,9 @@
         populateProfileDropdown();
       } else if (tabId === 'playerCompare') {
         populateCompareDropdowns();
+      } else if (tabId === 'playerDev') {
+        populatePlayerDevFilters();
+        renderPlayerDevChart();
       } else if (tabId === 'orga') {
         renderOrga();
       } else if (tabId === 'teamStats') {
@@ -1368,7 +1392,7 @@
         return;
       }
 
-      gridContainer.innerHTML = todayMatches.map((m, index) => {
+      gridContainer.innerHTML = todayMatches.map((m) => {
         const iframeUrl = m.url || m.iframe || m.link;
         const matchTitle = `${m.home || 'Heim'} vs. ${m.away || 'Auswärts'}`;
         const matchTime = formatTime(m.time || m.uhrzeit);
@@ -1454,7 +1478,8 @@
             stats: firebaseListToArray(data.Averages || data.stats),
             records: firebaseListToArray(data.Bestleistungen || data.records),
             teamStats: firebaseListToArray(data.Teamstatistiken || data.teamStats || data.team_stats),
-            orga: firebaseListToArray(data.Orga || data.orga || data.organisations || data.links)
+            orga: firebaseListToArray(data.Orga || data.orga || data.organisations || data.links),
+            playerDev: processPlayerDevData(firebaseListToArray(data.Spielerentwicklung || data.playerDev || data.spielerentwicklung))
           };
 
           localStorage.setItem(CACHE_KEY, JSON.stringify(appData));
@@ -1466,6 +1491,9 @@
             populateProfileDropdown();
           } else if (activeTab === 'playerCompare') {
             populateCompareDropdowns();
+          } else if (activeTab === 'playerDev') {
+            populatePlayerDevFilters();
+            renderPlayerDevChart();
           } else if (activeTab === 'orga') {
             renderOrga();
           } else if (activeTab === 'teamStats') {
@@ -1538,7 +1566,6 @@
       renderPlayerProfile();
     }
 
-    // Dropdowns für den Spielervergleich befüllen
     function populateCompareDropdowns() {
       const leftSelect = document.getElementById('comparePlayerLeft');
       const rightSelect = document.getElementById('comparePlayerRight');
@@ -1586,39 +1613,39 @@
       const pRight = appData.playerProfile.find(item => String(item.player || item.name || '').trim().toLowerCase() === String(playerRightName || '').trim().toLowerCase()) || {};
 
       const categories = [
-      { label: 'Spiele', leftRaw: pLeft.wonGames ?? pLeft.won_games ?? pLeft.games ?? pLeft.spiele, rightRaw: pRight.wonGames ?? pRight.won_games ?? pRight.games ?? pRight.spiele, type: 'brackets' },
-      { label: 'Legs', leftRaw: pLeft.wonLegs ?? pLeft.won_legs ?? pLeft.legs, rightRaw: pRight.wonLegs ?? pRight.won_legs ?? pRight.legs, type: 'brackets' },
-      { label: 'Average<br>(Einzel)', leftRaw: pLeft.avgSingle ?? pLeft.avg_single, rightRaw: pRight.avgSingle ?? pRight.avg_single, type: 'float' },
-      { label: 'First 9<br>(Einzel)', leftRaw: pLeft.first9Single ?? pLeft.first9_single, rightRaw: pRight.first9Single ?? pRight.first9_single, type: 'float' },
-      { label: 'Average<br>(Doppel)', leftRaw: pLeft.avgDouble ?? pLeft.avg_double, rightRaw: pRight.avgDouble ?? pRight.avg_double, type: 'float' },
-      { label: 'First 9<br>(Doppel)', leftRaw: pLeft.first9Double ?? pLeft.first9_double, rightRaw: pRight.first9Double ?? pRight.first9_double, type: 'float' },
-      { label: '180er', leftRaw: pLeft.r180 ?? pLeft['180'], rightRaw: pRight.r180 ?? pRight['180'], type: 'num' },
-      { label: '140+', leftRaw: pLeft.r140 ?? pLeft['140'], rightRaw: pRight.r140 ?? pRight['140'], type: 'brackets' },
-      { label: 'Highfinish', leftRaw: pLeft.highfinish, rightRaw: pRight.highfinish, type: 'brackets' },
-      { label: 'Shortgames', leftRaw: pLeft.shortgame ?? pLeft.shortgames, rightRaw: pRight.shortgame ?? pRight.shortgames, type: 'brackets' }
-    ];
+        { label: 'Spiele', leftRaw: pLeft.wonGames ?? pLeft.won_games ?? pLeft.games ?? pLeft.spiele, rightRaw: pRight.wonGames ?? pRight.won_games ?? pRight.games ?? pRight.spiele, type: 'brackets' },
+        { label: 'Legs', leftRaw: pLeft.wonLegs ?? pLeft.won_legs ?? pLeft.legs, rightRaw: pRight.wonLegs ?? pRight.won_legs ?? pRight.legs, type: 'brackets' },
+        { label: 'Average<br>(Einzel)', leftRaw: pLeft.avgSingle ?? pLeft.avg_single, rightRaw: pRight.avgSingle ?? pRight.avg_single, type: 'float' },
+        { label: 'First 9<br>(Einzel)', leftRaw: pLeft.first9Single ?? pLeft.first9_single, rightRaw: pRight.first9Single ?? pRight.first9_single, type: 'float' },
+        { label: 'Average<br>(Doppel)', leftRaw: pLeft.avgDouble ?? pLeft.avg_double, rightRaw: pRight.avgDouble ?? pRight.avg_double, type: 'float' },
+        { label: 'First 9<br>(Doppel)', leftRaw: pLeft.first9Double ?? pLeft.first9_double, rightRaw: pRight.first9Double ?? pRight.first9_double, type: 'float' },
+        { label: '180er', leftRaw: pLeft.r180 ?? pLeft['180'], rightRaw: pRight.r180 ?? pRight['180'], type: 'num' },
+        { label: '140+', leftRaw: pLeft.r140 ?? pLeft['140'], rightRaw: pRight.r140 ?? pRight['140'], type: 'brackets' },
+        { label: 'Highfinish', leftRaw: pLeft.highfinish, rightRaw: pRight.highfinish, type: 'brackets' },
+        { label: 'Shortgames', leftRaw: pLeft.shortgame ?? pLeft.shortgames, rightRaw: pRight.shortgame ?? pRight.shortgames, type: 'brackets' }
+      ];
 
-    container.innerHTML = categories.map(cat => {
-      const valL = parseNumericVal(cat.leftRaw, cat.type);
-      const valR = parseNumericVal(cat.rightRaw, cat.type);
+      container.innerHTML = categories.map(cat => {
+        const valL = parseNumericVal(cat.leftRaw, cat.type);
+        const valR = parseNumericVal(cat.rightRaw, cat.type);
 
-      const isLeftHigher = valL > valR;
-      const isRightHigher = valR > valL;
+        const isLeftHigher = valL > valR;
+        const isRightHigher = valR > valL;
 
-      const leftStyle = isLeftHigher ? 'color: #34d399 !important; font-weight: 900 !important;' : 'color: #ffffff !important; font-weight: 500 !important;';
-      const rightStyle = isRightHigher ? 'color: #34d399 !important; font-weight: 900 !important;' : 'color: #ffffff !important; font-weight: 500 !important;';
+        const leftStyle = isLeftHigher ? 'color: #34d399 !important; font-weight: 900 !important;' : 'color: #ffffff !important; font-weight: 500 !important;';
+        const rightStyle = isRightHigher ? 'color: #34d399 !important; font-weight: 900 !important;' : 'color: #ffffff !important; font-weight: 500 !important;';
 
-      const displayL = formatDisplayVal(cat.leftRaw, cat.type);
-      const displayR = formatDisplayVal(cat.rightRaw, cat.type);
+        const displayL = formatDisplayVal(cat.leftRaw, cat.type);
+        const displayR = formatDisplayVal(cat.rightRaw, cat.type);
 
-      return `
-        <div class="grid grid-cols-3 py-3 px-2 text-center items-center hover:bg-neutral-900/40 transition">
-          <div class="text-base md:text-lg" style="${leftStyle}">${displayL}</div>
-          <div class="text-xs md:text-sm font-semibold text-neutral-400 uppercase tracking-wider whitespace-normal leading-tight">${cat.label}</div>
-          <div class="text-base md:text-lg" style="${rightStyle}">${displayR}</div>
-        </div>
-      `;
-    }).join('');
+        return `
+          <div class="grid grid-cols-3 py-3 px-2 text-center items-center hover:bg-neutral-900/40 transition">
+            <div class="text-base md:text-lg" style="${leftStyle}">${displayL}</div>
+            <div class="text-xs md:text-sm font-semibold text-neutral-400 uppercase tracking-wider whitespace-normal leading-tight">${cat.label}</div>
+            <div class="text-base md:text-lg" style="${rightStyle}">${displayR}</div>
+          </div>
+        `;
+      }).join('');
     }
 
     function parseNumericVal(raw, type) {
@@ -1950,12 +1977,10 @@
       }
     }
 
-    // PDF Export für den Spielplan
     function downloadMatchesPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
-      // Titel & Untertitel im PDF
       doc.setFont("helvetica", "bold");
       doc.setFontSize(16);
       doc.setTextColor(33, 33, 33);
@@ -1966,7 +1991,6 @@
       doc.setTextColor(100, 100, 100);
       doc.text(`Stand: ${new Date().toLocaleDateString('de-DE')}`, 14, 22);
 
-      // Aktuelle Filter auslesen, damit nur das exportiert wird, was gerade angezeigt wird
       const selMatchday = document.getElementById('filterMatchday')?.value;
       const selTeam = document.getElementById('filterTeam')?.value;
       const selDate = document.getElementById('filterDate')?.value;
@@ -1984,7 +2008,6 @@
         return matchdayMatches && teamMatches && dateMatches && locationMatches;
       });
 
-      // Nach Datum sortieren
       filtered.sort((a, b) => {
         const dateA = parseMatchDate(a.date);
         const dateB = parseMatchDate(b.date);
@@ -1994,7 +2017,6 @@
         return dateA - dateB;
       });
 
-      // Tabellendaten aufbereiten
       const tableRows = filtered.map(m => {
         const dateStr = formatDate(m.date);
         const timeStr = formatTime(m.time || m.uhrzeit);
@@ -2011,7 +2033,6 @@
         ];
       });
 
-      // AutoTable generieren (skaliert alle Spalten auf eine Seite im Querformat)
       doc.autoTable({
         startY: 28,
         head: [['Datum / Uhrzeit', 'Heim', 'Auswärts', 'Ergebnis', 'Spielort', 'Spieltag']],
@@ -2020,13 +2041,12 @@
         headStyles: { fillColor: [24, 24, 27], textColor: [255, 255, 255], fontStyle: 'bold' },
         styles: { fontSize: 9, cellPadding: 3, halign: 'left' },
         columnStyles: {
-          3: { halign: 'center', fontStyle: 'bold' } // Ergebnis zentrieren
+          3: { halign: 'center', fontStyle: 'bold' }
         },
         tableWidth: 'auto',
         pageBreak: 'auto'
       });
 
-      // PDF direkt als Download speichern
       doc.save('SVG_Darts_Spielplan.pdf');
     }
 
@@ -2076,6 +2096,9 @@
         populateProfileDropdown();
       } else if (activeTab === 'playerCompare') {
         populateCompareDropdowns();
+      } else if (activeTab === 'playerDev') {
+        populatePlayerDevFilters();
+        renderPlayerDevChart();
       } else if (activeTab === 'orga') {
         renderOrga();
       } else if (activeTab === 'teamStats') {
@@ -2665,14 +2688,11 @@
       }).join('');
     }
 
-    // --- DIAGRAMM LOGIK FÜR TEAMSTATISTIKEN ---
-
     function populateTeamStatsChartFilters() {
       const select = document.getElementById('chartTeamFilter');
       if (!select) return;
       const currentVal = select.value;
 
-      // Ermittle Teams (A bis G) aus Spielerprofilen
       const teamLetters = new Set();
       appData.playerProfile.forEach(p => {
         if (p.team) {
@@ -2680,7 +2700,6 @@
           if (letter) teamLetters.add(letter.toUpperCase());
         }
       });
-      // Fallback
       if (!teamLetters.size) {
         ['A', 'B', 'C', 'D', 'E', 'F', 'G'].forEach(l => teamLetters.add(l));
       }
@@ -2708,10 +2727,8 @@
         legendOpponent.style.display = isDuration ? 'none' : 'flex';
       }
 
-      // 1. Daten ermitteln
       let playerPoints = [];
 
-      // Gefiltertes Team finden
       const selectedTeamObj = appData.teamStats.find(t => {
         const name = (t.team || t.name || '').toUpperCase();
         return name.endsWith(` ${teamFilter}`) || name === teamFilter || name.endsWith(`-${teamFilter}`);
@@ -2734,7 +2751,6 @@
 
       const teamNameStr = selectedTeamObj.team || selectedTeamObj.name || `Team ${teamFilter}`;
 
-      // Spieler filtern
       appData.playerProfile.forEach(p => {
         const pName = p.player || p.name;
         if (!pName) return;
@@ -2769,10 +2785,8 @@
         return;
       }
 
-      // Nach Wert absteigend sortieren
       playerPoints.sort((a, b) => b.value - a.value);
 
-      // Farbzuweisung: Jeder zweite Spieler (ungerader Index) erhält einen lesbaren Gelbton, die anderen verschiedene Grüntöne
       const greenShades = ['#34d399', '#10b981', '#059669', '#6ee7b7', '#22c55e', '#4ade80'];
       const yellowShades = ['#facc15', '#fde047', '#fef08a'];
 
@@ -2784,7 +2798,6 @@
         }
       });
 
-      // SVG Dimensionen & Abstände (Mehr Platz unten auf dem Handy für den alternierenden Versatz)
       const isMobile = window.innerWidth < 640;
       const margin = {
         top: 30,
@@ -2803,7 +2816,6 @@
       const innerWidth = width - margin.left - margin.right;
       const innerHeight = calculatedHeight - margin.top - margin.bottom;
 
-      // Min/Max für genaue Schritte ermitteln
       let allVals = playerPoints.map(d => d.value);
       if (teamValue > 0) allVals.push(teamValue);
       if (!isDuration && opponentValue !== null && opponentValue > 0) allVals.push(opponentValue);
@@ -2811,8 +2823,7 @@
       let rawMax = Math.max(...allVals);
       let rawMin = Math.min(...allVals);
 
-      // Y-Achse Schrittweiten konfigurieren
-      const stepSize = isDuration ? 30 : 2.0; // 30s bei Dauer, 2.0 bei Averages
+      const stepSize = isDuration ? 30 : 2.0;
       let yMin = Math.floor(Math.max(0, rawMin - stepSize) / stepSize) * stepSize;
       let yMax = Math.ceil((rawMax + stepSize) / stepSize) * stepSize;
 
@@ -2820,7 +2831,6 @@
 
       const yScale = val => innerHeight - ((val - yMin) / (yMax - yMin)) * innerHeight;
 
-      // Horizontale Gitterlinien mit festem Abstand (2.0 bzw. 0:30)
       let gridLinesHtml = '';
       for (let gridVal = yMin; gridVal <= yMax; gridVal += stepSize) {
         const yPos = margin.top + yScale(gridVal);
@@ -2832,12 +2842,10 @@
         `;
       }
 
-      // X-Achse Abstände für die Spielerpunkte
       const xSpacing = innerWidth / (playerPoints.length + 1);
 
       let linesAndPointsHtml = '';
 
-      // 1. Team-Linie von links nach rechts durchziehen (GESTRICHELT)
       if (teamValue > 0) {
         const teamY = margin.top + yScale(teamValue);
         const teamValText = isDuration ? formatSecondsToMMSS(teamValue) : teamValue.toFixed(2);
@@ -2849,7 +2857,6 @@
         `;
       }
 
-      // 2. Gegner-Linie von links nach rechts durchziehen (rechtsbündig ausgerichtet)
       if (!isDuration && opponentValue !== null && opponentValue > 0) {
         const oppY = margin.top + yScale(opponentValue);
         const oppValText = opponentValue.toFixed(2);
@@ -2861,7 +2868,6 @@
         `;
       }
 
-      // 3. Spieler-Punkte und X-Achsen Beschriftung zeichnen (mit erhöhtem mobilem Versatz von +36px für jede 2. Beschriftung)
       const baseLabelBaselineY = margin.top + innerHeight + 16;
 
       playerPoints.forEach((dp, i) => {
@@ -2871,7 +2877,6 @@
 
         const displayVal = isDuration ? formatSecondsToMMSS(dp.value) : dp.value.toFixed(2);
 
-        // Name beim letzten Leerzeichen in zwei Zeilen trennen
         const nameStr = String(dp.name || '');
         const lastSpaceIdx = nameStr.lastIndexOf(' ');
         let nameLine1 = nameStr;
@@ -2882,11 +2887,9 @@
           nameLine2 = nameStr.substring(lastSpaceIdx + 1);
         }
 
-        // Mobiler Versatz: Jeder zweite Eintrag (ungerader Index i) wird auf dem Handy um 36px nach unten versetzt
         const mobileOffset = (isMobile && (i % 2 === 1)) ? 36 : 0;
         const labelBaselineY = baseLabelBaselineY + mobileOffset;
 
-        // Senkrechte Hilfslinie vom Punkt nach unten zur jeweiligen Baseline
         linesAndPointsHtml += `
           <line x1="${xPos}" y1="${labelBaselineY}" x2="${xPos}" y2="${yPos}" stroke="${color}" stroke-opacity="0.3" stroke-width="1.5" stroke-dasharray="2 2" />
           <circle cx="${xPos}" cy="${yPos}" r="5" fill="${color}" stroke="#000000" stroke-width="2" />
@@ -2902,7 +2905,6 @@
           nameSvgContent = `<tspan x="${xPos}" dy="0">${nameLine1}</tspan>`;
         }
 
-        // Spieler-Beschriftung und Wert
         linesAndPointsHtml += `
           <g class="cursor-pointer hover:opacity-80 transition" onclick="navigateToPlayerProfile('${dp.name}')">
             <text x="${xPos}" y="${labelBaselineY}" fill="${color}" font-size="${isMobile ? '10' : '11'}" font-weight="700" font-family="Inter" text-anchor="middle">
@@ -2917,9 +2919,157 @@
 
       svg.innerHTML = `
         ${gridLinesHtml}
-        <!-- X-Achsen Linie -->
         <line x1="${margin.left}" y1="${margin.top + innerHeight}" x2="${margin.left + innerWidth}" y2="${margin.top + innerHeight}" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
         ${linesAndPointsHtml}
+      `;
+    }
+
+    // --- DIAGRAMM LOGIK FÜR SPIELERENTWICKLUNG ---
+
+    function populatePlayerDevFilters() {
+      const playerSelect = document.getElementById('devPlayerFilter');
+      if (!playerSelect) return;
+
+      const players = [...new Set(appData.playerDev.map(d => d.player).filter(Boolean))].sort();
+      if (!players.length) {
+        playerSelect.innerHTML = '<option value="">Keine Spieler gefunden</option>';
+        return;
+      }
+
+      const currentVal = playerSelect.value;
+      playerSelect.innerHTML = players.map(p => `<option value="${p}">${p}</option>`).join('');
+      
+      if (currentVal && players.includes(currentVal)) {
+        playerSelect.value = currentVal;
+      } else {
+        playerSelect.value = players[0];
+      }
+    }
+
+    function renderPlayerDevChart() {
+      const svg = document.getElementById('playerDevSvgChart');
+      if (!svg) return;
+
+      const selectedPlayer = document.getElementById('devPlayerFilter')?.value;
+      const selectedMetric = document.getElementById('devMetricFilter')?.value || 'avgSingleGame';
+
+      if (!selectedPlayer) {
+        svg.innerHTML = `<text x="50%" y="50%" text-anchor="middle" fill="#737373" font-size="14">Bitte wähle einen Spieler aus.</text>`;
+        return;
+      }
+
+      let matchData = appData.playerDev.filter(d => 
+        String(d.player || '').trim().toLowerCase() === String(selectedPlayer).trim().toLowerCase() &&
+        d[selectedMetric] !== undefined && d[selectedMetric] !== '' && d[selectedMetric] !== null
+      );
+
+      matchData.sort((a, b) => {
+        const dateA = parseMatchDate(a.date);
+        const dateB = parseMatchDate(b.date);
+        if (!dateA && !dateB) return 0;
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        return dateA - dateB;
+      });
+
+      if (!matchData.length) {
+        svg.innerHTML = `<text x="50%" y="50%" text-anchor="middle" fill="#737373" font-size="14">Keine Daten für diesen Filter vorhanden.</text>`;
+        return;
+      }
+
+      // Referenz-Average aus playerProfile für die Horizontale ermitteln
+      const pProfile = appData.playerProfile.find(p => String(p.player || p.name || '').trim().toLowerCase() === String(selectedPlayer).trim().toLowerCase()) || {};
+      
+      let refMetricKey = 'avgSingle';
+      if (selectedMetric === 'first9SingleGame') refMetricKey = 'first9Single';
+      else if (selectedMetric === 'avgDoubleGame') refMetricKey = 'avgDouble';
+      else if (selectedMetric === 'first9DoubleGame') refMetricKey = 'first9Double';
+
+      let refValue = parseNumeric(pProfile[refMetricKey] ?? pProfile[refMetricKey.replace(/([A-Z])/g, '_$1').toLowerCase()]);
+
+      const container = document.getElementById('devChartContainer');
+      const width = container.clientWidth || 800;
+      const height = 480;
+
+      const margin = { top: 35, right: 20, bottom: 60, left: 20 };
+      const innerWidth = width - margin.left - margin.right;
+      const innerHeight = height - margin.top - margin.bottom;
+
+      svg.setAttribute('height', height);
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+
+      const values = matchData.map(d => parseNumeric(d[selectedMetric]));
+      if (refValue > 0) values.push(refValue);
+
+      const minVal = Math.min(...values);
+      const maxVal = Math.max(...values);
+
+      const stepSize = 2.0;
+      let yMin = Math.floor(Math.max(0, minVal - 2) / stepSize) * stepSize;
+      let yMax = Math.ceil((maxVal + 2) / stepSize) * stepSize;
+
+      if (yMax <= yMin) yMax = yMin + stepSize * 2;
+
+      const yScale = val => innerHeight - ((val - yMin) / (yMax - yMin)) * innerHeight;
+
+      let gridLinesHtml = '';
+      for (let gridVal = yMin; gridVal <= yMax; gridVal += stepSize) {
+        const yPos = margin.top + yScale(gridVal);
+        gridLinesHtml += `
+          <line x1="${margin.left}" y1="${yPos}" x2="${margin.left + innerWidth}" y2="${yPos}" stroke="rgba(255,255,255,0.08)" stroke-dasharray="4 4" />
+          <text x="${margin.left + 4}" y="${yPos - 4}" fill="#737373" font-size="10" font-family="Inter">${gridVal.toFixed(1)}</text>
+        `;
+      }
+
+      // Horizontale Referenzlinie für den Profil-Average des Spielers
+      let refLineHtml = '';
+      if (refValue > 0) {
+        const refY = margin.top + yScale(refValue);
+        refLineHtml = `
+          <line x1="${margin.left}" y1="${refY}" x2="${margin.left + innerWidth}" y2="${refY}" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 4" />
+          <text x="${margin.left + innerWidth - 6}" y="${refY - 6}" fill="#f59e0b" font-size="11" font-weight="800" font-family="Inter" text-anchor="end">
+            Saison-Schnitt: ${refValue.toFixed(2)}
+          </text>
+        `;
+      }
+
+      // X-Spacing mit Abstand zur y-Achse (analog zum Teamstatistiken-Diagramm)
+      const xSpacing = innerWidth / (matchData.length + 1);
+
+      let pointsPath = [];
+      let dotsAndLabelsHtml = '';
+
+      matchData.forEach((d, i) => {
+        const xPos = margin.left + (i + 1) * xSpacing;
+        const numVal = parseNumeric(d[selectedMetric]);
+        const yPos = margin.top + yScale(numVal);
+
+        pointsPath.push(`${xPos},${yPos}`);
+
+        const dateStr = formatDate(d.date);
+
+        dotsAndLabelsHtml += `
+          <line x1="${xPos}" y1="${margin.top + innerHeight}" x2="${xPos}" y2="${yPos}" stroke="#10b981" stroke-opacity="0.2" stroke-width="1" stroke-dasharray="2 2" />
+          <circle cx="${xPos}" cy="${yPos}" r="5" fill="#10b981" stroke="#000000" stroke-width="2" />
+          
+          <text x="${xPos}" y="${yPos - 10}" fill="#FFFFFF" font-size="11" font-weight="800" font-family="Inter" text-anchor="middle">
+            ${numVal.toFixed(2)}
+          </text>
+
+          <text x="${xPos}" y="${margin.top + innerHeight + 20}" fill="#737373" font-size="10" font-family="Inter" text-anchor="middle">
+            ${dateStr}
+          </text>
+        `;
+      });
+
+      const lineSvg = pointsPath.length > 1 ? `<polyline points="${pointsPath.join(' ')}" fill="none" stroke="#10b981" stroke-width="2.5" />` : '';
+
+      svg.innerHTML = `
+        ${gridLinesHtml}
+        <line x1="${margin.left}" y1="${margin.top + innerHeight}" x2="${margin.left + innerWidth}" y2="${margin.top + innerHeight}" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+        ${refLineHtml}
+        ${lineSvg}
+        ${dotsAndLabelsHtml}
       `;
     }
 
@@ -2952,6 +3102,7 @@
           appData.records = firebaseListToArray(appData.records || appData.Bestleistungen);
           appData.teamStats = firebaseListToArray(appData.teamStats || appData.Teamstatistiken);
           appData.orga = firebaseListToArray(appData.orga || appData.Orga || appData.organisations || appData.links);
+          appData.playerDev = processPlayerDevData(firebaseListToArray(appData.playerDev || appData.Spielerentwicklung || appData.spielerentwicklung));
           
           populateMatchFilters();
           renderAllTables();
@@ -2966,6 +3117,8 @@
     window.addEventListener('resize', () => {
       if (activeTab === 'teamStats') {
         renderTeamStatsChart();
+      } else if (activeTab === 'playerDev') {
+        renderPlayerDevChart();
       }
     });
 
@@ -2993,6 +3146,8 @@
     window.renderRecords = renderRecords;
     window.renderTeamStats = renderTeamStats;
     window.renderTeamStatsChart = renderTeamStatsChart;
+    window.renderPlayerDevChart = renderPlayerDevChart;
+    window.populatePlayerDevFilters = populatePlayerDevFilters;
     window.renderOrga = renderOrga;
     window.downloadPlayerProfileImage = downloadPlayerProfileImage;
     window.downloadMatchesPDF = downloadMatchesPDF;
