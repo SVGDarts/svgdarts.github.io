@@ -1044,6 +1044,11 @@
           </div>
 
           <div class="flex flex-wrap items-center gap-2">
+            <!-- Anzeige des Saison-Schnitts -->
+            <span id="devRefValueBadge" class="hidden text-xs font-bold font-display px-3 py-2 bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 rounded-xl">
+              Saison-Schnitt: <span id="devRefValueVal">-</span>
+            </span>
+
             <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-1 font-semibold uppercase tracking-wider">
               <i class="fa-solid fa-filter text-white"></i> Filter:
             </div>
@@ -1056,7 +1061,6 @@
               <option value="first9DoubleGame">First 9 (Doppel)</option>
             </select>
           </div>
-        </div>
 
         <!-- Diagramm-Container mit 0 Randabstand links & rechts -->
         <div id="devChartContainer" class="w-full relative min-h-[480px] overflow-hidden px-0">
@@ -2987,6 +2991,18 @@
 
       let refValue = parseNumeric(pProfile[refMetricKey] ?? pProfile[refMetricKey.replace(/([A-Z])/g, '_$1').toLowerCase()]);
 
+      // Wert oben rechts neben dem Filter aktualisieren/anzeigen
+      const badgeEl = document.getElementById('devRefValueBadge');
+      const valEl = document.getElementById('devRefValueVal');
+      if (badgeEl && valEl) {
+        if (refValue > 0) {
+          valEl.innerText = refValue.toFixed(2);
+          badgeEl.classList.remove('hidden');
+        } else {
+          badgeEl.classList.add('hidden');
+        }
+      }
+
       const container = document.getElementById('devChartContainer');
       const width = container.clientWidth || 800;
       const height = 480;
@@ -3021,15 +3037,12 @@
         `;
       }
 
-      // Horizontale Referenzlinie für den Profil-Average des Spielers
+      // Horizontale Referenzlinie (ohne Textbeschriftung direkt an der Linie)
       let refLineHtml = '';
       if (refValue > 0) {
         const refY = margin.top + yScale(refValue);
         refLineHtml = `
           <line x1="${margin.left}" y1="${refY}" x2="${margin.left + innerWidth}" y2="${refY}" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6 4" />
-          <text x="${margin.left + innerWidth - 6}" y="${refY - 6}" fill="#f59e0b" font-size="11" font-weight="800" font-family="Inter" text-anchor="end">
-            Saison-Schnitt: ${refValue.toFixed(2)}
-          </text>
         `;
       }
 
