@@ -1036,24 +1036,24 @@
     <section id="content-playerDev" class="space-y-6 hidden">
       <div class="glass-card rounded-2xl p-4 md:p-6 shadow-2xl space-y-4">
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-800/80 pb-4">
+          <!-- Oben links: Spieler Dropdown -->
           <div class="flex items-center gap-2">
-            <!-- Spieler Filter (Links) -->
             <select id="devPlayerFilter" onchange="renderPlayerDevChart()" class="bg-black text-white text-base md:text-xl font-bold font-display rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
               <option value="">Bitte wählen...</option>
             </select>
           </div>
 
+          <!-- Oben rechts: Filter und reiner Wert des Saison-Schnitts -->
           <div class="flex flex-wrap items-center gap-2">
-            <!-- Anzeige des Saison-Schnitts -->
-            <span id="devRefValueBadge" class="hidden text-xs font-bold font-display px-3 py-2 bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 rounded-xl">
-              Saison-Schnitt: <span id="devRefValueVal">-</span>
-            </span>
+            <div id="devRefValueBadge" class="hidden items-center gap-2 text-xs font-bold font-display px-3 py-2 bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 rounded-xl">
+              <span>Saison-Schnitt:</span>
+              <span id="devRefValueVal">-</span>
+            </div>
 
             <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-1 font-semibold uppercase tracking-wider">
               <i class="fa-solid fa-filter text-white"></i> Filter:
             </div>
             
-            <!-- Kategorie Filter (Rechts) -->
             <select id="devMetricFilter" onchange="renderPlayerDevChart()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
               <option value="avgSingleGame">Average (Einzel)</option>
               <option value="first9SingleGame">First 9 (Einzel)</option>
@@ -1061,10 +1061,23 @@
               <option value="first9DoubleGame">First 9 (Doppel)</option>
             </select>
           </div>
+        </div>
 
         <!-- Diagramm-Container mit 0 Randabstand links & rechts -->
         <div id="devChartContainer" class="w-full relative min-h-[480px] overflow-hidden px-0">
           <svg id="playerDevSvgChart" class="w-full h-full block" style="min-height: 480px;"></svg>
+        </div>
+
+        <!-- Legende unten -->
+        <div class="flex flex-wrap items-center justify-center gap-6 text-xs pt-2 border-t border-neutral-800/50">
+          <div class="flex items-center gap-2">
+            <span class="w-3 h-3 rounded-full bg-emerald-400 shadow-sm"></span>
+            <span class="text-neutral-300 font-medium">Match-Werte</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-0.5 bg-yellow-500 border border-yellow-500 rounded" style="border-style: dashed;"></span>
+            <span class="text-neutral-300 font-medium">Saison-Schnitt</span>
+          </div>
         </div>
       </div>
     </section>
@@ -2991,15 +3004,17 @@
 
       let refValue = parseNumeric(pProfile[refMetricKey] ?? pProfile[refMetricKey.replace(/([A-Z])/g, '_$1').toLowerCase()]);
 
-      // Wert oben rechts neben dem Filter aktualisieren/anzeigen
+      // Reinen Wert oben rechts neben dem Filter anzeigen
       const badgeEl = document.getElementById('devRefValueBadge');
       const valEl = document.getElementById('devRefValueVal');
       if (badgeEl && valEl) {
         if (refValue > 0) {
           valEl.innerText = refValue.toFixed(2);
           badgeEl.classList.remove('hidden');
+          badgeEl.classList.add('flex');
         } else {
           badgeEl.classList.add('hidden');
+          badgeEl.classList.remove('flex');
         }
       }
 
@@ -3037,7 +3052,7 @@
         `;
       }
 
-      // Horizontale Referenzlinie (ohne Textbeschriftung direkt an der Linie)
+      // Horizontale Referenzlinie (ohne Textbeschriftung an der Linie)
       let refLineHtml = '';
       if (refValue > 0) {
         const refY = margin.top + yScale(refValue);
