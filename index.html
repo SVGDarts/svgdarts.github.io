@@ -319,6 +319,9 @@
         <button onclick="switchTab('playerDev')" id="tab-playerDev" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-chart-area text-xs"></i> Spielerentwicklung
         </button>
+        <button onclick="switchTab('ranking')" id="tab-ranking" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
+          <i class="fa-solid fa-ranking-star text-xs"></i> Ranking
+        </button>
         <button onclick="switchTab('orga')" id="tab-orga" class="tab-btn px-2.5 py-1.5 md:px-4 md:py-2 rounded-lg border border-transparent flex items-center gap-1.5 md:gap-2 font-medium text-neutral-400 hover:text-white whitespace-nowrap">
           <i class="fa-solid fa-folder-open text-xs"></i> Orga
         </button>
@@ -1087,6 +1090,90 @@
       </div>
     </section>
 
+    <!-- Reiter: Ranking -->
+    <section id="content-ranking" class="space-y-6 hidden">
+      <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold font-display text-white">Ranking</h2>
+          <p class="text-xs text-neutral-400 mt-1">Bestenliste nach Statistiken und Teams gefiltert.</p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2 glass-card p-1.5 md:p-2 rounded-2xl">
+          <div class="flex items-center gap-1.5 text-neutral-400 text-xs px-2 font-semibold uppercase tracking-wider">
+            <i class="fa-solid fa-filter text-white"></i> Filter:
+          </div>
+
+          <!-- Statistik Filter -->
+          <select id="rankingMetricFilter" onchange="renderRanking()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
+            <optgroup label="Averages & Scores">
+              <option value="avgSingle">Average (Einzel)</option>
+              <option value="avgDouble">Average (Doppel)</option>
+              <option value="first9Single">First 9 Average (Einzel)</option>
+              <option value="first9Double">First 9 Average (Doppel)</option>
+              <option value="avgOpponentSingle">Average Gegner (Einzel)</option>
+              <option value="avgOpponentDouble">Average Gegner (Doppel)</option>
+            </optgroup>
+            <optgroup label="Bestleistungen & Specials">
+              <option value="specials">Specials</option>
+              <option value="r180">180er</option>
+              <option value="r140">140+</option>
+              <option value="highfinish">Highfinish (Anzahl)</option>
+              <option value="bestHighfinish">Höchstes Highfinish</option>
+              <option value="shortgame">Shortgames</option>
+              <option value="shortgameChance">Chance auf Shortgame</option>
+              <option value="specialsPerGame">Specials pro Spiel</option>
+            </optgroup>
+            <optgroup label="Spielstatistiken & Quoten">
+              <option value="games">Spiele</option>
+              <option value="legs">Legs</option>
+              <option value="legsWonPct">Legquote</option>
+              <option value="winsSingle">Siege (Einzel)</option>
+              <option value="winRateSingle">Siegquote (Einzel)</option>
+              <option value="winsDouble">Siege (Doppel)</option>
+              <option value="winRateDouble">Siegquote (Doppel)</option>
+              <option value="winRateTotal">Siegquote (Gesamt)</option>
+            </optgroup>
+          </select>
+
+          <!-- Team Filter -->
+          <select id="rankingTeamFilter" onchange="renderRanking()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
+            <option value="">Alle Teams</option>
+            <option value="A">Team A</option>
+            <option value="B">Team B</option>
+            <option value="C">Team C</option>
+            <option value="D">Team D</option>
+            <option value="E">Team E</option>
+            <option value="F">Team F</option>
+            <option value="G">Team G</option>
+          </select>
+
+          <!-- Spieler Anzahl Filter -->
+          <select id="rankingLimitFilter" onchange="renderRanking()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
+            <option value="3">Top 3</option>
+            <option value="10">Top 10</option>
+            <option value="all" selected>Alle</option>
+          </select>
+
+          <button onclick="resetRankingFilters()" class="text-xs bg-black hover:bg-neutral-900 text-neutral-300 px-3 py-2 rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-rotate-left text-white"></i> Reset
+          </button>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl table-container shadow-2xl">
+        <table class="w-full text-left text-sm text-neutral-300">
+          <thead class="bg-neutral-900/80 text-neutral-400 uppercase text-xs font-bold tracking-wider border-b border-neutral-800">
+            <tr>
+              <th class="px-4 py-4 w-12 text-center">Rang</th>
+              <th class="px-4 py-4">Name</th>
+              <th id="rankingStatHeaderName" class="px-4 py-4">Statistik</th>
+            </tr>
+          </thead>
+          <tbody id="rankingTable" class="divide-y divide-neutral-800/60"></tbody>
+        </table>
+      </div>
+    </section>
+
     <!-- Reiter 8: Orga -->
     <section id="content-orga" class="space-y-6 hidden">
       <div>
@@ -1365,6 +1452,8 @@
       } else if (tabId === 'playerDev') {
         populatePlayerDevFilters();
         renderPlayerDevChart();
+      } else if (tabId === 'ranking') {
+        renderRanking();
       } else if (tabId === 'orga') {
         renderOrga();
       } else if (tabId === 'teamStats') {
@@ -1483,6 +1572,7 @@
         clearBtn.classList.add('hidden');
       }
 
+      renderRanking();
       renderPlayers();
       renderGameStats();
       renderStats();
@@ -2094,6 +2184,7 @@
       document.getElementById('filterHomeTeam').value = "";
       document.getElementById('filterHomeDate').value = "";
       document.getElementById('filterHomeLocation').value = "";
+      renderRanking();
       renderHome();
     }
 
@@ -3187,7 +3278,18 @@
     window.resetHomeMatchFilters = resetHomeMatchFilters;
     window.resetGameStatsTeamFilter = resetGameStatsTeamFilter;
     window.resetStatsTeamFilter = resetStatsTeamFilter;
+    function resetRankingFilters() {
+      const metricSel = document.getElementById('rankingMetricFilter');
+      const teamSel = document.getElementById('rankingTeamFilter');
+      const limitSel = document.getElementById('rankingLimitFilter');
+      if (metricSel) metricSel.value = "avgSingle";
+      if (teamSel) teamSel.value = "";
+      if (limitSel) limitSel.value = "all";
+      renderRanking();
+    }
+
     window.resetRecordsTeamFilter = resetRecordsTeamFilter;
+    window.resetRankingFilters = resetRankingFilters;
     window.setGameStatsSort = setGameStatsSort;
     window.setStatsSort = setStatsSort;
     window.setRecordsSort = setRecordsSort;
@@ -3205,7 +3307,173 @@
     window.renderTeamStatsChart = renderTeamStatsChart;
     window.renderPlayerDevChart = renderPlayerDevChart;
     window.populatePlayerDevFilters = populatePlayerDevFilters;
+    window.renderRanking = renderRanking;
     window.renderOrga = renderOrga;
+    function renderRanking() {
+      const tbody = document.getElementById('rankingTable');
+      const headerEl = document.getElementById('rankingStatHeaderName');
+      if (!tbody) return;
+
+      const metricFilter = document.getElementById('rankingMetricFilter')?.value || 'avgSingle';
+      const teamFilter = document.getElementById('rankingTeamFilter')?.value || '';
+      const limitFilter = document.getElementById('rankingLimitFilter')?.value || 'all';
+
+      const metricSelect = document.getElementById('rankingMetricFilter');
+      if (metricSelect && headerEl) {
+        const selectedOpt = metricSelect.options[metricSelect.selectedIndex];
+        headerEl.innerText = selectedOpt ? selectedOpt.text : 'Statistik';
+      }
+
+      // Zusammenführen aller Spieler-Daten aus squad, stats, records, gameStats
+      const allPlayersMap = {};
+
+      appData.squad.forEach(p => {
+        const name = p.name ? p.name.trim() : '';
+        if (name) {
+          allPlayersMap[name.toLowerCase()] = { name: name, team: p.team };
+        }
+      });
+
+      appData.stats.forEach(s => {
+        const name = (s.player || s.name || '').trim();
+        if (name) {
+          const key = name.toLowerCase();
+          if (!allPlayersMap[key]) allPlayersMap[key] = { name: name };
+          allPlayersMap[key] = { ...allPlayersMap[key], ...s };
+        }
+      });
+
+      appData.records.forEach(r => {
+        const name = (r.player || r.name || '').trim();
+        if (name) {
+          const key = name.toLowerCase();
+          if (!allPlayersMap[key]) allPlayersMap[key] = { name: name };
+          allPlayersMap[key] = { ...allPlayersMap[key], ...r };
+        }
+      });
+
+      appData.gameStats.forEach(g => {
+        const name = (g.player || g.name || '').trim();
+        if (name) {
+          const key = name.toLowerCase();
+          if (!allPlayersMap[key]) allPlayersMap[key] = { name: name };
+          allPlayersMap[key] = { ...allPlayersMap[key], ...g };
+        }
+      });
+
+      appData.playerProfile.forEach(p => {
+        const name = (p.player || p.name || '').trim();
+        if (name) {
+          const key = name.toLowerCase();
+          if (!allPlayersMap[key]) allPlayersMap[key] = { name: name };
+          allPlayersMap[key] = { ...allPlayersMap[key], ...p };
+        }
+      });
+
+      let playerList = Object.values(allPlayersMap);
+
+      if (teamFilter) {
+        playerList = playerList.filter(p => playerMatchesTeamFilter(p.name, teamFilter));
+      }
+
+      const getMetricVal = (item, metric) => {
+        if (metric === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avg_single ?? item.avg);
+        if (metric === 'avgDouble') return parseNumeric(item.avgDouble ?? item.avg_double);
+        if (metric === 'first9Single') return parseNumeric(item.first9Single ?? item.first9_single ?? item.first9);
+        if (metric === 'first9Double') return parseNumeric(item.first9Double ?? item.first9_double);
+        if (metric === 'avgOpponentSingle') return parseNumeric(item.avgOpponentSingle ?? item.avg_opponent_single);
+        if (metric === 'avgOpponentDouble') return parseNumeric(item.avgOpponentDouble ?? item.avg_opponent_double);
+
+        if (metric === 'specials') return parseNumeric(item.specials);
+        if (metric === 'r180') return parseNumeric(item.r180 ?? item['180']);
+        if (metric === 'r140') return parseBracketsNumber(item.r140 ?? item['140']);
+        if (metric === 'highfinish') return parseBracketsNumber(item.highfinish);
+        if (metric === 'bestHighfinish') return parseNumeric(item.bestHighfinish ?? item.best_highfinish);
+        if (metric === 'shortgame') return parseBracketsNumber(item.shortgame);
+        if (metric === 'shortgameChance') return parseNumeric(item.shortgameChance ?? item.shortgame_chance);
+        if (metric === 'specialsPerGame') return parseNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday);
+
+        if (metric === 'games') return parseNumeric(item.games ?? item.spiele);
+        if (metric === 'legs') return parseNumeric(item.legs);
+        if (metric === 'legsWonPct') return parseNumeric(item.legsWonPct ?? item.legs_won_pct ?? item.gewonneneLegsPct);
+        if (metric === 'winsSingle') return parseNumeric(item.winsSingle ?? item.wins_single ?? item.siegeEinzel);
+        if (metric === 'winRateSingle') return parseNumeric(item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
+        if (metric === 'winsDouble') return parseNumeric(item.winsDouble ?? item.wins_double ?? item.siegeDoppel);
+        if (metric === 'winRateDouble') return parseNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
+        if (metric === 'winRateTotal') return parseNumeric(item.winRateTotal ?? item.win_rate_total ?? item.siegquoteGesamt);
+
+        return 0;
+      };
+
+      const formatMetricDisplay = (item, metric) => {
+        if (metric === 'avgSingle' || metric === 'avgDouble' || metric === 'first9Single' || metric === 'first9Double' || metric === 'avgOpponentSingle' || metric === 'avgOpponentDouble' || metric === 'specialsPerGame') {
+          const val = getMetricVal(item, metric);
+          return val > 0 ? formatNumber(val) : '-';
+        }
+        if (metric === 'shortgameChance' || metric === 'legsWonPct' || metric === 'winRateSingle' || metric === 'winRateDouble' || metric === 'winRateTotal') {
+          const val = getMetricVal(item, metric);
+          return val > 0 ? formatPercent(val) : '-';
+        }
+        if (metric === 'bestHighfinish') {
+          const val = getMetricVal(item, metric);
+          return val > 0 ? val : '-';
+        }
+        if (metric === 'highfinish' || metric === 'shortgame' || metric === 'r140') {
+          const raw = item[metric] ?? (metric === 'r140' ? item['140'] : null);
+          return raw !== undefined && raw !== null && raw !== '' ? raw : '-';
+        }
+        const val = getMetricVal(item, metric);
+        return val > 0 ? val : '-';
+      };
+
+      // Nur Spieler mit vorhandenen/positiven Werten berücksichtigen
+      playerList = playerList.filter(p => getMetricVal(p, metricFilter) > 0);
+
+      // Absteigend sortieren
+      playerList.sort((a, b) => getMetricVal(b, metricFilter) - getMetricVal(a, metricFilter));
+
+      // Limit anwenden
+      let displayList = playerList;
+      if (limitFilter === '3') {
+        displayList = playerList.slice(0, 3);
+      } else if (limitFilter === '10') {
+        displayList = playerList.slice(0, 10);
+      }
+
+      if (!displayList.length) {
+        tbody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-neutral-500">Keine Daten für dieses Ranking gefunden.</td></tr>`;
+        return;
+      }
+
+      let currentRank = 0;
+      let previousVal = null;
+
+      tbody.innerHTML = displayList.map((p, idx) => {
+        const val = getMetricVal(p, metricFilter);
+        if (val !== previousVal) {
+          currentRank = idx + 1;
+          previousVal = val;
+        }
+        const playerName = p.name;
+        const displayVal = formatMetricDisplay(p, metricFilter);
+
+        const isMatch = globalSearchQuery && playerName.toLowerCase().includes(globalSearchQuery);
+        const rowClass = isMatch 
+          ? 'bg-yellow-200/20 text-yellow-200 font-bold border-l-4 border-yellow-400 transition' 
+          : 'hover:bg-neutral-900/60 transition';
+
+        return `
+          <tr class="${rowClass}">
+            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="navigateToPlayerProfile('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 text-white font-extrabold">${displayVal}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    window.renderRanking = renderRanking;
+
     window.downloadPlayerProfileImage = downloadPlayerProfileImage;
     window.downloadMatchesPDF = downloadMatchesPDF;
   </script>
