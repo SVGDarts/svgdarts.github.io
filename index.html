@@ -3472,19 +3472,26 @@
       const pod3Val = document.getElementById('podium3Val');
       const pod3El = document.getElementById('podium3');
 
+      // Podium aktualisieren (Platz 1, 2, 3) mit korrekten Farbklassen
       if (pod1Name && pod1Val) {
         pod1Name.innerText = p1 ? p1.name : '-';
+        pod1Name.className = "text-sm md:text-lg font-black text-yellow-400 mt-1 leading-snug break-words line-clamp-3 w-full";
         pod1Val.innerText = p1 ? formatMetricDisplay(p1, metricFilter) : '-';
+        pod1Val.className = "text-sm md:text-base font-black text-yellow-400 mt-1";
         if (pod1El) pod1El.onclick = p1 ? () => navigateToPlayerProfile(p1.name) : null;
       }
       if (pod2Name && pod2Val) {
         pod2Name.innerText = p2 ? p2.name : '-';
+        pod2Name.className = "text-xs md:text-base font-bold text-slate-300 mt-1 leading-snug break-words line-clamp-3 w-full";
         pod2Val.innerText = p2 ? formatMetricDisplay(p2, metricFilter) : '-';
+        pod2Val.className = "text-xs md:text-sm font-extrabold text-slate-300 mt-1";
         if (pod2El) pod2El.onclick = p2 ? () => navigateToPlayerProfile(p2.name) : null;
       }
       if (pod3Name && pod3Val) {
         pod3Name.innerText = p3 ? p3.name : '-';
+        pod3Name.className = "text-xs md:text-base font-bold text-amber-600 mt-1 leading-snug break-words line-clamp-3 w-full";
         pod3Val.innerText = p3 ? formatMetricDisplay(p3, metricFilter) : '-';
+        pod3Val.className = "text-xs md:text-sm font-extrabold text-amber-600 mt-1";
         if (pod3El) pod3El.onclick = p3 ? () => navigateToPlayerProfile(p3.name) : null;
       }
 
