@@ -1178,29 +1178,29 @@
       <div id="rankingPodiumContainer" class="grid grid-cols-3 gap-3 md:gap-6 items-end pt-6 pb-2 px-2 max-w-2xl mx-auto">
         <!-- Platz 2 (Silber) -->
         <div id="podium2" class="glass-card rounded-2xl p-3 md:p-4 text-center border-t-4 border-slate-300 flex flex-col items-center shadow-lg transition-all hover:scale-105 cursor-pointer">
-          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-400/20 text-slate-300 flex items-center justify-center font-black text-sm md:text-lg mb-2 border border-slate-300/40">
+          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-400/20 flex items-center justify-center font-bold text-sm md:text-base mb-1 md:mb-2 border border-slate-300/40" style="color: #cbd5e1 !important;">
             2
           </div>
-          <span id="podium2Name" class="text-xs md:text-base font-bold text-slate-300 mt-1 leading-snug break-words line-clamp-3 text-center w-full">-</span>
-          <span id="podium2Val" class="text-xs md:text-sm font-extrabold text-slate-300 mt-1">-</span>
+          <div id="podium2Name" class="text-xs md:text-base font-bold mt-1 leading-snug w-full text-center" style="color: #cbd5e1 !important;">-</div>
+          <span id="podium2Val" class="text-xs md:text-sm font-extrabold mt-1" style="color: #cbd5e1 !important;">-</span>
         </div>
 
         <!-- Platz 1 (Gold) -->
         <div id="podium1" class="glass-card rounded-2xl p-4 md:p-5 text-center border-t-4 border-yellow-400 flex flex-col items-center shadow-2xl transition-all hover:scale-105 cursor-pointer -translate-y-2">
-          <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-yellow-400/20 text-yellow-400 flex items-center justify-center font-black text-base md:text-xl mb-2 border border-yellow-400/40 shadow-md">
+          <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-yellow-400/20 text-yellow-400 flex items-center justify-center font-bold text-base md:text-lg mb-1 md:mb-2 border border-yellow-400/40 shadow-md">
             1
           </div>
-          <span id="podium1Name" class="text-sm md:text-lg font-black text-yellow-400 mt-1 leading-snug break-words line-clamp-3 text-center w-full">-</span>
+          <div id="podium1Name" class="text-sm md:text-lg font-black text-yellow-400 mt-1 leading-snug w-full text-center">-</div>
           <span id="podium1Val" class="text-sm md:text-base font-black text-yellow-400 mt-1">-</span>
         </div>
 
         <!-- Platz 3 (Bronze) -->
         <div id="podium3" class="glass-card rounded-2xl p-3 md:p-4 text-center border-t-4 border-amber-600 flex flex-col items-center shadow-lg transition-all hover:scale-105 cursor-pointer">
-          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-amber-700/20 text-amber-600 flex items-center justify-center font-black text-sm md:text-lg mb-2 border border-amber-600/40">
+          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-amber-700/20 flex items-center justify-center font-bold text-sm md:text-base mb-1 md:mb-2 border border-amber-600/40" style="color: #d97706 !important;">
             3
           </div>
-          <span id="podium3Name" class="text-xs md:text-base font-bold text-amber-600 mt-1 leading-snug break-words line-clamp-3 text-center w-full">-</span>
-          <span id="podium3Val" class="text-xs md:text-sm font-extrabold text-amber-600 mt-1">-</span>
+          <div id="podium3Name" class="text-xs md:text-base font-bold mt-1 leading-snug w-full text-center" style="color: #d97706 !important;">-</div>
+          <span id="podium3Val" class="text-xs md:text-sm font-extrabold mt-1" style="color: #d97706 !important;">-</span>
         </div>
       </div>
 
@@ -3484,10 +3484,23 @@
         playerList.sort((a, b) => getMetricVal(b, metricFilter) - getMetricVal(a, metricFilter));
       }
 
-      // Podium aktualisieren (Platz 1, 2, 3)
-      const p1 = playerList[0];
-      const p2 = playerList[1];
-      const p3 = playerList[2];
+      // Gruppen für Platz 1, 2 und 3 bei Gleichstand ermitteln
+      const ranksMap = [];
+      let currentGroup = null;
+
+      playerList.forEach(p => {
+        const val = getMetricVal(p, metricFilter);
+        if (!currentGroup || currentGroup.val !== val) {
+          currentGroup = { val: val, players: [p] };
+          ranksMap.push(currentGroup);
+        } else {
+          currentGroup.players.push(p);
+        }
+      });
+
+      const group1 = ranksMap[0] || null;
+      const group2 = ranksMap[1] || null;
+      const group3 = ranksMap[2] || null;
 
       const pod1Name = document.getElementById('podium1Name');
       const pod1Val = document.getElementById('podium1Val');
@@ -3499,26 +3512,45 @@
       const pod3Val = document.getElementById('podium3Val');
       const pod3El = document.getElementById('podium3');
 
+      // Platz 1 (Gold)
       if (pod1Name && pod1Val) {
-        pod1Name.innerText = p1 ? p1.name : '-';
-        pod1Name.className = "text-sm md:text-lg font-black text-yellow-400 mt-1 leading-snug break-words line-clamp-3 text-center w-full";
-        pod1Val.innerText = p1 ? formatMetricDisplay(p1, metricFilter) : '-';
-        pod1Val.className = "text-sm md:text-base font-black text-yellow-400 mt-1";
-        if (pod1El) pod1El.onclick = p1 ? () => navigateToPlayerProfile(p1.name) : null;
+        if (group1) {
+          pod1Name.innerHTML = group1.players.map(p => `<div>${p.name}</div>`).join('');
+          pod1Val.innerText = formatMetricDisplay(group1.players[0], metricFilter);
+          if (pod1El) pod1El.onclick = () => navigateToPlayerProfile(group1.players[0].name);
+        } else {
+          pod1Name.innerText = '-';
+          pod1Val.innerText = '-';
+          if (pod1El) pod1El.onclick = null;
+        }
       }
+
+      // Platz 2 (Silber) - Erzwungene Farbe #cbd5e1
       if (pod2Name && pod2Val) {
-        pod2Name.innerText = p2 ? p2.name : '-';
-        pod2Name.className = "text-xs md:text-base font-bold text-slate-300 mt-1 leading-snug break-words line-clamp-3 text-center w-full";
-        pod2Val.innerText = p2 ? formatMetricDisplay(p2, metricFilter) : '-';
-        pod2Val.className = "text-xs md:text-sm font-extrabold text-slate-300 mt-1";
-        if (pod2El) pod2El.onclick = p2 ? () => navigateToPlayerProfile(p2.name) : null;
+        if (group2) {
+          pod2Name.innerHTML = group2.players.map(p => `<div style="color: #cbd5e1 !important;">${p.name}</div>`).join('');
+          pod2Val.innerText = formatMetricDisplay(group2.players[0], metricFilter);
+          pod2Val.setAttribute('style', 'color: #cbd5e1 !important;');
+          if (pod2El) pod2El.onclick = () => navigateToPlayerProfile(group2.players[0].name);
+        } else {
+          pod2Name.innerText = '-';
+          pod2Val.innerText = '-';
+          if (pod2El) pod2El.onclick = null;
+        }
       }
+
+      // Platz 3 (Bronze) - Erzwungene Farbe #d97706
       if (pod3Name && pod3Val) {
-        pod3Name.innerText = p3 ? p3.name : '-';
-        pod3Name.className = "text-xs md:text-base font-bold text-amber-600 mt-1 leading-snug break-words line-clamp-3 text-center w-full";
-        pod3Val.innerText = p3 ? formatMetricDisplay(p3, metricFilter) : '-';
-        pod3Val.className = "text-xs md:text-sm font-extrabold text-amber-600 mt-1";
-        if (pod3El) pod3El.onclick = p3 ? () => navigateToPlayerProfile(p3.name) : null;
+        if (group3) {
+          pod3Name.innerHTML = group3.players.map(p => `<div style="color: #d97706 !important;">${p.name}</div>`).join('');
+          pod3Val.innerText = formatMetricDisplay(group3.players[0], metricFilter);
+          pod3Val.setAttribute('style', 'color: #d97706 !important;');
+          if (pod3El) pod3El.onclick = () => navigateToPlayerProfile(group3.players[0].name);
+        } else {
+          pod3Name.innerText = '-';
+          pod3Val.innerText = '-';
+          if (pod3El) pod3El.onclick = null;
+        }
       }
 
       let displayList = playerList;
