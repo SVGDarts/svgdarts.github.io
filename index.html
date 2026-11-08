@@ -1275,7 +1275,7 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    const CACHE_KEY = "svg_dart_app_data_v12";
+    const CACHE_KEY_BASE = "svg_dart_app_data_v12";
     const TEAM_URLS = {
       "SVG A": "https://portal.3k-darts.com/frontend/events/10/event/1708/phase/2409/group/35981",
       "SVG B": "https://portal.3k-darts.com/frontend/events/10/event/1311/phase/1982/group/34902",
@@ -1671,7 +1671,7 @@
             playerDev: processPlayerDevData(firebaseListToArray(data.Spielerentwicklung || data.playerDev || data.spielerentwicklung))
           };
 
-          localStorage.setItem(CACHE_KEY + "_" + currentSeason, JSON.stringify(appData));
+          localStorage.setItem(`${CACHE_KEY_BASE}_${currentSeason}`, JSON.stringify(appData));
           populateMatchFilters();
           renderAllTables();
           
@@ -1709,7 +1709,7 @@
       currentSeason = select.value;
       
       // Prüfen ob lokaler Cache für diese Saison existiert, um Ladezeiten zu verkürzen
-      const cached = localStorage.getItem(CACHE_KEY + "_" + currentSeason);
+      const cached = localStorage.getItem(`${CACHE_KEY_BASE}_${currentSeason}`);
       if (cached) {
         try {
           appData = JSON.parse(cached);
@@ -3350,7 +3350,7 @@
         currentSeason = select.value;
       }
 
-      const cached = localStorage.getItem(CACHE_KEY + "_" + currentSeason);
+      const cached = localStorage.getItem(`${CACHE_KEY_BASE}_${currentSeason}`);
       if (cached) {
         try {
           appData = JSON.parse(cached);
