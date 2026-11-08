@@ -230,6 +230,13 @@
         padding-bottom: 1rem !important;
       }
     }
+
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
   </style>
 
 </head>
@@ -1149,7 +1156,6 @@
 
           <!-- Spieler Anzahl Filter -->
           <select id="rankingLimitFilter" onchange="renderRanking()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
-            <option value="3">Top 3</option>
             <option value="10">Top 10</option>
             <option value="all" selected>Alle</option>
           </select>
@@ -1157,6 +1163,36 @@
           <button onclick="resetRankingFilters()" class="text-xs bg-black hover:bg-neutral-900 text-neutral-300 px-3 py-2 rounded-xl border border-neutral-700 transition flex items-center gap-1.5">
             <i class="fa-solid fa-rotate-left text-white"></i> Reset
           </button>
+        </div>
+      </div>
+
+      <!-- Podium für Platz 1, 2 und 3 -->
+      <div id="rankingPodiumContainer" class="grid grid-cols-3 gap-3 md:gap-6 items-end pt-6 pb-2 px-2 max-w-2xl mx-auto">
+        <!-- Platz 2 (Silber) -->
+        <div id="podium2" class="glass-card rounded-2xl p-3 md:p-4 text-center border-t-4 border-slate-400 flex flex-col items-center shadow-lg transition-all hover:scale-105 cursor-pointer">
+          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-400/20 text-slate-300 flex items-center justify-center font-black text-sm md:text-lg mb-2 border border-slate-400/40">
+            2
+          </div>
+          <span id="podium2Name" class="text-xs md:text-base font-bold text-slate-300 mt-1 leading-snug break-words line-clamp-3 text-center w-full">-</span>
+          <span id="podium2Val" class="text-xs md:text-sm font-extrabold text-slate-300 mt-1">-</span>
+        </div>
+
+        <!-- Platz 1 (Gold) -->
+        <div id="podium1" class="glass-card rounded-2xl p-4 md:p-5 text-center border-t-4 border-yellow-400 flex flex-col items-center shadow-2xl transition-all hover:scale-105 cursor-pointer -translate-y-2">
+          <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-yellow-400/20 text-yellow-400 flex items-center justify-center font-black text-base md:text-xl mb-2 border border-yellow-400/40 shadow-md">
+            1
+          </div>
+          <span id="podium1Name" class="text-sm md:text-lg font-black text-yellow-400 mt-1 leading-snug break-words line-clamp-3 text-center w-full">-</span>
+          <span id="podium1Val" class="text-sm md:text-base font-black text-yellow-400 mt-1">-</span>
+        </div>
+
+        <!-- Platz 3 (Bronze) -->
+        <div id="podium3" class="glass-card rounded-2xl p-3 md:p-4 text-center border-t-4 border-amber-600 flex flex-col items-center shadow-lg transition-all hover:scale-105 cursor-pointer">
+          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-amber-600/20 text-amber-500 flex items-center justify-center font-black text-sm md:text-lg mb-2 border border-amber-600/40">
+            3
+          </div>
+          <span id="podium3Name" class="text-xs md:text-base font-bold text-amber-500 mt-1 leading-snug break-words line-clamp-3 text-center w-full">-</span>
+          <span id="podium3Val" class="text-xs md:text-sm font-extrabold text-amber-500 mt-1">-</span>
         </div>
       </div>
 
@@ -1493,7 +1529,6 @@
         return true;
       });
 
-      // Chronologische Sortierung nach Uhrzeit
       todayMatches.sort((a, b) => {
         const timeA = String(a.time || a.uhrzeit || '').trim();
         const timeB = String(b.time || b.uhrzeit || '').trim();
@@ -2337,7 +2372,7 @@
         if (dateDiff !== 0) return dateDiff;
         const timeA = String(a.time || a.uhrzeit || '').trim();
         const timeB = String(b.time || b.uhrzeit || '').trim();
-        return timeA.localeCompare(timeB); // Früheste Uhrzeit zuerst bei kommenden Spielen
+        return timeA.localeCompare(timeB);
       });
 
       if (!pastMatches.length) {
@@ -2384,7 +2419,6 @@
         const dateDiff = dateA - dateB;
         if (dateDiff !== 0) return dateDiff;
 
-        // Wenn das Datum identisch ist, nach Uhrzeit sortieren
         const timeA = String(a.time || a.uhrzeit || '').trim();
         const timeB = String(b.time || b.uhrzeit || '').trim();
         return timeA.localeCompare(timeB);
@@ -3112,7 +3146,6 @@
         return;
       }
 
-      // Referenz-Average aus playerProfile für die Horizontale ermitteln
       const pProfile = appData.playerProfile.find(p => String(p.player || p.name || '').trim().toLowerCase() === String(selectedPlayer).trim().toLowerCase()) || {};
       
       let refMetricKey = 'avgSingle';
@@ -3122,7 +3155,6 @@
 
       let refValue = parseNumeric(pProfile[refMetricKey] ?? pProfile[refMetricKey.replace(/([A-Z])/g, '_$1').toLowerCase()]);
 
-      // Reinen Wert rechts neben dem Namen im Badge anzeigen
       const badgeEl = document.getElementById('devRefValueBadge');
       const valEl = document.getElementById('devRefValueVal');
       if (badgeEl && valEl) {
@@ -3170,7 +3202,6 @@
         `;
       }
 
-      // Horizontale Referenzlinie (ohne Textbeschriftung an der Linie)
       let refLineHtml = '';
       if (refValue > 0) {
         const refY = margin.top + yScale(refValue);
@@ -3179,7 +3210,6 @@
         `;
       }
 
-      // X-Spacing mit Abstand zur y-Achse
       const xSpacing = innerWidth / (matchData.length + 1);
 
       let pointsPath = [];
@@ -3195,7 +3225,6 @@
         const dateStr = formatDate(d.date);
         const labelY = margin.top + innerHeight + 15;
 
-        // Beschriftung des Datums parallel zur y-Achse (vertikal gedreht um -90 Grad)
         dotsAndLabelsHtml += `
           <line x1="${xPos}" y1="${labelY - 5}" x2="${xPos}" y2="${yPos}" stroke="#10b981" stroke-opacity="0.2" stroke-width="1" stroke-dasharray="2 2" />
           <circle cx="${xPos}" cy="${yPos}" r="5" fill="#10b981" stroke="#000000" stroke-width="2" />
@@ -3324,7 +3353,6 @@
         headerEl.innerText = selectedOpt ? selectedOpt.text : 'Statistik';
       }
 
-      // Zusammenführen aller Spieler-Daten aus squad, stats, records, gameStats
       const allPlayersMap = {};
 
       appData.squad.forEach(p => {
@@ -3426,17 +3454,42 @@
         return val > 0 ? val : '-';
       };
 
-      // Nur Spieler mit vorhandenen/positiven Werten berücksichtigen
       playerList = playerList.filter(p => getMetricVal(p, metricFilter) > 0);
 
-      // Absteigend sortieren
       playerList.sort((a, b) => getMetricVal(b, metricFilter) - getMetricVal(a, metricFilter));
 
-      // Limit anwenden
+      const p1 = playerList[0];
+      const p2 = playerList[1];
+      const p3 = playerList[2];
+
+      const pod1Name = document.getElementById('podium1Name');
+      const pod1Val = document.getElementById('podium1Val');
+      const pod1El = document.getElementById('podium1');
+      const pod2Name = document.getElementById('podium2Name');
+      const pod2Val = document.getElementById('podium2Val');
+      const pod2El = document.getElementById('podium2');
+      const pod3Name = document.getElementById('podium3Name');
+      const pod3Val = document.getElementById('podium3Val');
+      const pod3El = document.getElementById('podium3');
+
+      if (pod1Name && pod1Val) {
+        pod1Name.innerText = p1 ? p1.name : '-';
+        pod1Val.innerText = p1 ? formatMetricDisplay(p1, metricFilter) : '-';
+        if (pod1El) pod1El.onclick = p1 ? () => navigateToPlayerProfile(p1.name) : null;
+      }
+      if (pod2Name && pod2Val) {
+        pod2Name.innerText = p2 ? p2.name : '-';
+        pod2Val.innerText = p2 ? formatMetricDisplay(p2, metricFilter) : '-';
+        if (pod2El) pod2El.onclick = p2 ? () => navigateToPlayerProfile(p2.name) : null;
+      }
+      if (pod3Name && pod3Val) {
+        pod3Name.innerText = p3 ? p3.name : '-';
+        pod3Val.innerText = p3 ? formatMetricDisplay(p3, metricFilter) : '-';
+        if (pod3El) pod3El.onclick = p3 ? () => navigateToPlayerProfile(p3.name) : null;
+      }
+
       let displayList = playerList;
-      if (limitFilter === '3') {
-        displayList = playerList.slice(0, 3);
-      } else if (limitFilter === '10') {
+      if (limitFilter === '10') {
         displayList = playerList.slice(0, 10);
       }
 
