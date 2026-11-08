@@ -1290,12 +1290,14 @@
       "SVG 8-ER": "https://portal.3k-darts.com/frontend/events/10/event/1710/phase/2411/ko/tree"
     };
 
-    // Fasse / deklariere diese Variablen oben im Modul-Scope:
+    // Oben im Skript (Modul-Scope):
     let appData = { matches: [], squad: [], playerProfile: [], gameStats: [], stats: [], records: [], teamStats: [], orga: [], playerDev: [] };
     let activeTab = 'home';
     let globalSearchQuery = '';
-    let currentSeason = "2026_2027"; // <-- NEU: Standard-Saison definieren
-    let currentDbRef = null;         // <-- NEU: Referenz speichern für sauberen Listener-Wechsel
+    
+    // NEU: Holt die Saison direkt beim Start aus dem Dropdown, falls vorhanden
+    let seasonSelectEl = document.getElementById('globalSeasonSelect');
+    let currentSeason = seasonSelectEl ? seasonSelectEl.value : "2026_2027";
 
     let currentGameStatsSortKey = 'winRateTotal';
     let currentGameStatsSortAsc = false;
@@ -1650,7 +1652,6 @@
     }
 
     function listenToDatabase() {
-      // Wenn bereits ein Listener aktiv war, optional bereinigen oder direkt neu ansetzen
       const seasonPath = `/${currentSeason}`;
       const dbRef = ref(db, seasonPath);
       
@@ -1674,7 +1675,6 @@
           populateMatchFilters();
           renderAllTables();
           
-          // Ansichten aktualisieren, je nachdem welcher Tab gerade offen ist
           if (activeTab === 'livegames') {
             renderLiveGames();
           } else if (activeTab === 'playerProfile') {
@@ -1691,9 +1691,13 @@
             renderTeamStatsChart();
           }
         } else {
-          // Falls für die Saison noch keine Daten in Firebase liegen
-          console.warn("Keine Daten gefunden für Saison: " + currentSeason);
+          console.warn("Keine Daten in Firebase gefunden für Pfad: " + seasonPath);
+          // Leere Ansicht anzeigen, falls Saison leer ist
+          appData = { matches: [], squad: [], playerProfile: [], gameStats: [], stats: [], records: [], teamStats: [], orga: [], playerDev: [] };
+          renderAllTables();
         }
+      }, (error) => {
+        console.error("Firebase Read Error:", error);
       });
     }
 
@@ -3340,7 +3344,13 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      const cached = localStorage.getItem(CACHE_KEY);
+      // Saison aus Dropdown beim Start auslesen
+      const select = document.getElementById('globalSeasonSelect');
+      if (select) {
+        currentSeason = select.value;
+      }
+
+      const cached = localStorage.getItem(CACHE_KEY + "_" + currentSeason);
       if (cached) {
         try {
           appData = JSON.parse(cached);
@@ -3351,7 +3361,7 @@
           appData.stats = firebaseListToArray(appData.stats || appData.Averages);
           appData.records = firebaseListToArray(appData.records || appData.Bestleistungen);
           appData.teamStats = firebaseListToArray(appData.teamStats || appData.Teamstatistiken);
-          appData.orga = firebaseListToArray(appData.orga || appData.Orga || appData.organisations || appData.links);
+          appData.orga = firebaseListToArray(appData.orga || appData.Orga || data.organisations || data.links);
           appData.playerDev = processPlayerDevData(firebaseListToArray(appData.playerDev || appData.Spielerentwicklung || appData.spielerentwicklung));
           
           populateMatchFilters();
