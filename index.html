@@ -1721,7 +1721,7 @@
           appData.records = firebaseListToArray(appData.records || appData.Bestleistungen);
           appData.teamStats = firebaseListToArray(appData.teamStats || appData.Teamstatistiken);
           appData.orga = firebaseListToArray(appData.orga || appData.Orga || appData.organisations || appData.links);
-          appData.playerDev = processPlayerDevData(firebaseListToArray(appData.playerDev || appData.Spielerentwicklung || data.spielerentwicklung));
+          appData.playerDev = processPlayerDevData(firebaseListToArray(appData.playerDev || appData.Spielerentwicklung || appData.spielerentwicklung));
           
           populateMatchFilters();
           renderAllTables();
