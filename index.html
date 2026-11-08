@@ -1175,32 +1175,38 @@
       </div>
 
       <!-- Podium für Platz 1, 2 und 3 -->
-      <div id="rankingPodiumContainer" class="grid grid-cols-3 gap-3 md:gap-6 items-end pt-6 pb-2 px-2 max-w-2xl mx-auto">
+      <div id="rankingPodiumContainer" class="grid grid-cols-3 gap-3 md:gap-6 items-stretch pt-6 pb-2 px-2 max-w-2xl mx-auto">
         <!-- Platz 2 (Silber) -->
-        <div id="podium2" class="glass-card rounded-2xl p-3 md:p-4 text-center border-t-4 border-slate-300 flex flex-col items-center shadow-lg transition-all hover:scale-105 cursor-pointer">
-          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-400/20 flex items-center justify-center font-bold text-sm md:text-base mb-1 md:mb-2 border border-slate-300/40" style="color: #cbd5e1 !important;">
-            2
+        <div id="podium2" class="glass-card rounded-2xl p-3 md:p-4 text-center border-t-4 border-slate-300 flex flex-col justify-between items-center shadow-lg transition-all hover:scale-105 cursor-pointer h-full">
+          <div class="flex flex-col items-center w-full">
+            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-400/20 flex items-center justify-center font-bold text-sm md:text-base mb-1 md:mb-2 border border-slate-300/40" style="color: #cbd5e1 !important;">
+              2
+            </div>
+            <div id="podium2Name" class="text-xs md:text-base font-bold mt-1 leading-snug w-full text-center" style="color: #cbd5e1 !important;">-</div>
           </div>
-          <div id="podium2Name" class="text-xs md:text-base font-bold mt-1 leading-snug w-full text-center" style="color: #cbd5e1 !important;">-</div>
-          <span id="podium2Val" class="text-xs md:text-sm font-extrabold mt-1" style="color: #cbd5e1 !important;">-</span>
+          <span id="podium2Val" class="text-xs md:text-sm font-extrabold mt-2" style="color: #cbd5e1 !important;">-</span>
         </div>
 
         <!-- Platz 1 (Gold) -->
-        <div id="podium1" class="glass-card rounded-2xl p-4 md:p-5 text-center border-t-4 border-yellow-400 flex flex-col items-center shadow-2xl transition-all hover:scale-105 cursor-pointer -translate-y-2">
-          <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-yellow-400/20 text-yellow-400 flex items-center justify-center font-bold text-base md:text-lg mb-1 md:mb-2 border border-yellow-400/40 shadow-md">
-            1
+        <div id="podium1" class="glass-card rounded-2xl p-4 md:p-5 text-center border-t-4 border-yellow-400 flex flex-col justify-between items-center shadow-2xl transition-all hover:scale-105 cursor-pointer h-full">
+          <div class="flex flex-col items-center w-full">
+            <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-yellow-400/20 text-yellow-400 flex items-center justify-center font-bold text-base md:text-lg mb-1 md:mb-2 border border-yellow-400/40 shadow-md">
+              1
+            </div>
+            <div id="podium1Name" class="text-sm md:text-lg font-black text-yellow-400 mt-1 leading-snug w-full text-center">-</div>
           </div>
-          <div id="podium1Name" class="text-sm md:text-lg font-black text-yellow-400 mt-1 leading-snug w-full text-center">-</div>
-          <span id="podium1Val" class="text-sm md:text-base font-black text-yellow-400 mt-1">-</span>
+          <span id="podium1Val" class="text-sm md:text-base font-black text-yellow-400 mt-2">-</span>
         </div>
 
         <!-- Platz 3 (Bronze) -->
-        <div id="podium3" class="glass-card rounded-2xl p-3 md:p-4 text-center border-t-4 border-amber-600 flex flex-col items-center shadow-lg transition-all hover:scale-105 cursor-pointer">
-          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-amber-700/20 flex items-center justify-center font-bold text-sm md:text-base mb-1 md:mb-2 border border-amber-600/40" style="color: #d97706 !important;">
-            3
+        <div id="podium3" class="glass-card rounded-2xl p-3 md:p-4 text-center border-t-4 border-amber-600 flex flex-col justify-between items-center shadow-lg transition-all hover:scale-105 cursor-pointer h-full">
+          <div class="flex flex-col items-center w-full">
+            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-amber-700/20 flex items-center justify-center font-bold text-sm md:text-base mb-1 md:mb-2 border border-amber-600/40" style="color: #d97706 !important;">
+              3
+            </div>
+            <div id="podium3Name" class="text-xs md:text-base font-bold mt-1 leading-snug w-full text-center" style="color: #d97706 !important;">-</div>
           </div>
-          <div id="podium3Name" class="text-xs md:text-base font-bold mt-1 leading-snug w-full text-center" style="color: #d97706 !important;">-</div>
-          <span id="podium3Val" class="text-xs md:text-sm font-extrabold mt-1" style="color: #d97706 !important;">-</span>
+          <span id="podium3Val" class="text-xs md:text-sm font-extrabold mt-2" style="color: #d97706 !important;">-</span>
         </div>
       </div>
 
@@ -3456,7 +3462,6 @@
         if (metric === 'durationDoubleLeg') {
           const raw = item.durationDoubleLeg ?? item.duration_double_leg;
           return formatShortDuration(raw);
-        
         }
         if (metric === 'avgSingle' || metric === 'maxAvgSingle' || metric === 'avgDouble' || metric === 'maxAvgDouble' || metric === 'first9Single' || metric === 'maxFirst9Single' || metric === 'first9Double' || metric === 'maxFirst9Double' || metric === 'avgOpponentSingle' || metric === 'avgOpponentDouble' || metric === 'specialsPerGame') {
           const val = getMetricVal(item, metric);
@@ -3476,6 +3481,15 @@
         }
         const val = getMetricVal(item, metric);
         return val > 0 ? val : '-';
+      };
+
+      const formatPodiumMetricDisplay = (item, metric) => {
+        const rawStr = formatMetricDisplay(item, metric);
+        if ((metric === 'highfinish' || metric === 'shortgame' || metric === 'r140') && String(rawStr).includes('(')) {
+          const match = String(rawStr).match(/\((.*?)\)/);
+          if (match && match[1]) return match[1];
+        }
+        return rawStr;
       };
 
       // Nur Spieler mit vorhandenen/positiven Werten berücksichtigen
@@ -3521,7 +3535,7 @@
       if (pod1Name && pod1Val) {
         if (group1) {
           pod1Name.innerHTML = group1.players.map(p => `<div>${p.name}</div>`).join('');
-          pod1Val.innerText = formatMetricDisplay(group1.players[0], metricFilter);
+          pod1Val.innerText = formatPodiumMetricDisplay(group1.players[0], metricFilter);
           if (pod1El) pod1El.onclick = () => navigateToPlayerProfile(group1.players[0].name);
         } else {
           pod1Name.innerText = '-';
@@ -3534,7 +3548,7 @@
       if (pod2Name && pod2Val) {
         if (group2) {
           pod2Name.innerHTML = group2.players.map(p => `<div style="color: #cbd5e1 !important;">${p.name}</div>`).join('');
-          pod2Val.innerText = formatMetricDisplay(group2.players[0], metricFilter);
+          pod2Val.innerText = formatPodiumMetricDisplay(group2.players[0], metricFilter);
           pod2Val.setAttribute('style', 'color: #cbd5e1 !important;');
           if (pod2El) pod2El.onclick = () => navigateToPlayerProfile(group2.players[0].name);
         } else {
@@ -3548,7 +3562,7 @@
       if (pod3Name && pod3Val) {
         if (group3) {
           pod3Name.innerHTML = group3.players.map(p => `<div style="color: #d97706 !important;">${p.name}</div>`).join('');
-          pod3Val.innerText = formatMetricDisplay(group3.players[0], metricFilter);
+          pod3Val.innerText = formatPodiumMetricDisplay(group3.players[0], metricFilter);
           pod3Val.setAttribute('style', 'color: #d97706 !important;');
           if (pod3El) pod3El.onclick = () => navigateToPlayerProfile(group3.players[0].name);
         } else {
