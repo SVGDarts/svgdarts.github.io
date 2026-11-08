@@ -1674,6 +1674,7 @@
           localStorage.setItem(`${CACHE_KEY_BASE}_${currentSeason}`, JSON.stringify(appData));
           populateMatchFilters();
           renderAllTables();
+          renderRanking(); // <-- HIER EBENFALLS ERGÄNZEN
           
           if (activeTab === 'livegames') {
             renderLiveGames();
@@ -1708,7 +1709,6 @@
       
       currentSeason = select.value;
       
-      // Prüfen ob lokaler Cache für diese Saison existiert, um Ladezeiten zu verkürzen
       const cached = localStorage.getItem(`${CACHE_KEY_BASE}_${currentSeason}`);
       if (cached) {
         try {
@@ -1725,13 +1725,20 @@
           
           populateMatchFilters();
           renderAllTables();
+          renderRanking(); // <-- HIER ERGÄNZT
         } catch (e) {
           console.error("Cache Read Error", e);
         }
       }
       
-      // Live-Daten von Firebase für die neue Saison abrufen
       listenToDatabase();
+      
+      // Falls man gerade im Ranking-Tab ist, direkt nach Firebase-Empfang nochmals aktualisieren
+      setTimeout(() => {
+        if (activeTab === 'ranking') {
+          renderRanking();
+        }
+      }, 300);
     }
 
     // Global verfügbar machen im window-Bereich am Ende des Scripts:
