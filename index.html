@@ -3449,9 +3449,14 @@
       };
 
       const formatMetricDisplay = (item, metric) => {
-        if (metric === 'durationSingleLeg' || metric === 'durationDoubleLeg') {
-          const raw = item.durationSingleLeg ?? item.duration_single_leg ?? item.durationDoubleLeg ?? item.duration_double_leg;
+        if (metric === 'durationSingleLeg') {
+          const raw = item.durationSingleLeg ?? item.duration_single_leg;
           return formatShortDuration(raw);
+        }
+        if (metric === 'durationDoubleLeg') {
+          const raw = item.durationDoubleLeg ?? item.duration_double_leg;
+          return formatShortDuration(raw);
+        }
         }
         if (metric === 'avgSingle' || metric === 'maxAvgSingle' || metric === 'avgDouble' || metric === 'maxAvgDouble' || metric === 'first9Single' || metric === 'maxFirst9Single' || metric === 'first9Double' || metric === 'maxFirst9Double' || metric === 'avgOpponentSingle' || metric === 'avgOpponentDouble' || metric === 'specialsPerGame') {
           const val = getMetricVal(item, metric);
