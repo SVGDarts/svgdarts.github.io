@@ -3450,9 +3450,8 @@
 
       const formatMetricDisplay = (item, metric) => {
         if (metric === 'durationSingleLeg' || metric === 'durationDoubleLeg') {
-          const raw = item[metric] ?? item[metric.replace(/([A-Z])/g, '_$1').toLowerCase()];
-          return parseDurationToSeconds(raw);
-        }
+          const raw = item.durationSingleLeg ?? item.duration_single_leg ?? item.durationDoubleLeg ?? item.duration_double_leg;
+          return formatShortDuration(raw);
         }
         if (metric === 'avgSingle' || metric === 'maxAvgSingle' || metric === 'avgDouble' || metric === 'maxAvgDouble' || metric === 'first9Single' || metric === 'maxFirst9Single' || metric === 'first9Double' || metric === 'maxFirst9Double' || metric === 'avgOpponentSingle' || metric === 'avgOpponentDouble' || metric === 'specialsPerGame') {
           const val = getMetricVal(item, metric);
@@ -3477,8 +3476,9 @@
       // Nur Spieler mit vorhandenen/positiven Werten berücksichtigen
       playerList = playerList.filter(p => getMetricVal(p, metricFilter) > 0);
 
-      // Sortierung: Bei Spieldauer gewinnt die kürzeste Zeit (aufsteigend), sonst der höchste Wert (absteigend)
-      if (metricFilter === 'durationSingleLeg' || metricFilter === 'durationDoubleLeg') {
+      // Bei Spieldauer aufsteigend sortieren (kürzeste Zeit ist am besten), sonst absteigend
+      const isDurationMetric = metricFilter === 'durationSingleLeg' || metricFilter === 'durationDoubleLeg';
+      if (isDurationMetric) {
         playerList.sort((a, b) => getMetricVal(a, metricFilter) - getMetricVal(b, metricFilter));
       } else {
         playerList.sort((a, b) => getMetricVal(b, metricFilter) - getMetricVal(a, metricFilter));
