@@ -1114,11 +1114,19 @@
           <select id="rankingMetricFilter" onchange="renderRanking()" class="bg-black text-white text-xs rounded-xl px-3 py-2 border border-neutral-700 focus:outline-none cursor-pointer">
             <optgroup label="Averages & Scores">
               <option value="avgSingle">Average (Einzel)</option>
-              <option value="avgDouble">Average (Doppel)</option>
+              <option value="maxAvgSingle">Bestes Einzel Average</option>
               <option value="first9Single">First 9 Average (Einzel)</option>
+              <option value="maxFirst9Single">Bester Einzel First 9</option>
+              <option value="avgDouble">Average (Doppel)</option>
+              <option value="maxAvgDouble">Bestes Doppel Average</option>
               <option value="first9Double">First 9 Average (Doppel)</option>
+              <option value="maxFirst9Double">Bester Doppel First 9</option>
               <option value="avgOpponentSingle">Average Gegner (Einzel)</option>
               <option value="avgOpponentDouble">Average Gegner (Doppel)</option>
+            </optgroup>
+            <optgroup label="Spieldauer">
+              <option value="durationSingleLeg">Dauer Leg Einzel</option>
+              <option value="durationDoubleLeg">Dauer Leg Doppel</option>
             </optgroup>
             <optgroup label="Bestleistungen & Specials">
               <option value="specials">Specials</option>
@@ -1169,8 +1177,8 @@
       <!-- Podium für Platz 1, 2 und 3 -->
       <div id="rankingPodiumContainer" class="grid grid-cols-3 gap-3 md:gap-6 items-end pt-6 pb-2 px-2 max-w-2xl mx-auto">
         <!-- Platz 2 (Silber) -->
-        <div id="podium2" class="glass-card rounded-2xl p-3 md:p-4 text-center border-t-4 border-slate-400 flex flex-col items-center shadow-lg transition-all hover:scale-105 cursor-pointer">
-          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-400/20 text-slate-300 flex items-center justify-center font-black text-sm md:text-lg mb-2 border border-slate-400/40">
+        <div id="podium2" class="glass-card rounded-2xl p-3 md:p-4 text-center border-t-4 border-slate-300 flex flex-col items-center shadow-lg transition-all hover:scale-105 cursor-pointer">
+          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-slate-400/20 text-slate-300 flex items-center justify-center font-black text-sm md:text-lg mb-2 border border-slate-300/40">
             2
           </div>
           <span id="podium2Name" class="text-xs md:text-base font-bold text-slate-300 mt-1 leading-snug break-words line-clamp-3 text-center w-full">-</span>
@@ -1188,11 +1196,11 @@
 
         <!-- Platz 3 (Bronze) -->
         <div id="podium3" class="glass-card rounded-2xl p-3 md:p-4 text-center border-t-4 border-amber-600 flex flex-col items-center shadow-lg transition-all hover:scale-105 cursor-pointer">
-          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-amber-600/20 text-amber-500 flex items-center justify-center font-black text-sm md:text-lg mb-2 border border-amber-600/40">
+          <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-amber-700/20 text-amber-600 flex items-center justify-center font-black text-sm md:text-lg mb-2 border border-amber-600/40">
             3
           </div>
-          <span id="podium3Name" class="text-xs md:text-base font-bold text-amber-500 mt-1 leading-snug break-words line-clamp-3 text-center w-full">-</span>
-          <span id="podium3Val" class="text-xs md:text-sm font-extrabold text-amber-500 mt-1">-</span>
+          <span id="podium3Name" class="text-xs md:text-base font-bold text-amber-600 mt-1 leading-snug break-words line-clamp-3 text-center w-full">-</span>
+          <span id="podium3Val" class="text-xs md:text-sm font-extrabold text-amber-600 mt-1">-</span>
         </div>
       </div>
 
@@ -3406,11 +3414,18 @@
 
       const getMetricVal = (item, metric) => {
         if (metric === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avg_single ?? item.avg);
-        if (metric === 'avgDouble') return parseNumeric(item.avgDouble ?? item.avg_double);
+        if (metric === 'maxAvgSingle') return parseNumeric(item.maxAvgSingle ?? item.max_avg_single ?? item.bestAvgSingle);
         if (metric === 'first9Single') return parseNumeric(item.first9Single ?? item.first9_single ?? item.first9);
+        if (metric === 'maxFirst9Single') return parseNumeric(item.maxFirst9Single ?? item.max_first_9_single ?? item.bestFirst9Single);
+        if (metric === 'avgDouble') return parseNumeric(item.avgDouble ?? item.avg_double);
+        if (metric === 'maxAvgDouble') return parseNumeric(item.maxAvgDouble ?? item.max_avg_double ?? item.bestAvgDouble);
         if (metric === 'first9Double') return parseNumeric(item.first9Double ?? item.first9_double);
+        if (metric === 'maxFirst9Double') return parseNumeric(item.maxFirst9Double ?? item.max_first_9_double ?? item.bestFirst9Double);
         if (metric === 'avgOpponentSingle') return parseNumeric(item.avgOpponentSingle ?? item.avg_opponent_single);
         if (metric === 'avgOpponentDouble') return parseNumeric(item.avgOpponentDouble ?? item.avg_opponent_double);
+
+        if (metric === 'durationSingleLeg') return parseDurationToSeconds(item.durationSingleLeg ?? item.duration_single_leg);
+        if (metric === 'durationDoubleLeg') return parseDurationToSeconds(item.durationDoubleLeg ?? item.duration_double_leg);
 
         if (metric === 'specials') return parseNumeric(item.specials);
         if (metric === 'r180') return parseNumeric(item.r180 ?? item['180']);
@@ -3434,7 +3449,11 @@
       };
 
       const formatMetricDisplay = (item, metric) => {
-        if (metric === 'avgSingle' || metric === 'avgDouble' || metric === 'first9Single' || metric === 'first9Double' || metric === 'avgOpponentSingle' || metric === 'avgOpponentDouble' || metric === 'specialsPerGame') {
+        if (metric === 'durationSingleLeg' || metric === 'durationDoubleLeg') {
+          const raw = item.durationSingleLeg ?? item.duration_single_leg ?? item.durationDoubleLeg ?? item.duration_double_leg;
+          return formatShortDuration(raw);
+        }
+        if (metric === 'avgSingle' || metric === 'maxAvgSingle' || metric === 'avgDouble' || metric === 'maxAvgDouble' || metric === 'first9Single' || metric === 'maxFirst9Single' || metric === 'first9Double' || metric === 'maxFirst9Double' || metric === 'avgOpponentSingle' || metric === 'avgOpponentDouble' || metric === 'specialsPerGame') {
           const val = getMetricVal(item, metric);
           return val > 0 ? formatNumber(val) : '-';
         }
@@ -3454,10 +3473,18 @@
         return val > 0 ? val : '-';
       };
 
+      // Nur Spieler mit vorhandenen/positiven Werten berücksichtigen
       playerList = playerList.filter(p => getMetricVal(p, metricFilter) > 0);
 
-      playerList.sort((a, b) => getMetricVal(b, metricFilter) - getMetricVal(a, metricFilter));
+      // Bei Spieldauer aufsteigend sortieren (kürzeste Zeit ist am besten), sonst absteigend
+      const isDurationMetric = metricFilter === 'durationSingleLeg' || metricFilter === 'durationDoubleLeg';
+      if (isDurationMetric) {
+        playerList.sort((a, b) => getMetricVal(a, metricFilter) - getMetricVal(b, metricFilter));
+      } else {
+        playerList.sort((a, b) => getMetricVal(b, metricFilter) - getMetricVal(a, metricFilter));
+      }
 
+      // Podium aktualisieren (Platz 1, 2, 3)
       const p1 = playerList[0];
       const p2 = playerList[1];
       const p3 = playerList[2];
@@ -3472,24 +3499,23 @@
       const pod3Val = document.getElementById('podium3Val');
       const pod3El = document.getElementById('podium3');
 
-      // Podium aktualisieren (Platz 1, 2, 3) mit korrekten Farbklassen
       if (pod1Name && pod1Val) {
         pod1Name.innerText = p1 ? p1.name : '-';
-        pod1Name.className = "text-sm md:text-lg font-black text-yellow-400 mt-1 leading-snug break-words line-clamp-3 w-full";
+        pod1Name.className = "text-sm md:text-lg font-black text-yellow-400 mt-1 leading-snug break-words line-clamp-3 text-center w-full";
         pod1Val.innerText = p1 ? formatMetricDisplay(p1, metricFilter) : '-';
         pod1Val.className = "text-sm md:text-base font-black text-yellow-400 mt-1";
         if (pod1El) pod1El.onclick = p1 ? () => navigateToPlayerProfile(p1.name) : null;
       }
       if (pod2Name && pod2Val) {
         pod2Name.innerText = p2 ? p2.name : '-';
-        pod2Name.className = "text-xs md:text-base font-bold text-slate-300 mt-1 leading-snug break-words line-clamp-3 w-full";
+        pod2Name.className = "text-xs md:text-base font-bold text-slate-300 mt-1 leading-snug break-words line-clamp-3 text-center w-full";
         pod2Val.innerText = p2 ? formatMetricDisplay(p2, metricFilter) : '-';
         pod2Val.className = "text-xs md:text-sm font-extrabold text-slate-300 mt-1";
         if (pod2El) pod2El.onclick = p2 ? () => navigateToPlayerProfile(p2.name) : null;
       }
       if (pod3Name && pod3Val) {
         pod3Name.innerText = p3 ? p3.name : '-';
-        pod3Name.className = "text-xs md:text-base font-bold text-amber-600 mt-1 leading-snug break-words line-clamp-3 w-full";
+        pod3Name.className = "text-xs md:text-base font-bold text-amber-600 mt-1 leading-snug break-words line-clamp-3 text-center w-full";
         pod3Val.innerText = p3 ? formatMetricDisplay(p3, metricFilter) : '-';
         pod3Val.className = "text-xs md:text-sm font-extrabold text-amber-600 mt-1";
         if (pod3El) pod3El.onclick = p3 ? () => navigateToPlayerProfile(p3.name) : null;
