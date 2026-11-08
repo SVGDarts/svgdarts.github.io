@@ -3456,7 +3456,7 @@
         if (metric === 'durationDoubleLeg') {
           const raw = item.durationDoubleLeg ?? item.duration_double_leg;
           return formatShortDuration(raw);
-        }
+        
         }
         if (metric === 'avgSingle' || metric === 'maxAvgSingle' || metric === 'avgDouble' || metric === 'maxAvgDouble' || metric === 'first9Single' || metric === 'maxFirst9Single' || metric === 'first9Double' || metric === 'maxFirst9Double' || metric === 'avgOpponentSingle' || metric === 'avgOpponentDouble' || metric === 'specialsPerGame') {
           const val = getMetricVal(item, metric);
