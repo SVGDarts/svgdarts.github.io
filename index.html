@@ -2118,7 +2118,7 @@ function getPrevMetricVal(playerName, metric) {
       document.getElementById('profGamesVal').innerText = p.wonGames ?? p.won_games ?? p.games ?? p.spiele ?? '-';
       document.getElementById('profLegsVal').innerText = p.wonLegs ?? p.won_legs ?? p.legs ?? '-';
 
-      // Hilfsfunktion: setzt den Kartenwert inklusive Vorsaison-Vergleich direkt darunter (10px)
+      // Hilfsfunktion: setzt den Kartenwert inklusive Vorsaison-Vergleich darunter
       const setCardValue = (elementId, currentValue, metricKey, isDuration = false, isPercent = false) => {
         const el = document.getElementById(elementId);
         if (!el) return;
@@ -2137,7 +2137,8 @@ function getPrevMetricVal(playerName, metric) {
             const diff = currNum - prevNum;
             
             if (diff === 0) {
-              diffHtml = `<div class="text-[10px] font-medium mt-0.5" style="color: #fbbf24 !important;">0.00 <i class="fa-solid fa-right-long text-[9px]"></i></div>`;
+              // Verwende hier die Klasse profile-card-rank statt fixer px-Größen
+              diffHtml = `<div class="profile-card-rank mt-0.5" style="color: #fbbf24 !important;">0.00 <i class="fa-solid fa-right-long text-[9px]"></i></div>`;
             } else {
               let colorStyle = 'color: #fbbf24 !important;';
               let arrowIcon = '<i class="fa-solid fa-right-long text-[9px]"></i>';
@@ -2158,12 +2159,13 @@ function getPrevMetricVal(playerName, metric) {
                 ? `${diff > 0 ? '+' : ''}${diff.toFixed(1)}s`
                 : `${signStr}${diff.toFixed(2)}`;
 
-              diffHtml = `<div class="text-[0.65rem] md:text-[0.75rem] font-medium mt-0.5" style="${colorStyle}">${formattedDiff} ${arrowIcon}</div>`;
+              // Hier ebenfalls die Klasse profile-card-rank nutzen, damit es exakt übereinstimmt
+              diffHtml = `<div class="profile-card-rank mt-0.5" style="${colorStyle}">${formattedDiff} ${arrowIcon}</div>`;
             }
           }
         }
 
-        // Verwende flex-col, damit der Hauptwert oben und die Differenz exakt darunter steht
+        // Hauptwert oben, Differenz exakt darunter in Rang-Größe
         el.innerHTML = `<div class="flex flex-col">${formattedVal}${diffHtml}</div>`;
       };
 
