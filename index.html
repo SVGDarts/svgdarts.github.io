@@ -1266,7 +1266,7 @@
 
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js';
-    import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js';
+    import { getDatabase, ref, onValue, get } from 'https://www.gstatic.com/firebasejs/10.13.0/firebase-database.js';
 
     const firebaseConfig = {
       projectId: "svg-darts",
@@ -1652,10 +1652,42 @@
       handleGlobalSearch();
     }
 
+function getPreviousSeason(seasonStr) {
+  const parts = seasonStr.split('_');
+  if (parts.length === 2) {
+    const start = parseInt(parts[0], 10);
+    const end = parseInt(parts[1], 10);
+    if (!isNaN(start) && !isNaN(end)) {
+      return `${start - 1}_${start}`;
+    }
+  }
+  return null;
+}
+
     function listenToDatabase() {
       const seasonPath = `/${currentSeason}`;
       const dbRef = ref(db, seasonPath);
       
+      // NEU: Vorsaison-Daten laden
+      const prevSeason = getPreviousSeason(currentSeason);
+      if (prevSeason) {
+        const prevRef = ref(db, `/${prevSeason}`);
+        get(prevRef).then((snapshot) => {
+          if (snapshot.exists()) {
+            const prevData = snapshot.val();
+            appData.teamStatsPrev = firebaseListToArray(prevData.Teamstatistiken || prevData.teamStats || prevData.team_stats);
+          } else {
+            appData.teamStatsPrev = [];
+          }
+          renderTeamStats();
+        }).catch(err => {
+          console.error("Error loading previous season:", err);
+          appData.teamStatsPrev = [];
+        });
+      } else {
+        appData.teamStatsPrev = [];
+      }
+
       onValue(dbRef, (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
@@ -2926,11 +2958,41 @@
           : 'hover:bg-neutral-900/60 transition';
 
         return `
-          <tr class="${rowClass}">
-            <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white whitespace-nowrap">${teamName}</td>
-            <td class="px-4 py-4 text-white font-extrabold">${formatNumber(t.avg)}</td>
-            <td class="px-4 py-4 text-neutral-200">${formatNumber(t.first9 ?? t.first_9)}</td>
+              <tr class="${rowClass}">
+                <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
+                <td class="px-4 py-4 font-semibold text-white whitespace-nowrap">${teamName}</td>
+                <td class="px-4 py-4 text-white font-extrabold">
+                  ${formatNumber(t.avg)}
+                  ${(() => {
+                    if (!appData.teamStatsPrev || !appData.teamStatsPrev.length) return '';
+                    const teamNameClean = (t.team || t.name || '').trim().toLowerCase();
+                    const prevTeam = appData.teamStatsPrev.find(pt => (pt.team || pt.name || '').trim().toLowerCase() === teamNameClean);
+                    if (!prevTeam) return '';
+                    
+                    const currAvg = parseNumeric(t.avg);
+                    const prevAvg = parseNumeric(prevTeam.avg);
+                    const diff = currAvg - prevAvg;
+                    
+                    if (isNaN(diff)) return '';
+                    
+                    let colorClass = 'text-yellow-400';
+                    let arrowIcon = '<i class="fa-solid fa-right-long text-[10px]"></i>';
+                    let signStr = '';
+                    
+                    if (diff > 0) {
+                      colorClass = 'text-emerald-400';
+                      arrowIcon = '<i class="fa-solid fa-arrow-up text-[10px]"></i>';
+                      signStr = '+';
+                    } else if (diff < 0) {
+                      colorClass = 'text-red-500';
+                      arrowIcon = '<i class="fa-solid fa-arrow-down text-[10px]"></i>';
+                    }
+                    
+                    const diffFormatted = `${signStr}${diff.toFixed(2)}`;
+                    return `<span class="ml-2 text-xs font-semibold ${colorClass} inline-flex items-center gap-0.5">(${diffFormatted} ${arrowIcon})</span>`;
+                  })()}
+                </td>
+                <td class="px-4 py-4 text-neutral-200">${formatNumber(t.first9 ?? t.first_9)}</td>
             <td class="px-4 py-4 text-neutral-200">${formatNumber(t.avgSingle ?? t.avg_single)}</td>
             <td class="px-4 py-4 text-neutral-300">${formatNumber(t.avgDouble ?? t.avg_double)}</td>
             <td class="px-4 py-4 text-neutral-300">${formatNumber(t.avgOpponentSingleLeague ?? t.avg_opponent_single_league)}</td>
