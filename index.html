@@ -908,6 +908,12 @@
             <i class="fa-solid fa-download"></i> Download
           </button>
 
+<!-- NEU: Der Schalter für den Vorsaison-Vergleich -->
+          <label class="flex items-center gap-2 cursor-pointer bg-neutral-900 hover:bg-neutral-800 px-3 py-2.5 rounded-2xl border border-neutral-700 text-xs text-neutral-300 font-medium transition shadow-sm">
+            <input type="checkbox" id="toggleProfilePrevSeason" onchange="renderPlayerProfile()" checked class="rounded bg-black border-neutral-700 text-yellow-400 focus:ring-0 cursor-pointer">
+            <span>Vorsaison-Vergleich</span>
+          </label>
+
           <div class="glass-card px-4 py-2.5 rounded-2xl flex flex-col justify-center items-start text-left" style="min-width: 130px; height: 60px;">
             <div class="text-xs text-neutral-300 font-medium leading-tight text-left">
               Spiele: <span id="profGamesVal" class="font-bold text-white">-</span>
@@ -1652,8 +1658,9 @@
       handleGlobalSearch();
     }
 
+// 1. Berechnet dynamisch den Pfad der Vorgängersaison (z.B. 2026_2027 -> 2025_2026)
 function getPreviousSeason(seasonStr) {
-  const parts = seasonStr.split('_');
+  const parts = String(seasonStr || '').split('_');
   if (parts.length === 2) {
     const start = parseInt(parts[0], 10);
     const end = parseInt(parts[1], 10);
@@ -1664,11 +1671,99 @@ function getPreviousSeason(seasonStr) {
   return null;
 }
 
+// 2. Erzeugt das fertige HTML-Span für eine Differenz (Zahl + Pfeil + Farbe)
+function createDiffBadgeHTML(diff, isDuration = false, hasPrevValue = true) {
+  if (!hasPrevValue || isNaN(diff)) return '';
+  
+  if (diff === 0) {
+    return `<span class="ml-1.5 text-[10px] font-medium text-yellow-400 inline-flex items-center gap-0.5">0.00 <i class="fa-solid fa-right-long text-[9px]"></i></span>`;
+  }
+
+  let colorClass = 'text-yellow-400';
+  let arrowIcon = '<i class="fa-solid fa-right-long text-[9px]"></i>';
+  let signStr = '';
+
+  // Bei Spieldauer ist weniger Zeit (= negative Differenz) besser!
+  const isBetter = (!isDuration && diff > 0) || (isDuration && diff < 0);
+
+  if (isBetter) {
+    colorClass = 'text-emerald-400';
+    arrowIcon = '<i class="fa-solid fa-arrow-up text-[9px]"></i>';
+    signStr = !isDuration ? '+' : '';
+  } else {
+    colorClass = 'text-red-500';
+    arrowIcon = '<i class="fa-solid fa-arrow-down text-[9px]"></i>';
+  }
+
+  const formattedDiff = isDuration
+    ? `${diff > 0 ? '+' : ''}${diff.toFixed(1)}s`
+    : `${signStr}${diff.toFixed(2)}`;
+
+  return `<span class="ml-1.5 text-[10px] font-medium ${colorClass} inline-flex items-center gap-0.5">${formattedDiff} ${arrowIcon}</span>`;
+}
+
+// 3. Holt den Vorsaison-Wert eines bestimmten Spielers für eine bestimmte Metrik
+function getPrevMetricVal(playerName, metric) {
+  if (!appData.rankingPrev) return null;
+  const nameClean = String(playerName || '').trim().toLowerCase();
+  
+  let item = null;
+  if (appData.rankingPrev.playerProfile) {
+    item = appData.rankingPrev.playerProfile.find(p => String(p.player || p.name || '').trim().toLowerCase() === nameClean);
+  }
+  if (!item && appData.rankingPrev.stats) {
+    item = appData.rankingPrev.stats.find(s => String(s.player || s.name || '').trim().toLowerCase() === nameClean);
+  }
+  if (!item && appData.rankingPrev.records) {
+    item = appData.rankingPrev.records.find(r => String(r.player || r.name || '').trim().toLowerCase() === nameClean);
+  }
+  if (!item && appData.rankingPrev.gameStats) {
+    item = appData.rankingPrev.gameStats.find(g => String(g.player || g.name || '').trim().toLowerCase() === nameClean);
+  }
+  
+  if (!item) return null;
+
+  if (metric === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avg_single ?? item.avg);
+  if (metric === 'maxAvgSingle') return parseNumeric(item.maxAvgSingle ?? item.max_avg_single ?? item.bestAvgSingle);
+  if (metric === 'first9Single') return parseNumeric(item.first9Single ?? item.first9_single ?? item.first9);
+  if (metric === 'maxFirst9Single') return parseNumeric(item.maxFirst9Single ?? item.max_first_9_single ?? item.bestFirst9Single);
+  if (metric === 'avgDouble') return parseNumeric(item.avgDouble ?? item.avg_double);
+  if (metric === 'maxAvgDouble') return parseNumeric(item.maxAvgDouble ?? item.max_avg_double ?? item.bestAvgDouble);
+  if (metric === 'first9Double') return parseNumeric(item.first9Double ?? item.first9_double);
+  if (metric === 'maxFirst9Double') return parseNumeric(item.maxFirst9Double ?? item.max_first_9_double ?? item.bestFirst9Double);
+  if (metric === 'avgOpponentSingle') return parseNumeric(item.avgOpponentSingle ?? item.avg_opponent_single);
+  if (metric === 'avgOpponentDouble') return parseNumeric(item.avgOpponentDouble ?? item.avg_opponent_double);
+
+  if (metric === 'durationSingleLeg') return parseDurationToSeconds(item.durationSingleLeg ?? item.duration_single_leg);
+  if (metric === 'durationDoubleLeg') return parseDurationToSeconds(item.durationDoubleLeg ?? item.duration_double_leg);
+
+  if (metric === 'specials') return parseNumeric(item.specials);
+  if (metric === 'r180') return parseNumeric(item.r180 ?? item['180']);
+  if (metric === 'r140') return parseBracketsNumber(item.r140 ?? item['140']);
+  if (metric === 'highfinish') return parseBracketsNumber(item.highfinish);
+  if (metric === 'bestHighfinish') return parseNumeric(item.bestHighfinish ?? item.best_highfinish);
+  if (metric === 'shortgame') return parseBracketsNumber(item.shortgame);
+  if (metric === 'shortgames') return parseBracketsNumber(item.shortgame ?? item.shortgames);
+  if (metric === 'shortgameChance') return parseNumeric(item.shortgameChance ?? item.shortgame_chance);
+  if (metric === 'specialsPerGame') return parseNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday);
+
+  if (metric === 'games') return parseNumeric(item.games ?? item.spiele);
+  if (metric === 'legs') return parseNumeric(item.legs);
+  if (metric === 'legsWonPct') return parseNumeric(item.legsWonPct ?? item.legs_won_pct ?? item.gewonneneLegsPct);
+  if (metric === 'winsSingle') return parseNumeric(item.winsSingle ?? item.wins_single ?? item.siegeEinzel);
+  if (metric === 'winRateSingle') return parseNumeric(item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
+  if (metric === 'winsDouble') return parseNumeric(item.winsDouble ?? item.wins_double ?? item.siegeDoppel);
+  if (metric === 'winRateDouble') return parseNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
+  if (metric === 'winRateTotal') return parseNumeric(item.winRateTotal ?? item.win_rate_total ?? item.siegquoteGesamt);
+
+  return null;
+}
+
     function listenToDatabase() {
       const seasonPath = `/${currentSeason}`;
       const dbRef = ref(db, seasonPath);
       
-      // NEU: Vorsaison-Daten laden
+      // NEU: Vorsaison-Daten für alle Tabs abrufen
       const prevSeason = getPreviousSeason(currentSeason);
       if (prevSeason) {
         const prevRef = ref(db, `/${prevSeason}`);
@@ -1676,16 +1771,28 @@ function getPreviousSeason(seasonStr) {
           if (snapshot.exists()) {
             const prevData = snapshot.val();
             appData.teamStatsPrev = firebaseListToArray(prevData.Teamstatistiken || prevData.teamStats || prevData.team_stats);
+            appData.rankingPrev = {
+              stats: firebaseListToArray(prevData.Averages || prevData.stats),
+              records: firebaseListToArray(prevData.Bestleistungen || prevData.records),
+              gameStats: firebaseListToArray(prevData.Spielstatistiken || prevData.gameStats || prevData.game_stats),
+              playerProfile: firebaseListToArray(prevData.Spielerprofil || prevData.playerProfile)
+            };
           } else {
             appData.teamStatsPrev = [];
+            appData.rankingPrev = null;
           }
           renderTeamStats();
+          renderRanking();
+          if (activeTab === 'playerDev') renderPlayerDevChart();
+          if (activeTab === 'playerProfile') renderPlayerProfile();
         }).catch(err => {
           console.error("Error loading previous season:", err);
           appData.teamStatsPrev = [];
+          appData.rankingPrev = null;
         });
       } else {
         appData.teamStatsPrev = [];
+        appData.rankingPrev = null;
       }
 
       onValue(dbRef, (snapshot) => {
@@ -1998,97 +2105,100 @@ function getPreviousSeason(seasonStr) {
       const playerName = select.value;
       if (!playerName) return;
 
+      // Prüfen, ob der Vorsaison-Vergleich per Schalter aktiv ist
+      const showPrev = document.getElementById('toggleProfilePrevSeason')?.checked ?? true;
+
       const playerInfo = appData.squad.find(p => String(p.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || {};
       const p = appData.playerProfile.find(item => String(item.player || item.name || '').trim().toLowerCase() === String(playerName).trim().toLowerCase()) || {};
 
       document.getElementById('profPlayerTeam').innerText = playerInfo.team ? `Team: ${playerInfo.team}` : 'Team: -';
+      
+      // Spiele & Legs bleiben bewusst ohne Vorsaison-Vergleich
       document.getElementById('profGamesVal').innerText = p.wonGames ?? p.won_games ?? p.games ?? p.spiele ?? '-';
       document.getElementById('profLegsVal').innerText = p.wonLegs ?? p.won_legs ?? p.legs ?? '-';
 
-      document.getElementById('stat-avgSingle').innerText = formatNumber(p.avgSingle ?? p.avg_single);
+      // Hilfsfunktion: setzt den Kartenwert inklusive optionalem Vorsaison-Vergleich
+      const setCardValue = (elementId, currentValue, metricKey, isDuration = false, isPercent = false) => {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+
+        let formattedVal = isDuration ? formatShortDuration(currentValue) : (isPercent ? formatPercent(currentValue) : formatNumber(currentValue));
+        if (metricKey === 'specials' || metricKey === 'r180' || metricKey === 'r140' || metricKey === 'highfinish' || metricKey === 'shortgames') {
+          formattedVal = currentValue ?? '-';
+        }
+
+        let diffHtml = '';
+        if (showPrev && currentValue !== undefined && currentValue !== null && currentValue !== '-') {
+          const currNum = isDuration ? parseDurationToSeconds(currentValue) : (metricKey === 'r140' || metricKey === 'highfinish' || metricKey === 'shortgames' ? parseBracketsNumber(currentValue) : parseNumeric(currentValue));
+          const prevNum = getPrevMetricVal(playerName, metricKey);
+
+          if (prevNum !== null && !isNaN(prevNum) && currNum > 0) {
+            const diff = currNum - prevNum;
+            diffHtml = createDiffBadgeHTML(diff, isDuration, true);
+          }
+        }
+
+        el.innerHTML = `${formattedVal} ${diffHtml}`;
+      };
+
+      // --- Spielstatistiken ---
+      setCardValue('stat-avgSingle', p.avgSingle ?? p.avg_single, 'avgSingle');
       document.getElementById('rank-avgSingle').innerText = getRankText('avgSingle', playerName);
 
-      document.getElementById('stat-first9Single').innerText = formatNumber(p.first9Single ?? p.first9_single);
+      setCardValue('stat-first9Single', p.first9Single ?? p.first9_single, 'first9Single');
       document.getElementById('rank-first9Single').innerText = getRankText('first9Single', playerName);
 
-      document.getElementById('stat-maxAvgSingle').innerText = formatNumber(p.maxAvgSingle ?? p.max_avg_single ?? p.bestAvgSingle);
+      setCardValue('stat-maxAvgSingle', p.maxAvgSingle ?? p.max_avg_single ?? p.bestAvgSingle, 'maxAvgSingle');
       document.getElementById('rank-maxAvgSingle').innerText = getRankText('maxAvgSingle', playerName);
 
-      document.getElementById('stat-maxFirst9Single').innerText = formatNumber(p.maxFirst9Single ?? p.max_first_9_single ?? p.bestFirst9Single);
+      setCardValue('stat-maxFirst9Single', p.maxFirst9Single ?? p.max_first_9_single ?? p.bestFirst9Single, 'maxFirst9Single');
       document.getElementById('rank-maxFirst9Single').innerText = getRankText('maxFirst9Single', playerName);
 
-      document.getElementById('stat-avgOpponentSingle').innerText = formatNumber(p.avgOpponentSingle ?? p.avg_opponent_single);
+      setCardValue('stat-avgOpponentSingle', p.avgOpponentSingle ?? p.avg_opponent_single, 'avgOpponentSingle');
       document.getElementById('rank-avgOpponentSingle').innerText = getRankText('avgOpponentSingle', playerName);
 
-      document.getElementById('stat-durationSingleLeg').innerText = formatShortDuration(p.durationSingleLeg ?? p.duration_single_leg ?? '-');
+      setCardValue('stat-durationSingleLeg', p.durationSingleLeg ?? p.duration_single_leg, 'durationSingleLeg', true);
       document.getElementById('rank-durationSingleLeg').innerText = getRankText('durationSingleLeg', playerName);
 
-      document.getElementById('stat-avgDouble').innerText = formatNumber(p.avgDouble ?? p.avg_double);
+      setCardValue('stat-avgDouble', p.avgDouble ?? p.avg_double, 'avgDouble');
       document.getElementById('rank-avgDouble').innerText = getRankText('avgDouble', playerName);
 
-      document.getElementById('stat-first9Double').innerText = formatNumber(p.first9Double ?? p.first9_double);
+      setCardValue('stat-first9Double', p.first9Double ?? p.first9_double, 'first9Double');
       document.getElementById('rank-first9Double').innerText = getRankText('first9Double', playerName);
 
-      document.getElementById('stat-maxAvgDouble').innerText = formatNumber(p.maxAvgDouble ?? p.max_avg_double ?? p.bestAvgDouble);
+      setCardValue('stat-maxAvgDouble', p.maxAvgDouble ?? p.max_avg_double ?? p.bestAvgDouble, 'maxAvgDouble');
       document.getElementById('rank-maxAvgDouble').innerText = getRankText('maxAvgDouble', playerName);
 
-      document.getElementById('stat-maxFirst9Double').innerText = formatNumber(p.maxFirst9Double ?? p.max_first_9_double ?? p.bestFirst9Double);
+      setCardValue('stat-maxFirst9Double', p.maxFirst9Double ?? p.max_first_9_double ?? p.bestFirst9Double, 'maxFirst9Double');
       document.getElementById('rank-maxFirst9Double').innerText = getRankText('maxFirst9Double', playerName);
 
-      document.getElementById('stat-avgOpponentDouble').innerText = formatNumber(p.avgOpponentDouble ?? p.avg_opponent_double);
+      setCardValue('stat-avgOpponentDouble', p.avgOpponentDouble ?? p.avg_opponent_double, 'avgOpponentDouble');
       document.getElementById('rank-avgOpponentDouble').innerText = getRankText('avgOpponentDouble', playerName);
 
-      document.getElementById('stat-durationDoubleLeg').innerText = formatShortDuration(p.durationDoubleLeg ?? p.duration_double_leg ?? '-');
+      setCardValue('stat-durationDoubleLeg', p.durationDoubleLeg ?? p.duration_double_leg, 'durationDoubleLeg', true);
       document.getElementById('rank-durationDoubleLeg').innerText = getRankText('durationDoubleLeg', playerName);
 
-      const specialsVal = p.specials ?? '-';
-      const specialsRank = getRankText('specials', playerName);
-      const elRecSpecials = document.getElementById('rec-specials');
-      if (elRecSpecials) elRecSpecials.innerText = specialsVal;
-      const elRankSpecials = document.getElementById('rank-specials');
-      if (elRankSpecials) elRankSpecials.innerText = specialsRank;
+      // --- Bestleistungen ---
+      setCardValue('rec-specials', p.specials, 'specials');
+      document.getElementById('rank-specials').innerText = getRankText('specials', playerName);
 
-      const shortgameChanceVal = formatPercent(p.shortgameChance ?? p.shortgame_chance);
-      const shortgameChanceRank = getRankText('shortgameChance', playerName);
-      const elRecSC = document.getElementById('rec-shortgameChance');
-      if (elRecSC) elRecSC.innerText = shortgameChanceVal;
-      const elRankSC = document.getElementById('rank-shortgameChance');
-      if (elRankSC) elRankSC.innerText = shortgameChanceRank;
+      setCardValue('rec-shortgameChance', p.shortgameChance ?? p.shortgame_chance, 'shortgameChance', false, true);
+      document.getElementById('rank-shortgameChance').innerText = getRankText('shortgameChance', playerName);
 
-      const specialsPerGameVal = formatNumber(p.specialsPerGame ?? p.specials_per_game);
-      const specialsPerGameRank = getRankText('specialsPerGame', playerName);
-      const elRecSPG = document.getElementById('rec-specialsPerGame');
-      if (elRecSPG) elRecSPG.innerText = specialsPerGameVal;
-      const elRankSPG = document.getElementById('rank-specialsPerGame');
-      if (elRankSPG) elRankSPG.innerText = specialsPerGameRank;
+      setCardValue('rec-specialsPerGame', p.specialsPerGame ?? p.specials_per_game, 'specialsPerGame');
+      document.getElementById('rank-specialsPerGame').innerText = getRankText('specialsPerGame', playerName);
 
-      const r180Val = p.r180 ?? p['180'] ?? 0;
-      const r180Rank = getRankText('r180', playerName);
-      const r180El = document.getElementById('rec-r180');
-      if (r180El) r180El.innerText = r180Val;
-      const rankR180El = document.getElementById('rank-r180');
-      if (rankR180El) rankR180El.innerText = r180Rank;
+      setCardValue('rec-r180', p.r180 ?? p['180'], 'r180');
+      document.getElementById('rank-r180').innerText = getRankText('r180', playerName);
 
-      const r140Val = p.r140 ?? p['140'] ?? 0;
-      const r140Rank = getRankText('r140', playerName);
-      const r140El = document.getElementById('rec-r140');
-      if (r140El) r140El.innerText = r140Val;
-      const rankR140El = document.getElementById('rank-r140');
-      if (rankR140El) rankR140El.innerText = r140Rank;
+      setCardValue('rec-r140', p.r140 ?? p['140'], 'r140');
+      document.getElementById('rank-r140').innerText = getRankText('r140', playerName);
 
-      const highfinishVal = p.highfinish ?? '-';
-      const highfinishRank = getRankText('highfinish', playerName);
-      const elRecHF = document.getElementById('rec-highfinish');
-      if (elRecHF) elRecHF.innerText = highfinishVal;
-      const elRankHF = document.getElementById('rank-highfinish');
-      if (elRankHF) elRankHF.innerText = highfinishRank;
+      setCardValue('rec-highfinish', p.highfinish, 'highfinish');
+      document.getElementById('rank-highfinish').innerText = getRankText('highfinish', playerName);
 
-      const shortgamesVal = p.shortgame ?? p.shortgames ?? '-';
-      const shortgamesRank = getRankText('shortgames', playerName);
-      const shortgamesEl = document.getElementById('rec-shortgames');
-      if (shortgamesEl) shortgamesEl.innerText = shortgamesVal;
-      const rankShortgamesEl = document.getElementById('rank-shortgames');
-      if (rankShortgamesEl) rankShortgamesEl.innerText = shortgamesRank;
+      setCardValue('rec-shortgames', p.shortgame ?? p.shortgames, 'shortgames');
+      document.getElementById('rank-shortgames').innerText = getRankText('shortgames', playerName);
     }
 
     async function downloadPlayerProfileImage() {
@@ -2962,37 +3072,19 @@ function getPreviousSeason(seasonStr) {
                 <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
                 <td class="px-4 py-4 font-semibold text-white whitespace-nowrap">${teamName}</td>
                 <td class="px-4 py-4 text-white font-extrabold">
-                  ${formatNumber(t.avg)}
-                  ${(() => {
-                    if (!appData.teamStatsPrev || !appData.teamStatsPrev.length) return '';
-                    const teamNameClean = (t.team || t.name || '').trim().toLowerCase();
-                    const prevTeam = appData.teamStatsPrev.find(pt => (pt.team || pt.name || '').trim().toLowerCase() === teamNameClean);
-                    if (!prevTeam) return '';
-                    
-                    const currAvg = parseNumeric(t.avg);
-                    const prevAvg = parseNumeric(prevTeam.avg);
-                    const diff = currAvg - prevAvg;
-                    
-                    if (isNaN(diff)) return '';
-                    
-                    let colorClass = 'text-yellow-400';
-                    let arrowIcon = '<i class="fa-solid fa-right-long text-[9px]"></i>';
-                    let signStr = '';
-                    
-                    if (diff > 0) {
-                      colorClass = 'text-emerald-400';
-                      arrowIcon = '<i class="fa-solid fa-arrow-up text-[9px]"></i>';
-                      signStr = '+';
-                    } else if (diff < 0) {
-                      colorClass = 'text-red-500';
-                      arrowIcon = '<i class="fa-solid fa-arrow-down text-[9px]"></i>';
-                    }
-                    
-                    const diffFormatted = `${signStr}${diff.toFixed(2)}`;
-                    // Hier wurden die Klammern ( ) entfernt und die Textgröße auf 'text-[10px]' (noch kleiner) gestellt:
-                    return `<span class="ml-1.5 text-[10px] font-medium ${colorClass} inline-flex items-center gap-0.5">${diffFormatted} ${arrowIcon}</span>`;
-                  })()}
-                </td>
+  ${formatNumber(t.avg)}
+  ${(() => {
+    if (!appData.teamStatsPrev || !appData.teamStatsPrev.length) return '';
+    const teamNameClean = (t.team || t.name || '').trim().toLowerCase();
+    const prevTeam = appData.teamStatsPrev.find(pt => (pt.team || pt.name || '').trim().toLowerCase() === teamNameClean);
+    if (!prevTeam) return '';
+    
+    const currAvg = parseNumeric(t.avg);
+    const prevAvg = parseNumeric(prevTeam.avg);
+    const diff = currAvg - prevAvg;
+    return createDiffBadgeHTML(diff, false, !isNaN(diff));
+  })()}
+</td>
                 <td class="px-4 py-4 text-neutral-200">${formatNumber(t.first9 ?? t.first_9)}</td>
             <td class="px-4 py-4 text-neutral-200">${formatNumber(t.avgSingle ?? t.avg_single)}</td>
             <td class="px-4 py-4 text-neutral-300">${formatNumber(t.avgDouble ?? t.avg_double)}</td>
@@ -3308,6 +3400,12 @@ function getPreviousSeason(seasonStr) {
       const valEl = document.getElementById('devRefValueVal');
       if (badgeEl && valEl) {
         if (refValue > 0) {
+const prevRefVal = getPrevMetricVal(selectedPlayer, refMetricKey);
+          let diffHtml = '';
+          if (prevRefVal !== null && !isNaN(prevRefVal) && prevRefVal > 0) {
+            const diff = refValue - prevRefVal;
+            diffHtml = createDiffBadgeHTML(diff, false, true);
+          }
           valEl.innerText = refValue.toFixed(2);
           badgeEl.classList.remove('hidden');
           badgeEl.classList.add('flex');
@@ -3735,6 +3833,16 @@ function getPreviousSeason(seasonStr) {
         const playerName = p.name;
         const displayVal = formatMetricDisplay(p, metricFilter);
 
+        // --- NEU: DIFFERENZ BERECHNEN ---
+        let diffHtml = '';
+        const prevVal = getPrevMetricVal(playerName, metricFilter);
+        if (prevVal !== null && !isNaN(prevVal) && val > 0) {
+          const diff = val - prevVal;
+          const isDurationMetric = metricFilter === 'durationSingleLeg' || metricFilter === 'durationDoubleLeg';
+          diffHtml = createDiffBadgeHTML(diff, isDurationMetric, true);
+        }
+        // ---------------------------------
+
         const isMatch = globalSearchQuery && playerName.toLowerCase().includes(globalSearchQuery);
         const rowClass = isMatch 
           ? 'bg-yellow-200/20 text-yellow-200 font-bold border-l-4 border-yellow-400 transition' 
@@ -3744,7 +3852,7 @@ function getPreviousSeason(seasonStr) {
           <tr class="${rowClass}">
             <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
             <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="navigateToPlayerProfile('${playerName}')">${playerName}</td>
-            <td class="px-4 py-4 text-white font-extrabold">${displayVal}</td>
+            <td class="px-4 py-4 text-white font-extrabold">${displayVal} ${diffHtml}</td>
           </tr>
         `;
       }).join('');
