@@ -1676,14 +1676,14 @@ function createDiffBadgeHTML(diff, isDuration = false, hasPrevValue = true) {
   if (!hasPrevValue || isNaN(diff)) return '';
   
   if (diff === 0) {
-    return `<span class="ml-1 text-[10px] font-medium inline-flex items-center gap-0.5" style="color: #fbbf24 !important;">0.00 <i class="fa-solid fa-right-long text-[9px]"></i></span>`;
+    // Hier wurde text-[10px] durch text-[0.65rem] md:text-[0.75rem] ersetzt (gleiche Größe wie der Rang)
+    return `<span class="ml-1 text-[0.65rem] md:text-[0.75rem] font-medium inline-flex items-center gap-0.5" style="color: #fbbf24 !important;">0.00 <i class="fa-solid fa-right-long text-[9px]"></i></span>`;
   }
 
   let colorStyle = 'color: #fbbf24 !important;';
   let arrowIcon = '<i class="fa-solid fa-right-long text-[9px]"></i>';
   let signStr = '';
 
-  // Bei Spieldauer ist weniger Zeit (= negative Differenz) besser!
   const isBetter = (!isDuration && diff > 0) || (isDuration && diff < 0);
 
   if (isBetter) {
@@ -1699,8 +1699,8 @@ function createDiffBadgeHTML(diff, isDuration = false, hasPrevValue = true) {
     ? `${diff > 0 ? '+' : ''}${diff.toFixed(1)}s`
     : `${signStr}${diff.toFixed(2)}`;
 
-  // text-[10px] sorgt für die kleinere Schriftgröße (wie im Ranking):
-  return `<span class="ml-1 text-[10px] font-medium inline-flex items-center gap-0.5" style="${colorStyle}">${formattedDiff} ${arrowIcon}</span>`;
+  // Auch hier: Gleiche Schriftgröße wie der Rang (.profile-card-rank)
+  return `<span class="ml-1 text-[0.65rem] md:text-[0.75rem] font-medium inline-flex items-center gap-0.5" style="${colorStyle}">${formattedDiff} ${arrowIcon}</span>`;
 }
 
 // 3. Holt den Vorsaison-Wert eines bestimmten Spielers für eine bestimmte Metrik
