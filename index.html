@@ -2568,14 +2568,15 @@
     }
 
     function setGameStatsSort(key) {
-      if (currentGameStatsSortKey === key) {
-        currentGameStatsSortAsc = !currentGameStatsSortAsc;
-      } else {
-        currentGameStatsSortKey = key;
-        currentGameStatsSortAsc = key === 'player' || key === 'duration';
-      }
-      renderGameStats();
-    }
+  if (currentGameStatsSortKey === key) {
+    currentGameStatsSortAsc = !currentGameStatsSortAsc;
+  } else {
+    currentGameStatsSortKey = key;
+    // Nur bei 'player' aufsteigend beginnen (A-Z), bei 'duration' absteigend (höchste Dauer zuerst)
+    currentGameStatsSortAsc = key === 'player';
+  }
+  renderGameStats();
+}
 
     function updateGameStatsSortIcons() {
       const keys = ['player', 'games', 'legs', 'legsWonPct', 'winsSingle', 'winRateSingle', 'winsDouble', 'winRateDouble', 'winRateTotal', 'duration'];
@@ -2614,7 +2615,7 @@
         if (key === 'winsDouble') return parseNumeric(item.winsDouble ?? item.wins_double ?? item.siegeDoppel);
         if (key === 'winRateDouble') return parseNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
         if (key === 'winRateTotal') return parseNumeric(item.winRateTotal ?? item.win_rate_total ?? item.siegquoteGesamt);
-        if (key === 'duration') return item.duration || '';
+        if (key === 'duration') return parseDurationToSeconds(item.duration);
         return 0;
       };
 
