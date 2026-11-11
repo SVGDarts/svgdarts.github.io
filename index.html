@@ -2118,7 +2118,7 @@ function getPrevMetricVal(playerName, metric) {
       document.getElementById('profGamesVal').innerText = p.wonGames ?? p.won_games ?? p.games ?? p.spiele ?? '-';
       document.getElementById('profLegsVal').innerText = p.wonLegs ?? p.won_legs ?? p.legs ?? '-';
 
-      // Hilfsfunktion in renderPlayerProfile():
+      // Hilfsfunktion: setzt den Kartenwert inklusive Vorsaison-Vergleich direkt darunter (10px)
       const setCardValue = (elementId, currentValue, metricKey, isDuration = false, isPercent = false) => {
         const el = document.getElementById(elementId);
         if (!el) return;
@@ -2135,13 +2135,36 @@ function getPrevMetricVal(playerName, metric) {
 
           if (prevNum !== null && !isNaN(prevNum) && currNum > 0) {
             const diff = currNum - prevNum;
-            diffHtml = createDiffBadgeHTML(diff, isDuration, true);
+            
+            if (diff === 0) {
+              diffHtml = `<div class="text-[10px] font-medium mt-0.5" style="color: #fbbf24 !important;">0.00 <i class="fa-solid fa-right-long text-[9px]"></i></div>`;
+            } else {
+              let colorStyle = 'color: #fbbf24 !important;';
+              let arrowIcon = '<i class="fa-solid fa-right-long text-[9px]"></i>';
+              let signStr = '';
+
+              const isBetter = (!isDuration && diff > 0) || (isDuration && diff < 0);
+
+              if (isBetter) {
+                colorStyle = 'color: #34d399 !important;'; // Erzwungenes Grün (important)
+                arrowIcon = '<i class="fa-solid fa-arrow-up text-[9px]"></i>';
+                signStr = !isDuration ? '+' : '';
+              } else {
+                colorStyle = 'color: #f43f5e !important;'; // Erzwungenes Rot (important)
+                arrowIcon = '<i class="fa-solid fa-arrow-down text-[9px]"></i>';
+              }
+
+              const formattedDiff = isDuration
+                ? `${diff > 0 ? '+' : ''}${diff.toFixed(1)}s`
+                : `${signStr}${diff.toFixed(2)}`;
+
+              diffHtml = `<div class="text-[10px] font-medium mt-0.5" style="${colorStyle}">${formattedDiff} ${arrowIcon}</div>`;
+            }
           }
         }
 
-        // Durch inline-flex richtet sich der Hauptwert normal groß aus, 
-        // während die Differenz in kleiner ranking-Schrift (text-[10px]) daneben steht:
-        el.innerHTML = `<span class="inline-flex items-baseline gap-1">${formattedVal} ${diffHtml}</span>`;
+        // Verwende flex-col, damit der Hauptwert oben und die Differenz exakt darunter steht
+        el.innerHTML = `<div class="flex flex-col">${formattedVal}${diffHtml}</div>`;
       };
 
       // --- Spielstatistiken ---
