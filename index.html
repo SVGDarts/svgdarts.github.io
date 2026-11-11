@@ -2259,8 +2259,36 @@ function getPrevMetricVal(playerName, metric) {
 
       const btnInClone = clone.querySelector('button');
       if (btnInClone) btnInClone.remove();
+      
       const labelInClone = clone.querySelector('#toggleProfilePrevSeason')?.closest('label');
-if (labelInClone) labelInClone.remove();
+      if (labelInClone) labelInClone.remove();
+
+      // --- NEU: Differenzen im Download-Bild rechts neben den Wert setzen ---
+      const clonedCards = clone.querySelectorAll('.profile-card');
+      clonedCards.forEach(card => {
+        const valueWrapper = card.querySelector('.profile-card-value > div');
+        if (valueWrapper) {
+          const mainValNode = valueWrapper.childNodes[0];
+          const diffDiv = valueWrapper.querySelector('div');
+
+          if (diffDiv) {
+            const horizontalRow = document.createElement('div');
+            horizontalRow.className = "flex items-baseline gap-1.5";
+            
+            const mainSpan = document.createElement('span');
+            mainSpan.textContent = mainValNode ? mainValNode.textContent.trim() : '';
+            horizontalRow.appendChild(mainSpan);
+
+            diffDiv.className = "inline-flex items-center gap-0.5";
+            diffDiv.style.fontSize = "0.75rem"; 
+            horizontalRow.appendChild(diffDiv);
+
+            valueWrapper.innerHTML = '';
+            valueWrapper.appendChild(horizontalRow);
+          }
+        }
+      });
+      // --------------------------------------------------------------------
 
       const headerDiv = clone.querySelector('.flex.flex-col.md\\:flex-row');
       if (headerDiv) {
