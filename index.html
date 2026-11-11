@@ -2231,6 +2231,8 @@ function getPrevMetricVal(playerName, metric) {
 
       const btnInClone = clone.querySelector('button');
       if (btnInClone) btnInClone.remove();
+      const labelInClone = clone.querySelector('#toggleProfilePrevSeason')?.closest('label');
+if (labelInClone) labelInClone.remove();
 
       const headerDiv = clone.querySelector('.flex.flex-col.md\\:flex-row');
       if (headerDiv) {
