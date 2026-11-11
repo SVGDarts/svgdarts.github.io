@@ -2976,20 +2976,21 @@ function getPreviousSeason(seasonStr) {
                     if (isNaN(diff)) return '';
                     
                     let colorClass = 'text-yellow-400';
-                    let arrowIcon = '<i class="fa-solid fa-right-long text-[10px]"></i>';
+                    let arrowIcon = '<i class="fa-solid fa-right-long text-[9px]"></i>';
                     let signStr = '';
                     
                     if (diff > 0) {
                       colorClass = 'text-emerald-400';
-                      arrowIcon = '<i class="fa-solid fa-arrow-up text-[10px]"></i>';
+                      arrowIcon = '<i class="fa-solid fa-arrow-up text-[9px]"></i>';
                       signStr = '+';
                     } else if (diff < 0) {
                       colorClass = 'text-red-500';
-                      arrowIcon = '<i class="fa-solid fa-arrow-down text-[10px]"></i>';
+                      arrowIcon = '<i class="fa-solid fa-arrow-down text-[9px]"></i>';
                     }
                     
                     const diffFormatted = `${signStr}${diff.toFixed(2)}`;
-                    return `<span class="ml-2 text-xs font-semibold ${colorClass} inline-flex items-center gap-0.5">(${diffFormatted} ${arrowIcon})</span>`;
+                    // Hier wurden die Klammern ( ) entfernt und die Textgröße auf 'text-[10px]' (noch kleiner) gestellt:
+                    return `<span class="ml-1.5 text-[10px] font-medium ${colorClass} inline-flex items-center gap-0.5">${diffFormatted} ${arrowIcon}</span>`;
                   })()}
                 </td>
                 <td class="px-4 py-4 text-neutral-200">${formatNumber(t.first9 ?? t.first_9)}</td>
