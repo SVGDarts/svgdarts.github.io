@@ -237,6 +237,14 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+/* Erlaubt zweizeilige Spielernamen in den Reitern Spielstatistiken, Averages & Bestleistungen */
+    #content-gameStats table td:nth-child(2),
+    #content-stats table td:nth-child(2),
+    #content-records table td:nth-child(2) {
+      white-space: normal !important;
+      word-break: break-word;
+      line-height: 1.25;
+    }
   </style>
 
 </head>
@@ -1442,6 +1450,18 @@
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const num = parseFloat(String(val).replace(',', '.'));
       return isNaN(num) ? val : num.toFixed(2);
+    }
+
+// Teilt einen Spielernamen vor dem letzten Leerzeichen in zwei Zeilen auf
+    function formatTwoLineName(name) {
+      if (!name) return '-';
+      const cleanName = String(name).trim();
+      const lastSpaceIdx = cleanName.lastIndexOf(' ');
+      if (lastSpaceIdx === -1) return cleanName; // Wenn kein Leerzeichen im Namen ist
+      
+      const firstNamePart = cleanName.substring(0, lastSpaceIdx);
+      const lastNamePart = cleanName.substring(lastSpaceIdx + 1);
+      return `${firstNamePart}<br>${lastNamePart}`;
     }
 
     function formatPercent(val) {
@@ -2851,7 +2871,7 @@ function getPrevMetricVal(playerName, metric) {
         return `
           <tr class="${rowClass}">
             <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="navigateToPlayerProfile('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="navigateToPlayerProfile('${playerName}')">${formatTwoLineName(playerName)}</td>
             <td class="px-4 py-4 text-neutral-300">${gamesValue}</td>
             <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
@@ -2944,7 +2964,7 @@ function getPrevMetricVal(playerName, metric) {
         return `
           <tr class="${rowClass}">
             <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="navigateToPlayerProfile('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="navigateToPlayerProfile('${playerName}')">${formatTwoLineName(playerName)}</td>
             <td class="px-4 py-4 text-white font-extrabold">${formatNumber(s.avgSingle ?? s.avg_single ?? s.avg)}</td>
             <td class="px-4 py-4 text-neutral-200">${formatNumber(s.avgDouble ?? s.avg_double)}</td>
             <td class="px-4 py-4 text-neutral-200">${formatNumber(s.first9Single ?? s.first9_single ?? s.first9)}</td>
@@ -3038,7 +3058,7 @@ function getPrevMetricVal(playerName, metric) {
         return `
           <tr class="${rowClass}">
             <td class="px-4 py-4 text-center text-neutral-500 font-bold">${currentRank}</td>
-            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer whitespace-nowrap" onclick="navigateToPlayerProfile('${playerName}')">${playerName}</td>
+            <td class="px-4 py-4 font-semibold text-white hover:underline cursor-pointer" onclick="navigateToPlayerProfile('${playerName}')">${formatTwoLineName(playerName)}</td>
             <td class="px-4 py-4 text-white font-bold">${r.specials ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-200 font-semibold">${r.r180 ?? r['180'] ?? 0}</td>
             <td class="px-4 py-4 text-neutral-200 font-semibold">${display140}</td>
