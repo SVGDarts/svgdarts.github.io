@@ -1476,14 +1476,9 @@
     }
     function formatPercent(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
-      const str = String(val).replace(',', '.').trim();
-      const num = parseFloat(str);
-      if (isNaN(num)) return val;
-      if (str.includes('%')) {
-        return `${num.toFixed(1)}%`;
-      }
-      if (num >= 0 && num <= 1) {
-        return `${(num * 100).toFixed(1)}%`.replace('.0%', '%');
+      const num = parsePercentNumeric(val);
+      if (num === 0 && String(val).trim() !== '0' && String(val).trim() !== '0%' && !String(val).includes('(0')) {
+        return val;
       }
       return `${num.toFixed(1)}%`;
     }
@@ -1505,6 +1500,26 @@
       }
       const num = parseFloat(str.replace(',', '.'));
       return isNaN(num) ? 0 : num;
+    }
+
+// Extrahiert Prozentwerte (auch aus Klammern wie "17/34 (50%)") und normiert sie auf 0–100
+    function parsePercentNumeric(val) {
+      if (val === undefined || val === null || val === '-' || val === '') return 0;
+      const str = String(val).replace(',', '.').trim();
+
+      // 1. Prüfen, ob ein Wert in Klammern steht, z. B. "17/34 (50%)" -> "50%"
+      const bracketMatch = str.match(/\((.*?)\)/);
+      const targetStr = bracketMatch ? bracketMatch[1].trim() : str;
+
+      const hasPercentSign = targetStr.includes('%');
+      const num = parseFloat(targetStr.replace('%', '').trim());
+      if (isNaN(num)) return 0;
+
+      // 2. Falls kein %-Zeichen vorhanden ist und der Wert <= 1 liegt (z. B. 0.099 oder 0.5), in Prozent (9.9 bzw. 50) umrechnen
+      if (!hasPercentSign && num > 0 && num <= 1) {
+        return num * 100;
+      }
+      return num;
     }
 
     function parseMatchDate(dateVal) {
@@ -1702,12 +1717,12 @@ function getPreviousSeason(seasonStr) {
 }
 
 // 2. Erzeugt das fertige HTML-Span für eine Differenz (Zahl + Pfeil + Farbe)
-function createDiffBadgeHTML(diff, isDuration = false, hasPrevValue = true) {
+function createDiffBadgeHTML(diff, isDuration = false, hasPrevValue = true, isPercent = false) {
   if (!hasPrevValue || isNaN(diff)) return '';
+  const suffix = isPercent ? '%' : '';
   
   if (diff === 0) {
-    // Hier wurde text-[10px] durch text-[0.65rem] md:text-[0.75rem] ersetzt (gleiche Größe wie der Rang)
-    return `<span class="ml-1 text-[0.65rem] md:text-[0.75rem] font-medium inline-flex items-center gap-0.5" style="color: #fbbf24 !important;">0.00 <i class="fa-solid fa-right-long text-[9px]"></i></span>`;
+    return `<span class="ml-1 text-[0.65rem] md:text-[0.75rem] font-medium inline-flex items-center gap-0.5" style="color: #fbbf24 !important;">0.00${suffix} <i class="fa-solid fa-right-long text-[9px]"></i></span>`;
   }
 
   let colorStyle = 'color: #fbbf24 !important;';
@@ -1717,19 +1732,18 @@ function createDiffBadgeHTML(diff, isDuration = false, hasPrevValue = true) {
   const isBetter = (!isDuration && diff > 0) || (isDuration && diff < 0);
 
   if (isBetter) {
-    colorStyle = 'color: #34d399 !important;'; // Erzwungenes Grün (important)
+    colorStyle = 'color: #34d399 !important;';
     arrowIcon = '<i class="fa-solid fa-arrow-up text-[9px]"></i>';
     signStr = !isDuration ? '+' : '';
   } else {
-    colorStyle = 'color: #f43f5e !important;'; // Erzwungenes Rot (important)
+    colorStyle = 'color: #f43f5e !important;';
     arrowIcon = '<i class="fa-solid fa-arrow-down text-[9px]"></i>';
   }
 
   const formattedDiff = isDuration
     ? `${diff > 0 ? '+' : ''}${diff.toFixed(1)}s`
-    : `${signStr}${diff.toFixed(2)}`;
+    : `${signStr}${diff.toFixed(2)}${suffix}`;
 
-  // Auch hier: Gleiche Schriftgröße wie der Rang (.profile-card-rank)
   return `<span class="ml-1 text-[0.65rem] md:text-[0.75rem] font-medium inline-flex items-center gap-0.5" style="${colorStyle}">${formattedDiff} ${arrowIcon}</span>`;
 }
 
@@ -1775,17 +1789,17 @@ function getPrevMetricVal(playerName, metric) {
   if (metric === 'bestHighfinish') return parseNumeric(item.bestHighfinish ?? item.best_highfinish);
   if (metric === 'shortgame') return parseBracketsNumber(item.shortgame);
   if (metric === 'shortgames') return parseBracketsNumber(item.shortgame ?? item.shortgames);
-  if (metric === 'shortgameChance') return parseNumeric(item.shortgameChance ?? item.shortgame_chance);
+  if (metric === 'shortgameChance') return parsePercentNumeric(item.shortgameChance ?? item.shortgame_chance);
   if (metric === 'specialsPerGame') return parseNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday);
 
   if (metric === 'games') return parseNumeric(item.games ?? item.spiele);
   if (metric === 'legs') return parseNumeric(item.legs);
-  if (metric === 'legsWonPct') return parseNumeric(item.legsWonPct ?? item.legs_won_pct ?? item.gewonneneLegsPct);
+  if (metric === 'legsWonPct') return parsePercentNumeric(item.legsWonPct ?? item.legs_won_pct ?? item.gewonneneLegsPct);
   if (metric === 'winsSingle') return parseNumeric(item.winsSingle ?? item.wins_single ?? item.siegeEinzel);
-  if (metric === 'winRateSingle') return parseNumeric(item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
+  if (metric === 'winRateSingle') return parsePercentNumeric(item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
   if (metric === 'winsDouble') return parseNumeric(item.winsDouble ?? item.wins_double ?? item.siegeDoppel);
-  if (metric === 'winRateDouble') return parseNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
-  if (metric === 'winRateTotal') return parseNumeric(item.winRateTotal ?? item.win_rate_total ?? item.siegquoteGesamt);
+  if (metric === 'winRateDouble') return parsePercentNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
+  if (metric === 'winRateTotal') return parsePercentNumeric(item.winRateTotal ?? item.win_rate_total ?? item.siegquoteGesamt);
 
   return null;
 }
@@ -2160,15 +2174,19 @@ function getPrevMetricVal(playerName, metric) {
 
         let diffHtml = '';
         if (showPrev && currentValue !== undefined && currentValue !== null && currentValue !== '-') {
-          const currNum = isDuration ? parseDurationToSeconds(currentValue) : (metricKey === 'r140' || metricKey === 'highfinish' || metricKey === 'shortgames' ? parseBracketsNumber(currentValue) : parseNumeric(currentValue));
+          const currNum = isDuration 
+            ? parseDurationToSeconds(currentValue) 
+            : isPercent 
+              ? parsePercentNumeric(currentValue)
+              : (metricKey === 'r140' || metricKey === 'highfinish' || metricKey === 'shortgames' ? parseBracketsNumber(currentValue) : parseNumeric(currentValue));
           const prevNum = getPrevMetricVal(playerName, metricKey);
 
           if (prevNum !== null && !isNaN(prevNum) && currNum > 0) {
             const diff = currNum - prevNum;
+            const suffix = isPercent ? '%' : '';
             
             if (diff === 0) {
-              // Verwende hier die Klasse profile-card-rank statt fixer px-Größen
-              diffHtml = `<div class="profile-card-rank mt-0.5" style="color: #fbbf24 !important;">0.00 <i class="fa-solid fa-right-long text-[9px]"></i></div>`;
+              diffHtml = `<div class="profile-card-rank mt-0.5" style="color: #fbbf24 !important;">0.00${suffix} <i class="fa-solid fa-right-long text-[9px]"></i></div>`;
             } else {
               let colorStyle = 'color: #fbbf24 !important;';
               let arrowIcon = '<i class="fa-solid fa-right-long text-[9px]"></i>';
@@ -2177,19 +2195,18 @@ function getPrevMetricVal(playerName, metric) {
               const isBetter = (!isDuration && diff > 0) || (isDuration && diff < 0);
 
               if (isBetter) {
-                colorStyle = 'color: #34d399 !important;'; // Erzwungenes Grün (important)
+                colorStyle = 'color: #34d399 !important;';
                 arrowIcon = '<i class="fa-solid fa-arrow-up text-[9px]"></i>';
                 signStr = !isDuration ? '+' : '';
               } else {
-                colorStyle = 'color: #f43f5e !important;'; // Erzwungenes Rot (important)
+                colorStyle = 'color: #f43f5e !important;';
                 arrowIcon = '<i class="fa-solid fa-arrow-down text-[9px]"></i>';
               }
 
               const formattedDiff = isDuration
                 ? `${diff > 0 ? '+' : ''}${diff.toFixed(1)}s`
-                : `${signStr}${diff.toFixed(2)}`;
+                : `${signStr}${diff.toFixed(2)}${suffix}`;
 
-              // Hier ebenfalls die Klasse profile-card-rank nutzen, damit es exakt übereinstimmt
               diffHtml = `<div class="profile-card-rank mt-0.5" style="${colorStyle}">${formattedDiff} ${arrowIcon}</div>`;
             }
           }
@@ -2839,14 +2856,12 @@ function getPrevMetricVal(playerName, metric) {
         if (key === 'player') return item.player || item.name || '';
         if (key === 'games') return parseNumeric(item.games ?? item.spiele);
         if (key === 'legs') return parseNumeric(item.legs);
-        if (key === 'legsWonPct') return parseNumeric(item.legsWonPct ?? item.legs_won_pct ?? item.gewonneneLegsPct);
+        if (key === 'legsWonPct') return parsePercentNumeric(item.legsWonPct ?? item.legs_won_pct ?? item.gewonneneLegsPct);
         if (key === 'winsSingle') return parseNumeric(item.winsSingle ?? item.wins_single ?? item.siegeEinzel);
-        if (key === 'winRateSingle') return parseNumeric(item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
+        if (key === 'winRateSingle') return parsePercentNumeric(item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
         if (key === 'winsDouble') return parseNumeric(item.winsDouble ?? item.wins_double ?? item.siegeDoppel);
-        if (key === 'winRateDouble') return parseNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
-        if (key === 'winRateTotal') return parseNumeric(item.winRateTotal ?? item.win_rate_total ?? item.siegquoteGesamt);
-        if (key === 'duration') return parseDurationToSeconds(item.duration);
-        return 0;
+        if (key === 'winRateDouble') return parsePercentNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
+        if (key === 'winRateTotal') return parsePercentNumeric(item.winRateTotal ?? item.win_rate_total ?? item.siegquoteGesamt);
       };
 
       sortedData.sort((a, b) => {
@@ -3029,8 +3044,8 @@ function getPrevMetricVal(playerName, metric) {
         if (key === 'r140') return parseBracketsNumber(item.r140 ?? item['140']);
         if (key === 'highfinish') return parseBracketsNumber(item.highfinish);
         if (key === 'shortgame') return parseBracketsNumber(item.shortgame);
-        if (key === 'shortgameChance') return parseNumeric(item.shortgameChance ?? item.shortgame_chance);
-        if (key === 'specialsPerGame') return parseNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday ?? item.specials_per_matchday);
+        if (key === 'shortgameChance') return parsePercentNumeric(item.shortgameChance ?? item.shortgame_chance);
+        if (key === 'specialsPerGame') return parsePercentNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday ?? item.specials_per_matchday);
         return 0;
       };
 
@@ -3766,17 +3781,17 @@ const prevRefVal = getPrevMetricVal(selectedPlayer, refMetricKey);
         if (metric === 'highfinish') return parseBracketsNumber(item.highfinish);
         if (metric === 'bestHighfinish') return parseNumeric(item.bestHighfinish ?? item.best_highfinish);
         if (metric === 'shortgame') return parseBracketsNumber(item.shortgame);
-        if (metric === 'shortgameChance') return parseNumeric(item.shortgameChance ?? item.shortgame_chance);
-        if (metric === 'specialsPerGame') return parseNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday);
+        if (metric === 'shortgameChance') return parsePercentNumeric(item.shortgameChance ?? item.shortgame_chance);
+        if (metric === 'specialsPerGame') return parsePercentNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday);
 
         if (metric === 'games') return parseNumeric(item.games ?? item.spiele);
         if (metric === 'legs') return parseNumeric(item.legs);
-        if (metric === 'legsWonPct') return parseNumeric(item.legsWonPct ?? item.legs_won_pct ?? item.gewonneneLegsPct);
-        if (metric === 'winsSingle') return parseNumeric(item.winsSingle ?? item.wins_single ?? item.siegeEinzel);
-        if (metric === 'winRateSingle') return parseNumeric(item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
-        if (metric === 'winsDouble') return parseNumeric(item.winsDouble ?? item.wins_double ?? item.siegeDoppel);
-        if (metric === 'winRateDouble') return parseNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
-        if (metric === 'winRateTotal') return parseNumeric(item.winRateTotal ?? item.win_rate_total ?? item.siegquoteGesamt);
+        if (metric === 'legsWonPct') return parsePercentNumeric(item.legsWonPct ?? item.legs_won_pct ?? item.gewonneneLegsPct);
+     if (metric === 'winsSingle') return parseNumeric(item.winsSingle ?? item.wins_single ?? item.siegeEinzel);
+     if (metric === 'winRateSingle') return parsePercentNumeric(item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
+     if (metric === 'winsDouble') return parseNumeric(item.winsDouble ?? item.wins_double ?? item.siegeDoppel);
+     if (metric === 'winRateDouble') return parsePercentNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
+     if (metric === 'winRateTotal') return parsePercentNumeric(item.winRateTotal ?? item.win_rate_total ?? item.siegquoteGesamt);
 
         return 0;
       };
@@ -3927,7 +3942,8 @@ const prevRefVal = getPrevMetricVal(selectedPlayer, refMetricKey);
         if (prevVal !== null && !isNaN(prevVal) && val > 0) {
           const diff = val - prevVal;
           const isDurationMetric = metricFilter === 'durationSingleLeg' || metricFilter === 'durationDoubleLeg';
-          diffHtml = createDiffBadgeHTML(diff, isDurationMetric, true);
+          const isPercentMetric = ['shortgameChance', 'legsWonPct', 'winRateSingle', 'winRateDouble', 'winRateTotal'].includes(metricFilter);
+          diffHtml = createDiffBadgeHTML(diff, isDurationMetric, true, isPercentMetric);
         }
         // ---------------------------------
 
