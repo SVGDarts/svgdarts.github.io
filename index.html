@@ -3045,7 +3045,7 @@ function getPrevMetricVal(playerName, metric) {
         if (key === 'highfinish') return parseBracketsNumber(item.highfinish);
         if (key === 'shortgame') return parseBracketsNumber(item.shortgame);
         if (key === 'shortgameChance') return parsePercentNumeric(item.shortgameChance ?? item.shortgame_chance);
-        if (key === 'specialsPerGame') return parsePercentNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday ?? item.specials_per_matchday);
+        if (key === 'specialsPerGame') return parseNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday ?? item.specials_per_matchday);
         return 0;
       };
 
@@ -3782,7 +3782,7 @@ const prevRefVal = getPrevMetricVal(selectedPlayer, refMetricKey);
         if (metric === 'bestHighfinish') return parseNumeric(item.bestHighfinish ?? item.best_highfinish);
         if (metric === 'shortgame') return parseBracketsNumber(item.shortgame);
         if (metric === 'shortgameChance') return parsePercentNumeric(item.shortgameChance ?? item.shortgame_chance);
-        if (metric === 'specialsPerGame') return parsePercentNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday);
+        if (metric === 'specialsPerGame') return parseNumeric(item.specialsPerGame ?? item.specials_per_game ?? item.specialsPerMatchday);
 
         if (metric === 'games') return parseNumeric(item.games ?? item.spiele);
         if (metric === 'legs') return parseNumeric(item.legs);
