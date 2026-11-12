@@ -237,13 +237,22 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-/* Erlaubt zweizeilige Spielernamen in den Reitern Spielstatistiken, Averages & Bestleistungen */
+/* Zweizeilige Spielernamen in den Tabellen mit kompakterer Schrift auf Handys */
     #content-gameStats table td:nth-child(2),
     #content-stats table td:nth-child(2),
     #content-records table td:nth-child(2) {
       white-space: normal !important;
-      word-break: break-word;
-      line-height: 1.25;
+      word-break: keep-all; /* Verhindert das Zerreißen einzelner Wörter */
+      line-height: 1.2;
+      font-size: 0.68rem !important; /* Etwas kompakter auf dem Handy */
+    }
+
+    @media (min-width: 768px) {
+      #content-gameStats table td:nth-child(2),
+      #content-stats table td:nth-child(2),
+      #content-records table td:nth-child(2) {
+        font-size: 0.72rem !important; /* Standardgröße ab Tablet/Desktop */
+      }
     }
   </style>
 
@@ -1452,18 +1461,19 @@
       return isNaN(num) ? val : num.toFixed(2);
     }
 
-// Teilt einen Spielernamen vor dem letzten Leerzeichen in zwei Zeilen auf
+// Teilt einen Spielernamen vor dem letzten Leerzeichen auf und schützt beide Teile vor automatischem Umbrechen
     function formatTwoLineName(name) {
       if (!name) return '-';
       const cleanName = String(name).trim();
       const lastSpaceIdx = cleanName.lastIndexOf(' ');
-      if (lastSpaceIdx === -1) return cleanName; // Wenn kein Leerzeichen im Namen ist
+      if (lastSpaceIdx === -1) return `<span class="whitespace-nowrap">${cleanName}</span>`;
       
       const firstNamePart = cleanName.substring(0, lastSpaceIdx);
       const lastNamePart = cleanName.substring(lastSpaceIdx + 1);
-      return `${firstNamePart}<br>${lastNamePart}`;
+      
+      // Jeder Teil bleibt für sich in einer Zeile, getrennt durch einen Zeilenumbruch
+      return `<span class="whitespace-nowrap block">${firstNamePart}</span><span class="whitespace-nowrap block">${lastNamePart}</span>`;
     }
-
     function formatPercent(val) {
       if (val === undefined || val === null || val === '-' || val === '') return '-';
       const str = String(val).replace(',', '.').trim();
