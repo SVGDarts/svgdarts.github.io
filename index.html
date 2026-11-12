@@ -1752,21 +1752,27 @@ function getPrevMetricVal(playerName, metric) {
   if (!appData.rankingPrev) return null;
   const nameClean = String(playerName || '').trim().toLowerCase();
   
-  let item = null;
+  let item = {};
+  let found = false;
+
+  if (appData.rankingPrev.stats) {
+    const s = appData.rankingPrev.stats.find(x => String(x.player || x.name || '').trim().toLowerCase() === nameClean);
+    if (s) { item = { ...item, ...s }; found = true; }
+  }
+  if (appData.rankingPrev.records) {
+    const r = appData.rankingPrev.records.find(x => String(x.player || x.name || '').trim().toLowerCase() === nameClean);
+    if (r) { item = { ...item, ...r }; found = true; }
+  }
+  if (appData.rankingPrev.gameStats) {
+    const g = appData.rankingPrev.gameStats.find(x => String(x.player || x.name || '').trim().toLowerCase() === nameClean);
+    if (g) { item = { ...item, ...g }; found = true; }
+  }
   if (appData.rankingPrev.playerProfile) {
-    item = appData.rankingPrev.playerProfile.find(p => String(p.player || p.name || '').trim().toLowerCase() === nameClean);
-  }
-  if (!item && appData.rankingPrev.stats) {
-    item = appData.rankingPrev.stats.find(s => String(s.player || s.name || '').trim().toLowerCase() === nameClean);
-  }
-  if (!item && appData.rankingPrev.records) {
-    item = appData.rankingPrev.records.find(r => String(r.player || r.name || '').trim().toLowerCase() === nameClean);
-  }
-  if (!item && appData.rankingPrev.gameStats) {
-    item = appData.rankingPrev.gameStats.find(g => String(g.player || g.name || '').trim().toLowerCase() === nameClean);
+    const p = appData.rankingPrev.playerProfile.find(x => String(x.player || x.name || '').trim().toLowerCase() === nameClean);
+    if (p) { item = { ...item, ...p }; found = true; }
   }
   
-  if (!item) return null;
+  if (!found) return null;
 
   if (metric === 'avgSingle') return parseNumeric(item.avgSingle ?? item.avg_single ?? item.avg);
   if (metric === 'maxAvgSingle') return parseNumeric(item.maxAvgSingle ?? item.max_avg_single ?? item.bestAvgSingle);
