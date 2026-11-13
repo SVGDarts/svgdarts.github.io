@@ -1517,29 +1517,30 @@
     }
 
     function parseWinsAndTotal(wins, rateVal) {
-  const w = parseNumeric(wins);
-  const rate = parsePercentNumeric(rateVal);
-  let t = 0;
+      const w = parseNumeric(wins);
+      const rate = parsePercentNumeric(rateVal);
+      let t = 0;
 
-  if (rate > 0) {
-    t = Math.round(w / (rate / 100));
-  } else if (w === 0 && rateVal !== undefined && rateVal !== null && rateVal !== '-' && rateVal !== '') {
-    // Falls 0 Siege vorliegen, versuchen wir die Gesamtanzahl direkt aus dem String zu lesen (z.B. "0/2" -> Total = 2)
-    const str = String(rateVal).trim();
-    if (str.includes('/')) {
-      const parts = str.split('/');
-      const parsedTotal = parseInt(parts[1], 10);
-      if (!isNaN(parsedTotal)) t = parsedTotal;
+      // 1. Zuerst prüfen, ob in "wins" ODER in "rateVal" bereits ein Bruch wie "0/2" oder "0/2 (0%)" steht
+      const winsStr = wins !== undefined && wins !== null ? String(wins).trim() : '';
+      const rateStr = rateVal !== undefined && rateVal !== null ? String(rateVal).trim() : '';
+
+      const slashMatch = winsStr.match(/^\d+\s*\/\s*(\d+)/) || rateStr.match(/^\d+\s*\/\s*(\d+)/);
+      if (slashMatch) {
+        t = parseInt(slashMatch[1], 10);
+      }
+
+      // 2. Falls kein direkter Bruch gefunden wurde, über die Prozentquote berechnen
+      if (t === 0) {
+        if (rate > 0) {
+          t = Math.round(w / (rate / 100));
+        } else if (w > 0) {
+          t = w;
+        }
+      }
+
+      return { wins: w, total: t, rate: rate };
     }
-    if (t === 0) {
-      // Fallback, falls kein Slash im String steht, aber z.B. 0 Spiele/Versuche bekannt sind
-      t = parseNumeric(rateVal); 
-    }
-  } else if (w > 0) {
-    t = w;
-  }
-  return { wins: w, total: t, rate: rate };
-}
 
 function formatCombinedRate(wins, rateVal) {
   const parsed = parseWinsAndTotal(wins, rateVal);
