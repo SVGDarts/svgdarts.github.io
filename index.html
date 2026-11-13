@@ -1520,8 +1520,21 @@
   const w = parseNumeric(wins);
   const rate = parsePercentNumeric(rateVal);
   let t = 0;
+
   if (rate > 0) {
     t = Math.round(w / (rate / 100));
+  } else if (w === 0 && rateVal !== undefined && rateVal !== null && rateVal !== '-' && rateVal !== '') {
+    // Falls 0 Siege vorliegen, versuchen wir die Gesamtanzahl direkt aus dem String zu lesen (z.B. "0/2" -> Total = 2)
+    const str = String(rateVal).trim();
+    if (str.includes('/')) {
+      const parts = str.split('/');
+      const parsedTotal = parseInt(parts[1], 10);
+      if (!isNaN(parsedTotal)) t = parsedTotal;
+    }
+    if (t === 0) {
+      // Fallback, falls kein Slash im String steht, aber z.B. 0 Spiele/Versuche bekannt sind
+      t = parseNumeric(rateVal); 
+    }
   } else if (w > 0) {
     t = w;
   }
@@ -2878,8 +2891,8 @@ function getPrevMetricVal(playerName, metric) {
         if (key === 'winRateSingle') return parsePercentNumeric(item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
         if (key === 'winRateDouble') return parsePercentNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
         if (key === 'winRateTotal') {
-          const single = parseWinsAndTotal(item.winsSingle ?? item.wins_single ?? item.siegeEinzel, item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
-          const double = parseWinsAndTotal(item.winsDouble ?? item.wins_double ?? item.siegeDoppel, item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
+          const single = parseWinsAndTotal(g.winsSingle ?? g.wins_single ?? g.siegeEinzel, g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel);
+const double = parseWinsAndTotal(g.winsDouble ?? g.wins_double ?? g.siegeDoppel, g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel);
           const totWins = single.wins + double.wins;
           const totTotal = single.total + double.total;
           return totTotal > 0 ? (totWins / totTotal) * 100 : 0;
