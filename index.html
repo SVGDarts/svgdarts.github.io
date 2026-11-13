@@ -664,21 +664,15 @@
                 <th onclick="setGameStatsSort('legsWonPct')" class="px-4 py-4 sortable-header">
                   Legquote <span id="gsort-icon-legsWonPct" class="ml-1"></span>
                 </th>
-                <th onclick="setGameStatsSort('winsSingle')" class="px-4 py-4 sortable-header">
-                  Siege (Einzel) <span id="gsort-icon-winsSingle" class="ml-1"></span>
-                </th>
                 <th onclick="setGameStatsSort('winRateSingle')" class="px-4 py-4 sortable-header">
-                  Siegquote (Einzel) <span id="gsort-icon-winRateSingle" class="ml-1"></span>
-                </th>
-                <th onclick="setGameStatsSort('winsDouble')" class="px-4 py-4 sortable-header">
-                  Siege (Doppel) <span id="gsort-icon-winsDouble" class="ml-1"></span>
-                </th>
-                <th onclick="setGameStatsSort('winRateDouble')" class="px-4 py-4 sortable-header">
-                  Siegquote (Doppel) <span id="gsort-icon-winRateDouble" class="ml-1"></span>
-                </th>
-                <th onclick="setGameStatsSort('winRateTotal')" class="px-4 py-4 sortable-header">
-                  Siegquote (Gesamt) <span id="gsort-icon-winRateTotal" class="ml-1"></span>
-                </th>
+  Siegquote (Einzel) <span id="gsort-icon-winRateSingle" class="ml-1"></span>
+</th>
+<th onclick="setGameStatsSort('winRateDouble')" class="px-4 py-4 sortable-header">
+  Siegquote (Doppel) <span id="gsort-icon-winRateDouble" class="ml-1"></span>
+</th>
+<th onclick="setGameStatsSort('winRateTotal')" class="px-4 py-4 sortable-header">
+  Siegquote (Gesamt) <span id="gsort-icon-winRateTotal" class="ml-1"></span>
+</th>
                 <th onclick="setGameStatsSort('duration')" class="px-4 py-4 sortable-header">
                   Gesamtspieldauer <span id="gsort-icon-duration" class="ml-1"></span>
                 </th>
@@ -1521,6 +1515,24 @@
       }
       return num;
     }
+
+    function parseWinsAndTotal(wins, rateVal) {
+  const w = parseNumeric(wins);
+  const rate = parsePercentNumeric(rateVal);
+  let t = 0;
+  if (rate > 0) {
+    t = Math.round(w / (rate / 100));
+  } else if (w > 0) {
+    t = w;
+  }
+  return { wins: w, total: t, rate: rate };
+}
+
+function formatCombinedRate(wins, rateVal) {
+  const parsed = parseWinsAndTotal(wins, rateVal);
+  if (parsed.total === 0 && parsed.wins === 0) return '-';
+  return `${parsed.wins}/${parsed.total} (${parsed.rate.toFixed(1)}%)`;
+}
 
     function parseMatchDate(dateVal) {
       if (!dateVal || dateVal === '-') return null;
@@ -2832,7 +2844,7 @@ function getPrevMetricVal(playerName, metric) {
 }
 
     function updateGameStatsSortIcons() {
-      const keys = ['player', 'games', 'legs', 'legsWonPct', 'winsSingle', 'winRateSingle', 'winsDouble', 'winRateDouble', 'winRateTotal', 'duration'];
+      const keys = ['player', 'games', 'legs', 'legsWonPct', 'winRateSingle', 'winRateDouble', 'winRateTotal', 'duration'];
       keys.forEach(k => {
         const iconEl = document.getElementById(`gsort-icon-${k}`);
         if (!iconEl) return;
@@ -2863,11 +2875,15 @@ function getPrevMetricVal(playerName, metric) {
         if (key === 'games') return parseNumeric(item.games ?? item.spiele);
         if (key === 'legs') return parseNumeric(item.legs);
         if (key === 'legsWonPct') return parsePercentNumeric(item.legsWonPct ?? item.legs_won_pct ?? item.gewonneneLegsPct);
-        if (key === 'winsSingle') return parseNumeric(item.winsSingle ?? item.wins_single ?? item.siegeEinzel);
         if (key === 'winRateSingle') return parsePercentNumeric(item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
-        if (key === 'winsDouble') return parseNumeric(item.winsDouble ?? item.wins_double ?? item.siegeDoppel);
         if (key === 'winRateDouble') return parsePercentNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
-        if (key === 'winRateTotal') return parsePercentNumeric(item.winRateTotal ?? item.win_rate_total ?? item.siegquoteGesamt);
+        if (key === 'winRateTotal') {
+          const single = parseWinsAndTotal(item.winsSingle ?? item.wins_single ?? item.siegeEinzel, item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
+          const double = parseWinsAndTotal(item.winsDouble ?? item.wins_double ?? item.siegeDoppel, item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
+          const totWins = single.wins + double.wins;
+          const totTotal = single.total + double.total;
+          return totTotal > 0 ? (totWins / totTotal) * 100 : 0;
+        }
       };
 
       sortedData.sort((a, b) => {
@@ -2878,7 +2894,7 @@ function getPrevMetricVal(playerName, metric) {
       });
 
       if (!sortedData.length) {
-        tbody.innerHTML = `<tr><td colspan="11" class="px-6 py-8 text-center text-neutral-500">Keine Spielstatistiken gefunden.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="px-6 py-8 text-center text-neutral-500">Keine Spielstatistiken gefunden.</td></tr>`;
         return;
       }
 
@@ -2894,6 +2910,18 @@ function getPrevMetricVal(playerName, metric) {
         const playerName = g.player || g.name || '-';
         const gamesValue = parseNumeric(g.games ?? g.spiele ?? 0);
         
+        // Berechnungen für kombinierten Text (z.B. "6/7 (85.7%)")
+        const single = parseWinsAndTotal(g.winsSingle ?? g.wins_single ?? item?.siegeEinzel, g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel);
+        const double = parseWinsAndTotal(g.winsDouble ?? g.wins_double ?? item?.siegeDoppel, g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel);
+        
+        const totWins = single.wins + double.wins;
+        const totTotal = single.total + double.total;
+        const totRate = totTotal > 0 ? (totWins / totTotal) * 100 : 0;
+        
+        const singleStr = single.total > 0 ? `${single.wins}/${single.total} (${single.rate.toFixed(1)}%)` : '-';
+        const doubleStr = double.total > 0 ? `${double.wins}/${double.total} (${double.rate.toFixed(1)}%)` : '-';
+        const totalStr = totTotal > 0 ? `${totWins}/${totTotal} (${totRate.toFixed(1)}%)` : '-';
+
         const isMatch = globalSearchQuery && playerName.toLowerCase().includes(globalSearchQuery);
         const rowClass = isMatch 
           ? 'bg-yellow-200/20 text-yellow-200 font-bold border-l-4 border-yellow-400 transition' 
@@ -2906,11 +2934,9 @@ function getPrevMetricVal(playerName, metric) {
             <td class="px-4 py-4 text-neutral-300">${gamesValue}</td>
             <td class="px-4 py-4 text-neutral-300">${g.legs ?? '-'}</td>
             <td class="px-4 py-4 text-neutral-200">${formatPercent(g.legsWonPct ?? g.legs_won_pct ?? g.gewonneneLegsPct)}</td>
-            <td class="px-4 py-4 text-neutral-200 font-semibold">${g.winsSingle ?? g.wins_single ?? g.siegeEinzel ?? '-'}</td>
-            <td class="px-4 py-4 text-neutral-200">${formatPercent(g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel)}</td>
-            <td class="px-4 py-4 text-neutral-300 font-semibold">${g.winsDouble ?? g.wins_double ?? g.siegeDoppel ?? '-'}</td>
-            <td class="px-4 py-4 text-neutral-300">${formatPercent(g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel)}</td>
-            <td class="px-4 py-4 text-white font-extrabold">${formatPercent(g.winRateTotal ?? g.win_rate_total ?? g.siegquoteGesamt)}</td>
+            <td class="px-4 py-4 text-neutral-200 font-semibold">${singleStr}</td>
+            <td class="px-4 py-4 text-neutral-300 font-semibold">${doubleStr}</td>
+            <td class="px-4 py-4 text-white font-extrabold">${totalStr}</td>
             <td class="px-4 py-4 text-neutral-300">${g.duration || '-'}</td>
           </tr>
         `;
