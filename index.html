@@ -2891,8 +2891,8 @@ function getPrevMetricVal(playerName, metric) {
         if (key === 'winRateSingle') return parsePercentNumeric(item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
         if (key === 'winRateDouble') return parsePercentNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
         if (key === 'winRateTotal') {
-          const single = parseWinsAndTotal(g.winsSingle ?? g.wins_single ?? g.siegeEinzel, g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel);
-        const double = parseWinsAndTotal(g.winsDouble ?? g.wins_double ?? g.siegeDoppel, g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel);
+          const single = parseWinsAndTotal(item.winsSingle ?? item.wins_single ?? item.siegeEinzel, item.winRateSingle ?? item.win_rate_single ?? item.siegquoteEinzel);
+          const double = parseWinsAndTotal(item.winsDouble ?? item.wins_double ?? item.siegeDoppel, item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
           const totWins = single.wins + double.wins;
           const totTotal = single.total + double.total;
           return totTotal > 0 ? (totWins / totTotal) * 100 : 0;
@@ -2923,9 +2923,9 @@ function getPrevMetricVal(playerName, metric) {
         const playerName = g.player || g.name || '-';
         const gamesValue = parseNumeric(g.games ?? g.spiele ?? 0);
         
-        // Berechnungen für kombinierten Text (z.B. "6/7 (85.7%)")
-        const single = parseWinsAndTotal(g.winsSingle ?? g.wins_single ?? item?.siegeEinzel, g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel);
-        const double = parseWinsAndTotal(g.winsDouble ?? g.wins_double ?? item?.siegeDoppel, g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel);
+        // Berechnungen für kombinierten Text (z.B. "0/2 (0.0%)" oder "6/7 (85.7%)")
+        const single = parseWinsAndTotal(g.winsSingle ?? g.wins_single ?? g.siegeEinzel, g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel);
+        const double = parseWinsAndTotal(g.winsDouble ?? g.wins_double ?? g.siegeDoppel, g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel);
         
         const totWins = single.wins + double.wins;
         const totTotal = single.total + double.total;
