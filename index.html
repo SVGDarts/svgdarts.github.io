@@ -2892,7 +2892,7 @@ function getPrevMetricVal(playerName, metric) {
         if (key === 'winRateDouble') return parsePercentNumeric(item.winRateDouble ?? item.win_rate_double ?? item.siegquoteDoppel);
         if (key === 'winRateTotal') {
           const single = parseWinsAndTotal(g.winsSingle ?? g.wins_single ?? g.siegeEinzel, g.winRateSingle ?? g.win_rate_single ?? g.siegquoteEinzel);
-const double = parseWinsAndTotal(g.winsDouble ?? g.wins_double ?? g.siegeDoppel, g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel);
+        const double = parseWinsAndTotal(g.winsDouble ?? g.wins_double ?? g.siegeDoppel, g.winRateDouble ?? g.win_rate_double ?? g.siegquoteDoppel);
           const totWins = single.wins + double.wins;
           const totTotal = single.total + double.total;
           return totTotal > 0 ? (totWins / totTotal) * 100 : 0;
