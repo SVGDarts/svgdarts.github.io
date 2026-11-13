@@ -1102,7 +1102,7 @@
             </select>
 
             <div id="devRefValueBadge" class="hidden items-center gap-2 text-xs font-bold font-display px-3 py-2 bg-yellow-500/10 text-yellow-400 border border-yellow-500/30 rounded-xl">
-              <span id="devRefValueVal">-</span>
+              <div id="devRefValueVal" class="flex items-center gap-1.5">-</div>
             </div>
           </div>
         </div>
@@ -3549,13 +3549,14 @@ function getPrevMetricVal(playerName, metric) {
       const valEl = document.getElementById('devRefValueVal');
       if (badgeEl && valEl) {
         if (refValue > 0) {
-const prevRefVal = getPrevMetricVal(selectedPlayer, refMetricKey);
+          const prevRefVal = getPrevMetricVal(selectedPlayer, refMetricKey);
           let diffHtml = '';
           if (prevRefVal !== null && !isNaN(prevRefVal) && prevRefVal > 0) {
             const diff = refValue - prevRefVal;
-            diffHtml = createDiffBadgeHTML(diff, false, true);
+            const isPercentMetric = false; // Averages/First9 sind Fließkommazahlen
+            diffHtml = createDiffBadgeHTML(diff, false, true, isPercentMetric);
           }
-          valEl.innerText = refValue.toFixed(2);
+          valEl.innerHTML = `${refValue.toFixed(2)} ${diffHtml}`;
           badgeEl.classList.remove('hidden');
           badgeEl.classList.add('flex');
         } else {
